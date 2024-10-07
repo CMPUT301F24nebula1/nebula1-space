@@ -9,7 +9,7 @@
 
     <string name="profile_title">Profile</string>
     <string name="username">Username</string>
-    <string name="sign_out">Sign Out</string>
+    <string name="Edit">Edit</string>
     <string name="confirm">Confirm</string>
     <string name="email">Email</string>
     <string name="phone_number">Phone number</string>
