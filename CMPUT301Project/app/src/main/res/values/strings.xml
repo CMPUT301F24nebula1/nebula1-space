@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">CMPUT301Project</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="event_list_title">Events</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="Name">Name</string>
+    <string name="Edit">Edit</string>
+    <string name="confirm">Confirm</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone number</string>
+
+    <string name="profile_picture">Profile</string>
+
+</resources>
