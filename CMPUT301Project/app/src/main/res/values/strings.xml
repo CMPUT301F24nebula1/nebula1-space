@@ -7,8 +7,10 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="event_list_title">Events</string>
+
     <string name="profile_title">Profile</string>
-    <string name="username">Username</string>
+    <string name="Name">Name</string>
     <string name="Edit">Edit</string>
     <string name="confirm">Confirm</string>
     <string name="email">Email</string>

@@ -21,6 +21,14 @@
             android:background="@color/design_default_color_primary"
             android:title="@string/profile_title"
             android:titleTextColor="#FFFFFF" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/event_list_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/design_default_color_primary"
+            android:title="@string/event_list_title"
+            android:titleTextColor="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
@@ -38,17 +46,6 @@
         android:background="@drawable/profile_image_border"
         android:src="@drawable/profile"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/user_type"
-        android:text="Character: \n\n entrant"
-        android:textSize="25sp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image"/>
-
 
     <EditText
         android:id="@+id/editTextUsername"
@@ -59,11 +56,11 @@
         android:layout_marginEnd="24dp"
         android:textSize="25sp"
         android:editable="false"
-        android:hint="@string/username"
+        android:hint="@string/Name"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_type"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
@@ -71,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:text="Username"
+        android:text="Name"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
         app:layout_constraintStart_toStartOf="parent" />
