@@ -2,3 +2,13 @@
 plugins {
     alias(libs.plugins.android.application) apply false
 }
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        val nav_version = "2.7.0"
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+    }
+}

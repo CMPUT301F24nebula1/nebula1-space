@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/EntrantHomepageFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.cmput301project.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
+        android:id="@+id/EntrantHomepageFragment"
+        android:name="com.example.cmput301project.EntrantHomepageFragment"
+        android:label="@string/homepage_fragment_label"
+        tools:layout="@layout/entrant_homepage">
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_EntrantHomepage_to_EntrantProfile"
+            app:destination="@id/EntrantProfileFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.cmput301project.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
 
+    <fragment
+        android:id="@+id/EntrantProfileFragment"
+        android:name="com.example.cmput301project.EntrantProfileFragment"
+        android:label="@string/profile_fragment_label"
+        tools:layout="@layout/entrant_profile">
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/EntrantHomepageFragment" />
+
     </fragment>
 </navigation>
