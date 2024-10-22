@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Event {
     private ArrayList<Entrant> waitlist;
     private int limit;
+    private String name;
     private String description;
 
     public Event() {
@@ -33,5 +34,13 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

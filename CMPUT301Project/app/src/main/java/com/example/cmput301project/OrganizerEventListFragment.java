@@ -26,10 +26,10 @@ public class OrganizerEventListFragment extends Fragment {
         return binding.getRoot();
     }
 
-//    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-//        binding.addEventButton.setOnClickListener(v ->
-//                NavHostFragment.findNavController(OrganizerEventListFragment.this)
-//                        .navigate(R.id.action_OrganizerEventList_to_AddEvent)
-//        );
-//    }
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        binding.addEventButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(OrganizerEventListFragment.this)
+                        .navigate(R.id.action_OrganizerEventList_to_AddEvent)
+        );
+    }
 }

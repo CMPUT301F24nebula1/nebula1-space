@@ -39,6 +39,9 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation("androidx.activity:activity-ktx:1.2.0")    // For Activities
+    implementation("androidx.fragment:fragment-ktx:1.3.0")   // For Fragments
+
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -48,4 +51,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(kotlin("script-runtime"))
 }
