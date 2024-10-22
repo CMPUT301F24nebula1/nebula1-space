@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Event {
     private ArrayList<Entrant> waitlist;
     private int limit;
+    private String description;
 
     public Event() {
         this.waitlist = new ArrayList<Entrant>();
@@ -24,5 +25,13 @@ public class Event {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -4,6 +4,7 @@
     <!-- Strings used for fragments for navigation -->
     <string name="homepage_fragment_label">Entrant Homepage</string>
     <string name="profile_fragment_label">Profile</string>
+    <string name="organizer_homepage_fragment_label">Home</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 

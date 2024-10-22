@@ -31,7 +31,12 @@ public class EntrantHomepageFragment extends Fragment {
         binding.profileButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(EntrantHomepageFragment.this)
                         .navigate(R.id.action_EntrantHomepage_to_EntrantProfile)
-                );
+        );
+
+        binding.organizerViewButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(EntrantHomepageFragment.this)
+                        .navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage)
+        );
 
     }
 

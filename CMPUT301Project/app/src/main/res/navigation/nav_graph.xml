@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_EntrantHomepage_to_EntrantProfile"
             app:destination="@id/EntrantProfileFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_OrganizerHomepage"
+            app:destination="@id/OrganizerHomepageFragment" />
     </fragment>
 
     <fragment
@@ -24,5 +27,12 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/EntrantHomepageFragment" />
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerHomepageFragment"
+        android:name="com.example.cmput301project.OrganizerHomepageFragment"
+        android:label="@string/organizer_homepage_fragment_label"
+        tools:layout="@layout/organizer_homepage">
     </fragment>
 </navigation>
