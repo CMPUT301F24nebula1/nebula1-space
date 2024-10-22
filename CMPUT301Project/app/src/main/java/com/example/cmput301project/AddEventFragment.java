@@ -1,11 +1,14 @@
 package com.example.cmput301project;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cmput301project.databinding.AddEventBinding;
 import com.example.cmput301project.databinding.OrganizerEventListBinding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class AddEventFragment extends Fragment {
@@ -73,6 +77,33 @@ public class AddEventFragment extends Fragment {
                 openImagePicker();
             }
         });
+
+        binding.saveEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // An event has to have a name
+                if (binding.eventNameEdittext.getText().toString().isEmpty()) {
+                    new AlertDialog.Builder(getContext())  // 'this' refers to the current context, can be 'getContext()' if inside a Fragment
+                            .setTitle("Alert")  // Set the title of the dialog
+                            .setMessage("An event has to have a name.")  // Set the message for the dialog
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Action to take when the user presses the "OK" button
+                                    dialog.dismiss();  // Close the dialog
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)  // Optional: Set an icon
+                            .show();  // Display the dialog
+
+                }
+                String name = binding.eventNameEdittext.getText().toString();
+                String description = binding.eventDescriptionEdittext.getText().toString();
+                String posterUrl = convertImageViewToBase64String(eventImageView);
+                Event event = new Event(name);
+                event.setPosterUrl(posterUrl);
+                event.setDescription(description);
+            }
+        });
     }
 
     private void openImagePicker() {
@@ -80,6 +111,22 @@ public class AddEventFragment extends Fragment {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+    }
+
+    public String convertImageViewToBase64String(ImageView imageView) {
+        // Step 1: Get the Bitmap from the ImageView
+        imageView.buildDrawingCache();
+        Bitmap bitmap = imageView.getDrawingCache();
+
+        // Step 2: Convert the Bitmap to a ByteArrayOutputStream
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);  // Compress as PNG or JPEG
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        // Step 3: Encode the byte array into a Base64 string
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return encodedImage;  // Return the Base64 encoded string
     }
 
 }

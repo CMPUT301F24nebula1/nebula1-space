@@ -7,9 +7,11 @@ public class Event {
     private int limit;
     private String name;
     private String description;
+    private String posterUrl;
 
-    public Event() {
+    public Event(String name) {
         this.waitlist = new ArrayList<Entrant>();
+        this.name = name;
     }
 
     public void add_entrant(Entrant e) {
@@ -42,5 +44,13 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.cmput301project;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,8 @@ public class EntrantHomepageFragment extends Fragment {
         );
 
     }
+
+
 
     @Override
     public void onDestroyView() {

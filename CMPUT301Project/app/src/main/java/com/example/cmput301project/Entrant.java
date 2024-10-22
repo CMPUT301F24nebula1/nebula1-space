@@ -7,7 +7,8 @@ public class Entrant extends User{
     private String name;
     private String email;
     private String phone;
-    public Entrant() {
+    public Entrant(String id) {
+        super(id);
         this.events = new ArrayList<Event>();
     }
 
