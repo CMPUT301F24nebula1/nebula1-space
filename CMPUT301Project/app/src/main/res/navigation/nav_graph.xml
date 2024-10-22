@@ -23,10 +23,6 @@
         android:name="com.example.cmput301project.EntrantProfileFragment"
         android:label="@string/profile_fragment_label"
         tools:layout="@layout/entrant_profile">
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/EntrantHomepageFragment" />
-
     </fragment>
 
     <fragment
@@ -34,5 +30,18 @@
         android:name="com.example.cmput301project.OrganizerHomepageFragment"
         android:label="@string/organizer_homepage_fragment_label"
         tools:layout="@layout/organizer_homepage">
+        <action
+            android:id="@+id/action_OrganizerHomepage_to_EntrantHomepage"
+            app:destination="@id/EntrantHomepageFragment" />
+        <action
+            android:id="@+id/action_OrganizerHomepage_to_EventList"
+            app:destination="@id/OrganizerEventListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerEventListFragment"
+        android:name="com.example.cmput301project.OrganizerEventListFragment"
+        android:label="@string/organizer_event_list_fragment_label"
+        tools:layout="@layout/organizer_event_list">
     </fragment>
 </navigation>
