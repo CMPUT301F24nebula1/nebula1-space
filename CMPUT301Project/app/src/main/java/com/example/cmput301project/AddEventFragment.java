@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -50,15 +51,15 @@ public class AddEventFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = AddEventBinding.inflate(inflater, container, false);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        db = sharedViewModel.getDb();
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         eventImageView = binding.eventImageview;
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        Organizer o = sharedViewModel.getOrganizer();
-        FirebaseFirestore db = sharedViewModel.getDb();
 
+        Organizer o = sharedViewModel.getOrganizer();
         ref = db.collection("users").document(o.getId());
 
         imagePickerLauncher = registerForActivityResult(
@@ -114,27 +115,13 @@ public class AddEventFragment extends Fragment {
                 }
                 String name = binding.eventNameEdittext.getText().toString();
                 String description = binding.eventDescriptionEdittext.getText().toString();
-                String posterUrl = convertImageViewToBase64String(eventImageView);
-                Event event = new Event(name);
-                event.setPosterUrl(posterUrl);
+                //String posterUrl = convertImageViewToBase64String(eventImageView);
+                Event event = new Event();
+                event.setName(name);
+                //event.setPosterUrl(posterUrl);
                 event.setDescription(description);
-
-                // Temporarily comment
-
-//                ref.document(event.getId())
-//                        .set(event)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                Log.d("Firestore", "Event successfully written with ID: " + event.getId());
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w("Firestore", "Error writing document", e);
-//                            }
-//                        });
+                o.create_event(event);
+                addEventToUser(o.getId(), event);
             }
         });
     }
@@ -160,6 +147,21 @@ public class AddEventFragment extends Fragment {
         String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
         return encodedImage;  // Return the Base64 encoded string
+    }
+
+    // when organizer adds an event, upload it to the firebase
+    public void addEventToUser(String userId, Event newEvent) {
+        // Reference to the user's document
+        DocumentReference userDocRef = db.collection("users").document(userId);
+
+        // Use the Firestore update() method to update the events array field
+        userDocRef.update("events", FieldValue.arrayUnion(newEvent))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Event successfully added!");
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Firestore", "Error updating events", e);
+                });
     }
 
 }
