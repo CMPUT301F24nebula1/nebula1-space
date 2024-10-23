@@ -1,6 +1,7 @@
 package com.example.cmput301project;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Event {
     private ArrayList<Entrant> waitlist;
@@ -8,10 +9,12 @@ public class Event {
     private String name;
     private String description;
     private String posterUrl;
+    private final String id;
 
     public Event(String name) {
         this.waitlist = new ArrayList<Entrant>();
         this.name = name;
+        this.id = UUID.randomUUID().toString();
     }
 
     public void add_entrant(Entrant e) {
@@ -52,5 +55,9 @@ public class Event {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public String getId() {
+        return id;
     }
 }

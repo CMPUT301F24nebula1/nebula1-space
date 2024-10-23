@@ -41,6 +41,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.activity:activity-ktx:1.2.0")    // For Activities
     implementation("androidx.fragment:fragment-ktx:1.3.0")   // For Fragments
+    implementation("com.google.zxing:core:3.3.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.2.0")  // For Android integration
+
 
 
     implementation(libs.appcompat)

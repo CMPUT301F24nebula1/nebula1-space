@@ -3,13 +3,13 @@ package com.example.cmput301project;
 import java.util.ArrayList;
 
 public class Entrant extends User{
-    private ArrayList<Event> events;
+    private ArrayList<Event> joinedEvents;
     private String name;
     private String email;
     private String phone;
     public Entrant(String id) {
         super(id);
-        this.events = new ArrayList<Event>();
+        this.joinedEvents = new ArrayList<Event>();
     }
 
     public void join_event(Event event) {

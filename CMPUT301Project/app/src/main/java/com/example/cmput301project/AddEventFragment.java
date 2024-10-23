@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.databinding.AddEventBinding;
 import com.example.cmput301project.databinding.OrganizerEventListBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,6 +36,10 @@ public class AddEventFragment extends Fragment {
     private AddEventBinding binding;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView eventImageView;
+
+    private SharedViewModel sharedViewModel;
+    private FirebaseFirestore db;
+    private CollectionReference ref;
 
     @Override
     public View onCreateView(
@@ -44,6 +54,10 @@ public class AddEventFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         eventImageView = binding.eventImageview;
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        FirebaseFirestore db = sharedViewModel.getDb();
+
+        ref = db.collection("event");
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -102,6 +116,23 @@ public class AddEventFragment extends Fragment {
                 Event event = new Event(name);
                 event.setPosterUrl(posterUrl);
                 event.setDescription(description);
+
+                // Temporarily comment
+
+//                ref.document(event.getId())
+//                        .set(event)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Log.d("Firestore", "Event successfully written with ID: " + event.getId());
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.w("Firestore", "Error writing document", e);
+//                            }
+//                        });
             }
         });
     }

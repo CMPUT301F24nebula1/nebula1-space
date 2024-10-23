@@ -5,15 +5,18 @@ import static java.security.AccessController.getContext;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.cmput301project.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
@@ -33,8 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
+    private SharedViewModel sharedViewModel;
+
     private FirebaseFirestore db;
-    private CollectionReference citiesRef;
+    private CollectionReference userRef;
     private String id;
     private User user;
 
@@ -43,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         id = getDeviceId(this);
-        user = new User(id);
+
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.setUserId(id);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -59,16 +66,26 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         Map<String, String> data = new HashMap<>();
         data.put("testing", "testing");
-        citiesRef = db.collection("cities");
-        citiesRef
-                .document("test")
-                .set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firestore", "DocumentSnapshot successfully written!");
-                    }
-                });
+        userRef = db.collection("users");
+        if (id != null && !id.isEmpty()) {
+            userRef
+                    .document(id)
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("Firestore", "Error writing document", e);
+                        }
+                    });
+        } else {
+            Log.d("Firestore", "Invalid ID for the document.");
+        }
 
 
     }
