@@ -11,6 +11,11 @@ public class Event {
     private String posterUrl;
     private final String id;
 
+    public Event() {
+        this.waitlist = new ArrayList<Entrant>();
+        this.id = UUID.randomUUID().toString();
+    }
+
     public Event(String name) {
         this.waitlist = new ArrayList<Entrant>();
         this.name = name;

@@ -27,6 +27,7 @@ import com.example.cmput301project.databinding.OrganizerEventListBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -39,7 +40,7 @@ public class AddEventFragment extends Fragment {
 
     private SharedViewModel sharedViewModel;
     private FirebaseFirestore db;
-    private CollectionReference ref;
+    private DocumentReference ref;
 
     @Override
     public View onCreateView(
@@ -55,9 +56,10 @@ public class AddEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         eventImageView = binding.eventImageview;
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        Organizer o = sharedViewModel.getOrganizer();
         FirebaseFirestore db = sharedViewModel.getDb();
 
-        ref = db.collection("event");
+        ref = db.collection("users").document(o.getId());
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

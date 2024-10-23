@@ -4,6 +4,10 @@ public class User {
     // Verifies user identity using device authentication
     private String id;
 
+    public User() {
+        ;
+    }
+
     public User(String id) {
         this.id = id;
     }

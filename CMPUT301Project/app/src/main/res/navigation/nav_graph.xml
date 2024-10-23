@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/EntrantHomepageFragment">
+    app:startDestination="@id/EntrantHomepageFragment"
+    >
+
+    <!--app:startDestination="@id/EventListFragment"-->
 
     <fragment
         android:id="@+id/EntrantHomepageFragment"
@@ -35,17 +38,7 @@
             app:destination="@id/EntrantHomepageFragment" />
         <action
             android:id="@+id/action_OrganizerHomepage_to_EventList"
-            app:destination="@id/OrganizerEventListFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/OrganizerEventListFragment"
-        android:name="com.example.cmput301project.OrganizerEventListFragment"
-        android:label="@string/organizer_event_list_fragment_label"
-        tools:layout="@layout/organizer_event_list">
-        <action
-            android:id="@+id/action_OrganizerEventList_to_AddEvent"
-            app:destination="@id/AddEventFragment" />
+            app:destination="@+id/EventListFragment" />
     </fragment>
 
     <fragment
@@ -53,5 +46,15 @@
         android:name="com.example.cmput301project.AddEventFragment"
         android:label="@string/add_event_fragment_label"
         tools:layout="@layout/add_event">
+    </fragment>
+
+    <fragment
+        android:id="@+id/EventListFragment"
+        android:name="com.example.cmput301project.EventListFragment"
+        android:label="@string/event_list_fragment_label"
+        tools:layout="@layout/event_list">
+        <action
+            android:id="@+id/action_EventList_to_AddEvent"
+            app:destination="@id/AddEventFragment" />
     </fragment>
 </navigation>
