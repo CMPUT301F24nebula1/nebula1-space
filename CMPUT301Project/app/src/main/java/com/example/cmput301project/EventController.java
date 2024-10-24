@@ -2,6 +2,7 @@ package com.example.cmput301project;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -12,12 +13,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
-public class AddEventController {
+public class EventController {
     private Organizer organizer;
     private FirebaseFirestore db;
 
-    public AddEventController(Organizer organizer, FirebaseFirestore db) {
+    public EventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
         this.db = db;
     }

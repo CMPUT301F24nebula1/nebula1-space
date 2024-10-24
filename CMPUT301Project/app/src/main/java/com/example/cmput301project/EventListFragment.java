@@ -23,6 +23,8 @@ public class EventListFragment extends Fragment {
     private ListView eventList;
     private EventArrayAdapter eventAdapter;
 
+
+
     private SharedViewModel sharedViewModel;
 
     @Override
@@ -42,13 +44,19 @@ public class EventListFragment extends Fragment {
 
         eventList = binding.eventList;
 
-        events = sharedViewModel.getOrganizer().getEvents();
+        sharedViewModel.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+            if (organizer != null) {
+                // Update the UI with the organizer data
+                events = organizer.getEvents();
+            }
+            if (eventList != null && events != null) {
+                // Set the adapter with the context and event data
+                eventAdapter = new EventArrayAdapter(getContext(), events);
+                eventList.setAdapter(eventAdapter);
+            }
+        });
 
-        if (eventList != null && events != null) {
-            // Set the adapter with the context and event data
-            eventAdapter = new EventArrayAdapter(getContext(), events);
-            eventList.setAdapter(eventAdapter);
-        }
+
 
         binding.addEventButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(EventListFragment.this)

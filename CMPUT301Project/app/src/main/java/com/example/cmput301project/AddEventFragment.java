@@ -5,15 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,23 +20,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.databinding.AddEventBinding;
-import com.example.cmput301project.databinding.OrganizerEventListBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddEventFragment extends Fragment {
-    private AddEventController addEventController;
+    private EventController eventController;
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
@@ -51,11 +36,17 @@ public class AddEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         binding = AddEventBinding.inflate(inflater, container, false);
-        Organizer organizer = sharedViewModel.getOrganizer();  // Retrieve organizer somehow (via arguments, singleton, etc.)
+        sharedViewModel.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+                    if (organizer != null) {
+                        // Update the UI with the organizer data
+                        eventController = new EventController(organizer, db);
+                    }
+                });
+        //Organizer organizer = sharedViewModel.getOrganizer();  // Retrieve organizer somehow (via arguments, singleton, etc.)
         db = FirebaseFirestore.getInstance();  // or get from sharedViewModel if needed
 
         // Initialize the controller
-        addEventController = new AddEventController(organizer, db);
+
 
         return binding.getRoot();
     }
@@ -67,7 +58,7 @@ public class AddEventFragment extends Fragment {
 
             if (!name.isEmpty()) {
                 // Delegate the business logic to the controller
-                addEventController.addEvent(name, description, imageUri, aVoid -> {
+                eventController.addEvent(name, description, imageUri, aVoid -> {
 
                     NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
                     NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
