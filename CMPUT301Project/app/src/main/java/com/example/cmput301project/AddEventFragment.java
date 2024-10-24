@@ -40,105 +40,56 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddEventFragment extends Fragment {
+    private AddEventController addEventController;
     private AddEventBinding binding;
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-    private ImageView eventImageView;
-    private Uri imageUri;
+    private Uri imageUri;  // Store image URI after selecting it
+    private FirebaseFirestore db;
 
     private SharedViewModel sharedViewModel;
-    private FirebaseFirestore db;
-    private DocumentReference ref;
-    private FirebaseFirestore firestore;
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-
-        // Inflate the layout for this fragment
-        binding = AddEventBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        db = sharedViewModel.getDb();
+        binding = AddEventBinding.inflate(inflater, container, false);
+        Organizer organizer = sharedViewModel.getOrganizer();  // Retrieve organizer somehow (via arguments, singleton, etc.)
+        db = FirebaseFirestore.getInstance();  // or get from sharedViewModel if needed
+
+        // Initialize the controller
+        addEventController = new AddEventController(organizer, db);
+
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        eventImageView = binding.eventImageview;
+        binding.saveEventButton.setOnClickListener(view1 -> {
+            String name = binding.eventNameEdittext.getText().toString();
+            String description = binding.eventDescriptionEdittext.getText().toString();
 
-        Organizer o = sharedViewModel.getOrganizer();
-        firestore = FirebaseFirestore.getInstance();
-        ref = db.collection("users").document(o.getId());
-
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                        imageUri = result.getData().getData();
-                        try {
-                            Bitmap bitmap;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                // Use ImageDecoder for API level 28 and above
-                                Bitmap decodedBitmap = null;
-                                if (imageUri != null) {
-                                    decodedBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                                }
-                                eventImageView.setImageBitmap(decodedBitmap);
-                            } else {
-                                // For older APIs, use MediaStore
-                                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                                eventImageView.setImageBitmap(bitmap);
+            if (!name.isEmpty()) {
+                // Delegate the business logic to the controller
+                addEventController.addEvent(name, description, imageUri, aVoid -> {
+                    NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
+                    NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
+                }, e -> {
+                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                new AlertDialog.Builder(getContext())  // 'this' refers to the current context, can be 'getContext()' if inside a Fragment
+                        .setTitle("Alert")  // Set the title of the dialog
+                        .setMessage("An event has to have a name.")  // Set the message for the dialog
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Action to take when the user presses the "OK" button
+                                dialog.dismiss();  // Close the dialog
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        );
-
-        binding.selectImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openImagePicker();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)  // Optional: Set an icon
+                        .show();  // Display the dialog
+                return;
             }
         });
 
-        binding.saveEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // An event has to have a name
-                if (binding.eventNameEdittext.getText().toString().isEmpty()) {
-                    new AlertDialog.Builder(getContext())  // 'this' refers to the current context, can be 'getContext()' if inside a Fragment
-                            .setTitle("Alert")  // Set the title of the dialog
-                            .setMessage("An event has to have a name.")  // Set the message for the dialog
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Action to take when the user presses the "OK" button
-                                    dialog.dismiss();  // Close the dialog
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)  // Optional: Set an icon
-                            .show();  // Display the dialog
-                    return;
-                }
-                String name = binding.eventNameEdittext.getText().toString();
-                String description = binding.eventDescriptionEdittext.getText().toString();
-                //String posterUrl = convertImageViewToBase64String(eventImageView);
-                Event event = new Event();
-                event.setName(name);
-                event.setDescription(description);
-                o.create_event(event);
-                if (imageUri != null) {
-                    uploadImageToFirebase(imageUri);  // Call the upload function
-                    storeImageUrlInFirestore(imageUri.toString());
-                    event.setPosterUrl(imageUri.toString());
-                }
-                addEventToUser(o.getId(), event);
-
-                NavHostFragment.findNavController(AddEventFragment.this)
-                        .navigate(R.id.action_AddEvent_to_EventList);
-            }
-        });
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
     private void openImagePicker() {
@@ -148,52 +99,18 @@ public class AddEventFragment extends Fragment {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    // when organizer adds an event, upload it to the firebase
-    public void addEventToUser(String userId, Event newEvent) {
-        // Reference to the user's document
-        DocumentReference userDocRef = db.collection("users").document(userId);
-
-        // Use the Firestore update() method to update the events array field
-        userDocRef.update("events", FieldValue.arrayUnion(newEvent))
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "Event successfully added!");
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Error updating events", e);
-                });
-    }
-
-    private void uploadImageToFirebase(Uri imageUri) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
-
-        imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                String downloadUrl = uri.toString();
-                Log.d("Firebase", "Upload successful! URL: " + downloadUrl);
-                Toast.makeText(getActivity(), "Upload successful!", Toast.LENGTH_SHORT).show();
-            });
-        }).addOnFailureListener(e -> {
-            Log.e("Firebase", "Upload failed: " + e.getMessage());
-            Toast.makeText(getActivity(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    private void storeImageUrlInFirestore(String downloadUrl) {
-        // Create a map to store the image URL and other data
-        Map<String, Object> imageData = new HashMap<>();
-        imageData.put("imageUrl", downloadUrl);
-        imageData.put("timestamp", System.currentTimeMillis());  // Example: Adding a timestamp
-
-        // Store the data in a collection named "images"
-        firestore.collection("images")
-                .add(imageData)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(getActivity(), "Image URL saved to Firestore!", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getActivity(), "Failed to save image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
+    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+                        binding.eventImageview.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    );
 }
