@@ -39,13 +39,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         Event e = getItem(position);
         ImageView poster = view.findViewById(R.id.event_poster);
         TextView name = view.findViewById(R.id.event_name);
-//        if (!e.getPosterUrl().isEmpty()) {
-//            Glide.with(getContext())
-//                    .load(e.getPosterUrl())
-//                    .placeholder(R.drawable.placeholder_image)  // Display a placeholder while loading
-//                    .error(R.drawable.error_image)              // Display an error image if loading fails
-//                    .into(poster);
-//        }
+
         try {
             if (!e.getPosterUrl().isEmpty()) {
                 Glide.with(getContext())
@@ -61,16 +55,5 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
 
 
         return view;
-    }
-
-
-    public Bitmap convertBase64StringToBitmap(String base64String) {
-        // Step 1: Decode the Base64 string into a byte array
-        byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
-
-        // Step 2: Convert the byte array into a Bitmap
-        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-        return decodedBitmap;  // Return the decoded Bitmap
     }
 }

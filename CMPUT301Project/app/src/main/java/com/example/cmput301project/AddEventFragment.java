@@ -68,6 +68,7 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty()) {
                 // Delegate the business logic to the controller
                 addEventController.addEvent(name, description, imageUri, aVoid -> {
+
                     NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
                     NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
                 }, e -> {

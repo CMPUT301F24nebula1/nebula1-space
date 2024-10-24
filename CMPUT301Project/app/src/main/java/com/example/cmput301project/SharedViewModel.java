@@ -64,8 +64,6 @@ public class SharedViewModel extends ViewModel {
 
         // Create a new user with the userId and events
         Organizer o = new Organizer(userId);
-        o.create_event(new Event("Event 1"));
-        o.create_event(new Event("Event 2"));
 
         // Add the user to the "users" collection
         db.collection("users")

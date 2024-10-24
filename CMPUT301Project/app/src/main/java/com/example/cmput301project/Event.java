@@ -10,6 +10,8 @@ public class Event {
     private String name;
     private String description;
     private String posterUrl;
+    private String qrCode;
+    private String hashedQRCode;
     private final String id;
 
     public Event() {
@@ -65,5 +67,21 @@ public class Event {
 
     public String getId() {
         return id;
+    }
+
+    public String getHashedQRCode() {
+        return hashedQRCode;
+    }
+
+    public void setHashedQRCode(String hashedQRCode) {
+        this.hashedQRCode = hashedQRCode;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 }
