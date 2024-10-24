@@ -30,23 +30,18 @@ public class AddEventFragment extends Fragment {
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
 
-    private SharedViewModel sharedViewModel;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         binding = AddEventBinding.inflate(inflater, container, false);
-        sharedViewModel.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
-                    if (organizer != null) {
+
+        MyApplication app = (MyApplication) requireActivity().getApplication();
+        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+            if (organizer != null) {
                         // Update the UI with the organizer data
                         eventController = new EventController(organizer, db);
                     }
-                });
-        //Organizer organizer = sharedViewModel.getOrganizer();  // Retrieve organizer somehow (via arguments, singleton, etc.)
-        db = FirebaseFirestore.getInstance();  // or get from sharedViewModel if needed
-
-        // Initialize the controller
-
+        });
+        db = FirebaseFirestore.getInstance();
 
         return binding.getRoot();
     }
@@ -75,7 +70,7 @@ public class AddEventFragment extends Fragment {
                                 dialog.dismiss();  // Close the dialog
                             }
                         })
-                        .setIcon(android.R.drawable.ic_dialog_alert)  // Optional: Set an icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();  // Display the dialog
                 return;
             }

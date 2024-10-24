@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -20,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.provider.Settings;
@@ -36,24 +38,21 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
-    private SharedViewModel sharedViewModel;
 
     private FirebaseFirestore db;
     private CollectionReference userRef;
     private String id;
-    private User user;
-
+    private Organizer o;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         id = getDeviceId(this);
 
-        ((MyApplication) this.getApplication()).setUser(new User(id));
-        User u = ((MyApplication) this.getApplication()).getUser();
-
-        SharedViewModelFactory factory = new SharedViewModelFactory(id);
-        sharedViewModel = new ViewModelProvider(this, factory).get(SharedViewModel.class);
+        ((MyApplication) this.getApplication()).setUserId(id);
+        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
+        db = ((MyApplication) this.getApplication()).getDb();
+        retrieveUser(id);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -93,4 +92,37 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve ANDROID_ID as the device ID
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
+
+    private void retrieveUser(String userId) {
+        DocumentReference docRef = db.collection("users").document(userId);
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Organizer organizer = documentSnapshot.toObject(Organizer.class);
+                if (organizer != null) {
+                    // Set the retrieved organizer to the Application class
+                    ((MyApplication) getApplication()).setOrganizer(organizer);
+                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+                }
+            } else {
+                Organizer newOrganizer = new Organizer(userId);
+                ((MyApplication) getApplication()).setOrganizer(newOrganizer);
+                addUser(newOrganizer);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("Firebase", "Error retrieving organizer", e);
+        });
+    }
+
+    public void addUser(Organizer organizer) {
+        db.collection("users").document(organizer.getId())
+                .set(organizer)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "User successfully added!");
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Firestore", "Error adding user", e);
+                });
+    }
+
+
 }

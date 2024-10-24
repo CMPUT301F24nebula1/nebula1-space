@@ -44,8 +44,8 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
             if (!e.getPosterUrl().isEmpty()) {
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
-                        .placeholder(R.drawable.placeholder_image)  // Optional placeholder
-                        .error(R.drawable.error_image)              // Optional error image
+                        .placeholder(R.drawable.placeholder_image)  // placeholder
+                        .error(R.drawable.error_image)              // error image
                         .into(poster);
             }
         } catch (NullPointerException exception) {
