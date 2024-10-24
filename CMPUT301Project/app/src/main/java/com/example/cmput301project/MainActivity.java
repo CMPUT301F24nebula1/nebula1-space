@@ -61,33 +61,6 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-
-        // TETSTING firebase!
-//        db = FirebaseFirestore.getInstance();
-//        Map<String, String> data = new HashMap<>();
-//        data.put("testing", "testing");
-//        userRef = db.collection("tests");
-//        if (id != null && !id.isEmpty()) {
-//            userRef
-//                    .document(id)
-//                    .set(data)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.d("Firestore", "Error writing document", e);
-//                        }
-//                    });
-//        } else {
-//            Log.d("Firestore", "Invalid ID for the document.");
-//        }
-
-
     }
 
     @Override
