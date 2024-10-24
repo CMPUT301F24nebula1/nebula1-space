@@ -39,12 +39,24 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         Event e = getItem(position);
         ImageView poster = view.findViewById(R.id.event_poster);
         TextView name = view.findViewById(R.id.event_name);
-        //poster.setImageBitmap(convertBase64StringToBitmap(e.getPosterUrl()));
-//        Glide.with(getContext())
-//                .load(e.getPosterUrl())
-//                .placeholder(R.drawable.placeholder_image)  // Display a placeholder while loading
-//                .error(R.drawable.error_image)              // Display an error image if loading fails
-//                .into(poster);
+//        if (!e.getPosterUrl().isEmpty()) {
+//            Glide.with(getContext())
+//                    .load(e.getPosterUrl())
+//                    .placeholder(R.drawable.placeholder_image)  // Display a placeholder while loading
+//                    .error(R.drawable.error_image)              // Display an error image if loading fails
+//                    .into(poster);
+//        }
+        try {
+            if (!e.getPosterUrl().isEmpty()) {
+                Glide.with(getContext())
+                        .load(e.getPosterUrl())
+                        .placeholder(R.drawable.placeholder_image)  // Optional placeholder
+                        .error(R.drawable.error_image)              // Optional error image
+                        .into(poster);
+            }
+        } catch (NullPointerException exception) {
+            Log.e("Error", "Poster URL is null", exception);
+        }
         name.setText(e.getName());
 
 

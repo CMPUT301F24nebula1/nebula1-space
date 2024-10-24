@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -30,18 +31,24 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddEventFragment extends Fragment {
     private AddEventBinding binding;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ImageView eventImageView;
+    private Uri imageUri;
 
     private SharedViewModel sharedViewModel;
     private FirebaseFirestore db;
     private DocumentReference ref;
+    private FirebaseFirestore firestore;
 
     @Override
     public View onCreateView(
@@ -60,13 +67,14 @@ public class AddEventFragment extends Fragment {
         eventImageView = binding.eventImageview;
 
         Organizer o = sharedViewModel.getOrganizer();
+        firestore = FirebaseFirestore.getInstance();
         ref = db.collection("users").document(o.getId());
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
+                        imageUri = result.getData().getData();
                         try {
                             Bitmap bitmap;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -111,16 +119,20 @@ public class AddEventFragment extends Fragment {
                             })
                             .setIcon(android.R.drawable.ic_dialog_alert)  // Optional: Set an icon
                             .show();  // Display the dialog
-
+                    return;
                 }
                 String name = binding.eventNameEdittext.getText().toString();
                 String description = binding.eventDescriptionEdittext.getText().toString();
                 //String posterUrl = convertImageViewToBase64String(eventImageView);
                 Event event = new Event();
                 event.setName(name);
-                //event.setPosterUrl(posterUrl);
                 event.setDescription(description);
                 o.create_event(event);
+                if (imageUri != null) {
+                    uploadImageToFirebase(imageUri);  // Call the upload function
+                    storeImageUrlInFirestore(imageUri.toString());
+                    event.setPosterUrl(imageUri.toString());
+                }
                 addEventToUser(o.getId(), event);
 
                 NavHostFragment.findNavController(AddEventFragment.this)
@@ -136,22 +148,6 @@ public class AddEventFragment extends Fragment {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    public String convertImageViewToBase64String(ImageView imageView) {
-        // Step 1: Get the Bitmap from the ImageView
-        imageView.buildDrawingCache();
-        Bitmap bitmap = imageView.getDrawingCache();
-
-        // Step 2: Convert the Bitmap to a ByteArrayOutputStream
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);  // Compress as PNG or JPEG
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-        // Step 3: Encode the byte array into a Base64 string
-        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-        return encodedImage;  // Return the Base64 encoded string
-    }
-
     // when organizer adds an event, upload it to the firebase
     public void addEventToUser(String userId, Event newEvent) {
         // Reference to the user's document
@@ -164,6 +160,39 @@ public class AddEventFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.w("Firestore", "Error updating events", e);
+                });
+    }
+
+    private void uploadImageToFirebase(Uri imageUri) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+
+        imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                String downloadUrl = uri.toString();
+                Log.d("Firebase", "Upload successful! URL: " + downloadUrl);
+                Toast.makeText(getActivity(), "Upload successful!", Toast.LENGTH_SHORT).show();
+            });
+        }).addOnFailureListener(e -> {
+            Log.e("Firebase", "Upload failed: " + e.getMessage());
+            Toast.makeText(getActivity(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void storeImageUrlInFirestore(String downloadUrl) {
+        // Create a map to store the image URL and other data
+        Map<String, Object> imageData = new HashMap<>();
+        imageData.put("imageUrl", downloadUrl);
+        imageData.put("timestamp", System.currentTimeMillis());  // Example: Adding a timestamp
+
+        // Store the data in a collection named "images"
+        firestore.collection("images")
+                .add(imageData)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(getActivity(), "Image URL saved to Firestore!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getActivity(), "Failed to save image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
