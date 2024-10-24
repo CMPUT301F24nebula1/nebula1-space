@@ -122,6 +122,9 @@ public class AddEventFragment extends Fragment {
                 event.setDescription(description);
                 o.create_event(event);
                 addEventToUser(o.getId(), event);
+
+                NavHostFragment.findNavController(AddEventFragment.this)
+                        .navigate(R.id.action_AddEvent_to_EventList);
             }
         });
     }

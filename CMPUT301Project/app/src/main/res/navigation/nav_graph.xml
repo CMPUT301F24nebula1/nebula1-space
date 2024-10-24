@@ -46,6 +46,9 @@
         android:name="com.example.cmput301project.AddEventFragment"
         android:label="@string/add_event_fragment_label"
         tools:layout="@layout/add_event">
+        <action
+            android:id="@+id/action_AddEvent_to_EventList"
+            app:destination="@+id/EventListFragment" />
     </fragment>
 
     <fragment
