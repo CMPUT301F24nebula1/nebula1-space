@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class EventController {
     private Organizer organizer;
     private FirebaseFirestore db;
-    private Application app;
+    //private Application app;
 
     public EventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
