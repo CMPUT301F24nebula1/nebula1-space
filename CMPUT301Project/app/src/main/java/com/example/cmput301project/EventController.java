@@ -1,5 +1,6 @@
 package com.example.cmput301project;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class EventController {
     private Organizer organizer;
     private FirebaseFirestore db;
+    private Application app;
 
     public EventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
@@ -29,36 +31,32 @@ public class EventController {
         Event event = new Event();
 
         Bitmap b = QRCodeGenerator.generateQRCode(event.getId());
-        String hashedQRCode = QRCodeGenerator.hashQRCode(QRCodeGenerator.convertBitmapToByteArray(b));
-        event.setHashedQRCode(hashedQRCode);
 
-        event.setName(name);
         uploadBitmapToFirebase(b, new OnSuccessListener<String>() {
             @Override
             public void onSuccess(String s) {
+                String hashedQRCode = QRCodeGenerator.hashQRCode(QRCodeGenerator.convertBitmapToByteArray(b));
+                event.setHashedQRCode(hashedQRCode);
+                event.setName(name);
                 event.setQrCode(s);
-            }
-        }, failureListener);
+                if (description != null)
+                    event.setDescription(description);
 
-        if (description != null)
-            event.setDescription(description);
-
-        // Upload image if present
-        if (imageUri != null) {
-            uploadImageToFirebase(imageUri, new OnSuccessListener<String>() {
-                @Override
-                public void onSuccess(String downloadUrl) {
-                    event.setPosterUrl(downloadUrl);  // Set image URL in event
+                // Upload image if present
+                if (imageUri != null) {
+                    uploadImageToFirebase(imageUri, new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String downloadUrl) {
+                            event.setPosterUrl(downloadUrl);  // Set image URL in event
+                            saveEventToFirestore(event, successListener, failureListener);
+                        }
+                    }, failureListener);
+                } else {
                     saveEventToFirestore(event, successListener, failureListener);
                 }
-            }, failureListener);
-        } else {
-            saveEventToFirestore(event, successListener, failureListener);
-        }
-
-        // Upload QR Code
-
-        organizer.create_event(event);
+                organizer.create_event(event);
+            }
+        }, failureListener);
     }
 
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {

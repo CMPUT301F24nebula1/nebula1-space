@@ -59,5 +59,18 @@
         <action
             android:id="@+id/action_EventList_to_AddEvent"
             app:destination="@id/AddEventFragment" />
+        <action
+            android:id="@+id/action_EventList_to_OrganizerEventDetail"
+            app:destination="@id/OrganizerEventDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerEventDetailFragment"
+        android:name="com.example.cmput301project.OrganizerEventDetailFragment"
+        android:label="@string/event_list_fragment_label"
+        tools:layout="@layout/organizer_event_detail">
+        <argument
+            android:name="e"
+            app:argType="com.example.cmput301project.Event" />
     </fragment>
 </navigation>

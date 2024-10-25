@@ -1,10 +1,16 @@
 package com.example.cmput301project;
 
+import androidx.lifecycle.Observer;
+
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Observable;
+import java.util.Set;
 import java.util.UUID;
 
-public class Event {
+public class Event extends Observable implements Serializable {
     private ArrayList<Entrant> waitlist;
     private int limit;
     private String name;

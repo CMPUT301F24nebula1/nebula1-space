@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +23,7 @@ public class EventListFragment extends Fragment {
     private ArrayList<Event> events;
     private ListView eventList;
     private EventArrayAdapter eventAdapter;
-    
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -51,6 +52,14 @@ public class EventListFragment extends Fragment {
                 eventList.setAdapter(eventAdapter);
             }
         });
+
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    EventListFragmentDirections.ActionEventListToOrganizerEventDetail action = EventListFragmentDirections.actionEventListToOrganizerEventDetail(events.get(i));
+                    NavHostFragment.findNavController(EventListFragment.this).navigate(action);
+                }
+            });
 
         binding.addEventButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(EventListFragment.this)

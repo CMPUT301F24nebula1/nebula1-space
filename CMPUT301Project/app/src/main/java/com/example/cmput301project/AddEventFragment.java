@@ -43,10 +43,6 @@ public class AddEventFragment extends Fragment {
         });
         db = FirebaseFirestore.getInstance();
 
-        return binding.getRoot();
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         binding.saveEventButton.setOnClickListener(view1 -> {
             String name = binding.eventNameEdittext.getText().toString();
             String description = binding.eventDescriptionEdittext.getText().toString();
@@ -76,6 +72,10 @@ public class AddEventFragment extends Fragment {
             }
         });
 
+        return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 

@@ -1,7 +1,6 @@
 package com.example.cmput301project;
 
 import android.app.Application;
-import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -24,6 +23,21 @@ public class MyApplication extends Application {
         FirebaseApp.initializeApp(this);  // Initialize Firebase
     }
 
+    public void listenToFirebaseUpdates(String userId) {
+        DocumentReference docRef = getDb().collection("users").document(userId);
+
+        docRef.addSnapshotListener((snapshot, e) -> {
+            if (e != null) {
+                Log.w("Firebase", "Listen failed.", e);
+                return;
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                Organizer organizer = snapshot.toObject(Organizer.class);
+                organizerLiveData.setValue(organizer);  // Update LiveData with the new organizer
+            }
+        });
+    }
 
 
     public Organizer getOrganizer() {
@@ -63,7 +77,9 @@ public class MyApplication extends Application {
     public LiveData<Organizer> getOrganizerLiveData() {
         return organizerLiveData;
     }
+
     public void setOrganizerLiveData(Organizer organizer) {
+        this.organizer = organizer;
         this.organizerLiveData.setValue(organizer);
     }
 }
