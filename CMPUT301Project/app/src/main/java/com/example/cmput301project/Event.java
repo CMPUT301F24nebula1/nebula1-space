@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Event extends Observable implements Serializable {
-    private ArrayList<Entrant> waitlist;
+    private ArrayList<Organizer> waitlist;
     private int limit;
     private String name;
     private String description;
@@ -21,22 +21,22 @@ public class Event extends Observable implements Serializable {
     private final String id;
 
     public Event() {
-        this.waitlist = new ArrayList<Entrant>();
+        this.waitlist = new ArrayList<Organizer>();
         this.id = UUID.randomUUID().toString();
     }
 
     public Event(String name) {
-        this.waitlist = new ArrayList<Entrant>();
+        this.waitlist = new ArrayList<Organizer>();
         this.name = name;
         this.id = UUID.randomUUID().toString();
     }
 
-    public void add_entrant(Entrant e) {
-        waitlist.add(e);
+    public void add_entrant(Organizer o) {
+        waitlist.add(o);
     }
 
-    public void remove_entrant(Entrant e) {
-        waitlist.remove(e);
+    public void remove_entrant(Organizer o) {
+        waitlist.remove(o);
     }
 
     public int getLimit() {
