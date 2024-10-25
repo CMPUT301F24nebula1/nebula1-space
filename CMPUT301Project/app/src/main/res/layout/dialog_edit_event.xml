@@ -23,7 +23,6 @@
             android:id="@+id/edit_event_poster_imageview"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:contentDescription="qrcode image"
             android:layout_marginStart="32dp"
             android:layout_marginTop="64dp"
             android:layout_marginEnd="32dp"

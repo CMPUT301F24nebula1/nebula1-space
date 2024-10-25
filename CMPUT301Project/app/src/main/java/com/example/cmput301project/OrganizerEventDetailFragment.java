@@ -1,7 +1,11 @@
 package com.example.cmput301project;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,23 +14,33 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.databinding.OrganizerEventDetailBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class OrganizerEventDetailFragment extends Fragment {
     OrganizerEventDetailBinding binding;
     private FirebaseFirestore db;
     private Event e;
-    MyApplication app;
+    private Uri imageUri;
+    private MyApplication app;
+    private ImageView eventPosterImageView;
+    private EventController ec;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,8 +51,9 @@ public class OrganizerEventDetailFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-
+        Organizer o = app.getOrganizer();
         db = FirebaseFirestore.getInstance();
+        ec = new EventController(o, db);
 
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
@@ -119,26 +134,38 @@ public class OrganizerEventDetailFragment extends Fragment {
         // Find views in the custom layout
         EditText eventNameEditText = dialogView.findViewById(R.id.edit_event_name);
         EditText eventDescriptionEditText = dialogView.findViewById(R.id.edit_event_description);
-        ImageView eventQRCodeImageView = dialogView.findViewById(R.id.edit_event_poster_imageview);
+        eventPosterImageView = dialogView.findViewById(R.id.edit_event_poster_imageview);
         Button uploadButton = dialogView.findViewById(R.id.upload_event_image_button);
 
         // Set the existing values if needed
         eventNameEditText.setText(e.getName());
         eventDescriptionEditText.setText(e.getDescription());
 
+        try {
+            if (!e.getPosterUrl().isEmpty()) {
+                Glide.with(getContext())
+                        .load(e.getPosterUrl())
+                        .placeholder(R.drawable.placeholder_image)  // placeholder
+                        .error(R.drawable.error_image)              // error image
+                        .into(eventPosterImageView);
+            }
+        } catch (NullPointerException exception) {
+            Log.e("Error", "Poster URL is null", exception);
+        }
+
+        uploadButton.setOnClickListener(view -> openImagePicker());
+
         builder.setView(dialogView)
                 .setPositiveButton("Save", (dialog, id) -> {
                     // Handle saving the edited values
                     String newName = eventNameEditText.getText().toString();
                     String newDescription = eventDescriptionEditText.getText().toString();
-                    // Update the event
-                    e.setName(newName);
-                    e.setDescription(newDescription);
 
-                    Organizer o = app.getOrganizer();
-                    updateEventInFirebase(o.getId(), e);
-
-                    //((MyApplication) requireActivity().getApplication()).setOrganizerLiveData(o);
+                    ec.editEvent(e, newName, newDescription, imageUri, aVoid -> {
+                        Log.d("Firebase", "Event edited successfully");
+                    }, f -> {
+                        Log.d("Firebase", "Fails.");
+                    });
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> {
                     dialog.dismiss();
@@ -148,37 +175,25 @@ public class OrganizerEventDetailFragment extends Fragment {
         dialog.show();
     }
 
-    public void updateEventInFirebase(String userId, Event updatedEvent) {
-        DocumentReference userDocRef = app.getDb().collection("users").document(userId);
-
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Get the current user
-                Organizer organizer = documentSnapshot.toObject(Organizer.class);
-                if (organizer != null) {
-                    ArrayList<Event> events = organizer.getEvents();
-
-                    // Find and update the specific event
-                    for (int i = 0; i < events.size(); i++) {
-                        if (events.get(i).getId().equals(updatedEvent.getId())) {
-                            events.set(i, updatedEvent);  // Replace with the updated event
-                            break;
-                        }
-                    }
-                    // Write the updated events list back to Firebase
-                    userDocRef.update("events", events)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d("Firebase", "Event successfully updated!");
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e("Firebase", "Error updating event", e);
-                            });
-                }
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("Firebase", "Error fetching user data", e);
-        });
+    private void openImagePicker() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-
+    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+                        eventPosterImageView.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    );
 }

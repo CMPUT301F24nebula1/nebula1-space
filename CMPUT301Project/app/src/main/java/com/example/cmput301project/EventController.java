@@ -59,6 +59,26 @@ public class EventController {
         }, failureListener);
     }
 
+    public void editEvent(Event event, String name, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+        if (name != null) {
+            event.setName(name);
+        }
+        if (description != null) {
+            event.setDescription(description);
+        }
+        if (imageUri != null) {
+            uploadImageToFirebase(imageUri, new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String downloadUrl) {
+                    event.setPosterUrl(downloadUrl);  // Set image URL in event
+                    updateEventInFirebase(organizer.getId(), event);
+                }
+            }, failureListener);
+        } else {
+            saveEventToFirestore(event, successListener, failureListener);
+        }
+    }
+
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
@@ -96,6 +116,38 @@ public class EventController {
         userDocRef.update("events", FieldValue.arrayUnion(event))
                 .addOnSuccessListener(successListener)
                 .addOnFailureListener(failureListener);
+    }
+
+    private void updateEventInFirebase(String userId, Event updatedEvent) {
+        DocumentReference userDocRef = db.collection("users").document(userId);
+
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Get the current user
+                Organizer organizer = documentSnapshot.toObject(Organizer.class);
+                if (organizer != null) {
+                    ArrayList<Event> events = organizer.getEvents();
+
+                    // Find and update the specific event
+                    for (int i = 0; i < events.size(); i++) {
+                        if (events.get(i).getId().equals(updatedEvent.getId())) {
+                            events.set(i, updatedEvent);  // Replace with the updated event
+                            break;
+                        }
+                    }
+                    // Write the updated events list back to Firebase
+                    userDocRef.update("events", events)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("Firebase", "Event successfully updated!");
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("Firebase", "Error updating event", e);
+                            });
+                }
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("Firebase", "Error fetching user data", e);
+        });
     }
 
 }
