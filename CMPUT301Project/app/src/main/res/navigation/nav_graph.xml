@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_EntrantHomepage_to_OrganizerHomepage"
             app:destination="@id/OrganizerHomepageFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_EventDetail"
+            app:destination="@+id/OrganizerEventDetailFragment" />
     </fragment>
 
     <fragment

@@ -1,6 +1,7 @@
 package com.example.cmput301project;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.example.cmput301project.databinding.ActivityMainBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -26,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-
 
     private FirebaseFirestore db;
     private CollectionReference userRef;
@@ -49,10 +50,56 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
+        Intent intent = getIntent();
+        String navigateTo = intent.getStringExtra("navigateTo");
+        String eventId = intent.getStringExtra("eventId");
+
+        Log.e("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+
+        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
+        if ("eventDetailFragment".equals(navigateTo)) {
+            Log.d("MainActivity", "Navigating to EntrantProfile");
+            Bundle bundle = new Bundle();
+
+            findEventInAllOrganizers(eventId, navController);
+
+        }
+
+    }
+
+    public void findEventInAllOrganizers(String eventId, NavController nc) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        CollectionReference organizersRef = db.collection("organizers");
+
+        organizersRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Organizer organizer = document.toObject(Organizer.class);
+                    if (organizer != null && organizer.getEvents() != null) {
+                        for (Event event : organizer.getEvents()) {
+                            if (event.getId().equals(eventId)) {
+                                Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizer.getId());
+                                Bundle bundle = new Bundle();
+
+                                bundle.putSerializable("e", event);
+
+                                nc.navigate(R.id.action_EntrantHomepage_to_EventDetail, bundle);
+                                return;
+                            }
+                        }
+                    }
+                }
+                Log.d("Firestore", "No matching event found with ID: " + eventId);
+            } else {
+                Log.w("Firestore", "Error getting documents", task.getException());
+            }
+        });
     }
 
     @Override

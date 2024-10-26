@@ -1,23 +1,29 @@
 package com.example.cmput301project;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class OrganizerEventController {
     private Organizer organizer;
     private FirebaseFirestore db;
+    private Event e;
 
     public OrganizerEventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
@@ -76,6 +82,37 @@ public class OrganizerEventController {
             saveEventToFirestore(event, successListener, failureListener);
         }
     }
+
+    public Event findEventInAllOrganizers(String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        CollectionReference organizersRef = db.collection("organizers");
+
+        // 获取 organizers 集合中的所有文档
+        organizersRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Organizer organizer = document.toObject(Organizer.class);
+                    if (organizer != null && organizer.getEvents() != null) {
+                        // 遍历 Organizer 的 events 列表，查找匹配的 eventId
+                        for (Event event : organizer.getEvents()) {
+                            if (event.getId().equals(eventId)) {
+                                // 找到匹配的 event，可以在这里处理相关逻辑
+                                Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizer.getId());
+                                e = event;
+                                return;
+                            }
+                        }
+                    }
+                }
+                Log.d("Firestore", "No matching event found with ID: " + eventId);
+            } else {
+                Log.w("Firestore", "Error getting documents", task.getException());
+            }
+        });
+        return e;
+    }
+
 
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
