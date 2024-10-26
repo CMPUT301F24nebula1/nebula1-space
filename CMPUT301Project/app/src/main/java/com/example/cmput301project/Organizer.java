@@ -3,7 +3,7 @@ package com.example.cmput301project;
 import java.util.ArrayList;
 
 public class Organizer extends User{
-    private ArrayList<Event> events;
+    private transient ArrayList<Event> events;
 
     private String name;
 
@@ -33,4 +33,7 @@ public class Organizer extends User{
         this.name = name;
     }
 
+    public void setEvents(ArrayList<Event> events) {
+        this.events = events;
+    }
 }

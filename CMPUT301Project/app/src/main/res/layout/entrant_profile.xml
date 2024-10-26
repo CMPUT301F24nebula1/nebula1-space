@@ -16,7 +16,9 @@
         android:id="@+id/ruqpar61tyf"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0">
+        android:layout_weight="1"
+        android:focusableInTouchMode="true"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -33,7 +35,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/event_imageview"
+                    android:id="@+id/profile_imageview"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_marginTop="16dp"
@@ -51,7 +53,9 @@
                     android:layout_gravity="center_horizontal"
                     android:text="Edit Profile Picture"
                     android:textColor="#FFFEFE"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="visible"
+                    android:enabled="true"/>
 
                 <RelativeLayout
                     android:id="@+id/rrkmakex3pu"
@@ -79,13 +83,14 @@
                             android:clipToPadding="false"
                             android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/rcmftz4npudn"
-                                android:layout_width="wrap_content"
+                            <EditText
+                                android:id="@+id/entrant_profile_name"
+                                android:layout_width="match_parent"
                                 android:layout_height="36dp"
                                 android:text="Input"
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:focusedByDefault="true"/>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -139,9 +144,9 @@
                             android:clipToPadding="false"
                             android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/rpplfbkhl9ui"
-                                android:layout_width="wrap_content"
+                            <EditText
+                                android:id="@+id/entrant_profile_email"
+                                android:layout_width="match_parent"
                                 android:layout_height="34dp"
                                 android:text="Input"
                                 android:textColor="#1D1B20"
@@ -200,11 +205,11 @@
                             android:paddingHorizontal="17dp"
                             android:paddingVertical="21dp">
 
-                            <TextView
-                                android:id="@+id/ruob2m4jmcmj"
-                                android:layout_width="wrap_content"
+                            <EditText
+                                android:id="@+id/entrant_profile_phone"
+                                android:layout_width="match_parent"
                                 android:layout_height="35dp"
-                                android:text="Input"
+                                android:text="Input Phone"
                                 android:textColor="#1D1B20"
                                 android:textSize="16sp" />
                         </LinearLayout>

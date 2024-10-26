@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference userRef;
     private String id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
+        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -71,30 +75,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         CollectionReference organizersRef = db.collection("organizers");
 
         organizersRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Organizer organizer = document.toObject(Organizer.class);
-                    if (organizer != null && organizer.getEvents() != null) {
-                        for (Event event : organizer.getEvents()) {
-                            if (event.getId().equals(eventId)) {
-                                Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizer.getId());
+                for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
+                    String organizerId = organizerDoc.getId();
+
+                    // Get the "events" subcollection for the current organizer
+                    CollectionReference eventsRef = organizersRef.document(organizerId).collection("events");
+
+                    eventsRef.document(eventId).get().addOnCompleteListener(eventTask -> {
+                        if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+                            Event event = eventTask.getResult().toObject(Event.class);
+
+                            if (event != null) {
+                                Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                 Bundle bundle = new Bundle();
-
                                 bundle.putSerializable("e", event);
-
                                 nc.navigate(R.id.action_EntrantHomepage_to_EventDetail, bundle);
-                                return;
                             }
+                        } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
+                            Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
+                        } else {
+                            Log.w("Firestore", "Error getting event", eventTask.getException());
                         }
-                    }
+                    });
                 }
-                Log.d("Firestore", "No matching event found with ID: " + eventId);
             } else {
-                Log.w("Firestore", "Error getting documents", task.getException());
+                Log.w("Firestore", "Error getting organizers", task.getException());
             }
         });
     }
@@ -146,18 +155,46 @@ public class MainActivity extends AppCompatActivity {
                             .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
 
                 }
-                else if (roles != null && roles.contains("organizer")) {
+                if (roles != null && roles.contains("organizer")) {
                     // set up organizer part for this user
 
                     db.collection("organizers").document(userId).get()
                             .addOnSuccessListener(organizerSnapshot -> {
                                 if (organizerSnapshot.exists()) {
                                     Organizer organizer = organizerSnapshot.toObject(Organizer.class);
-                                    ((MyApplication) getApplication()).setOrganizer(organizer);
-                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+
+                                    if (organizer != null) {
+                                        // Retrieve events from the subcollection
+                                        db.collection("organizers").document(userId).collection("events")
+                                                .get()
+                                                .addOnSuccessListener(eventsSnapshot -> {
+                                                    ArrayList<Event> eventsList = new ArrayList<>();
+                                                    for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
+                                                        Event event = eventDoc.toObject(Event.class);
+                                                        eventsList.add(event);
+                                                    }
+
+                                                    // Set the events list in the organizer object
+                                                    organizer.setEvents(eventsList);
+
+                                                    // Update the global instance and LiveData
+                                                    ((MyApplication) getApplication()).setOrganizer(organizer);
+                                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+
+                                                    Log.d("Firestore", "Organizer and events successfully loaded.");
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Log.w("Firestore", "Error retrieving events data", e);
+                                                });
+                                    }
+                                } else {
+                                    Log.w("Firestore", "Organizer document does not exist.");
                                 }
                             })
-                            .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
+                            .addOnFailureListener(e -> {
+                                Log.w("Firestore", "Error retrieving organizer data", e);
+                            });
+
                 }
 
             } else {

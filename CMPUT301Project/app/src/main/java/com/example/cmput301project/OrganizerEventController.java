@@ -75,11 +75,11 @@ public class OrganizerEventController {
                 @Override
                 public void onSuccess(String downloadUrl) {
                     event.setPosterUrl(downloadUrl);  // Set image URL in event
-                    updateEventInFirebase(organizer.getId(), event);
+                    updateEventInFirebase(organizer.getId(), event, successListener, failureListener);
                 }
             }, failureListener);
         } else {
-            saveEventToFirestore(event, successListener, failureListener);
+            updateEventInFirebase(organizer.getId(), event, successListener, failureListener);
         }
     }
 
@@ -151,39 +151,37 @@ public class OrganizerEventController {
         userDocRef.update("events", FieldValue.arrayUnion(event))
                 .addOnSuccessListener(successListener)
                 .addOnFailureListener(failureListener);
+
+        CollectionReference eventsCollection = db.collection("organizers")
+                .document(organizer.getId())
+                .collection("events");
+        eventsCollection.document(event.getId())
+                .set(event)
+                .addOnSuccessListener(eventVoid -> Log.d("Firestore", "Event successfully added: " + event.getId()))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error adding event: " + event.getId(), e));
     }
 
-    private void updateEventInFirebase(String userId, Event updatedEvent) {
-        DocumentReference userDocRef = db.collection("organizers").document(userId);
+    private void updateEventInFirebase(String organizerId, Event updatedEvent, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+        // Get a reference to the specific event document in the "events" subcollection
+        DocumentReference eventDocRef = db.collection("organizers")
+                .document(organizerId)
+                .collection("events")
+                .document(updatedEvent.getId());
 
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Get the current user
-                Organizer organizer = documentSnapshot.toObject(Organizer.class);
-                if (organizer != null) {
-                    ArrayList<Event> events = organizer.getEvents();
-
-                    // Find and update the specific event
-                    for (int i = 0; i < events.size(); i++) {
-                        if (events.get(i).getId().equals(updatedEvent.getId())) {
-                            events.set(i, updatedEvent);  // Replace with the updated event
-                            break;
-                        }
+        // Update the event document directly in Firestore
+        eventDocRef.set(updatedEvent)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firebase", "Event successfully updated!");
+                    if (successListener != null) {
+                        successListener.onSuccess(aVoid);
                     }
-                    // Write the updated events list back to Firebase
-                    userDocRef.update("events", events)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d("Firebase", "Event successfully updated!");
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e("Firebase", "Error updating event", e);
-                            });
-                }
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("Firebase", "Error fetching user data", e);
-        });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firebase", "Error updating event", e);
+                    if (failureListener != null) {
+                        failureListener.onFailure(e);
+                    }
+                });
     }
-
 }
 

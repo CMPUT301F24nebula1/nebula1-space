@@ -2,6 +2,7 @@ package com.example.cmput301project;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -40,15 +41,42 @@ public class UserController {
         }).addOnFailureListener(e -> Log.w("Firestore", "Error getting document", e));
     }
 
-    public static void addOrganizer(Organizer o) {
+//    public static void addOrganizer(Organizer o) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("organizers").document(o.getId())
+//                .set(o)
+//                .addOnSuccessListener(aVoid -> {
+//                    Log.d("Firestore", "User successfully added!");
+//                })
+//                .addOnFailureListener(f -> {
+//                    Log.w("Firestore", "Error adding user", f);
+//                });
+//    }
+
+    public static void addOrganizer(Organizer organizer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("organizers").document(o.getId())
-                .set(o)
+
+        // Add the main organizer document
+        db.collection("organizers").document(organizer.getId())
+                .set(organizer)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "User successfully added!");
+
+                    // Now add each event as a subdocument in the "events" subcollection
+                    if (organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
+                        CollectionReference eventsCollection = db.collection("organizers")
+                                .document(organizer.getId())
+                                .collection("events");
+
+                        for (Event event : organizer.getEvents()) {
+                            eventsCollection.document(event.getId())
+                                    .set(event)
+                                    .addOnSuccessListener(eventVoid -> Log.d("Firestore", "Event successfully added: " + event.getId()))
+                                    .addOnFailureListener(e -> Log.e("Firestore", "Error adding event: " + event.getId(), e));
+                        }
+                    }
                 })
-                .addOnFailureListener(f -> {
-                    Log.w("Firestore", "Error adding user", f);
-                });
+                .addOnFailureListener(e -> Log.w("Firestore", "Error adding organizer", e));
     }
+
 }
