@@ -17,6 +17,7 @@ import com.example.cmput301project.databinding.EntrantProfileBinding;
 public class EntrantProfileFragment extends Fragment {
 
     private EntrantProfileBinding binding;
+    MyApplication app;
 
     @Override
     public View onCreateView(
@@ -26,10 +27,15 @@ public class EntrantProfileFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.entrant_profile, container, false);
+        app = (MyApplication) requireActivity().getApplication();
         return view;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Entrant entrant = app.getEntrant();
+
+        app.setEntrantLiveData(entrant);
     }
 }

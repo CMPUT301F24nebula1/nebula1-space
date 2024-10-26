@@ -16,7 +16,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.databinding.AddEventBinding;
@@ -25,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.IOException;
 
 public class AddEventFragment extends Fragment {
-    private EventController eventController;
+    private OrganizerEventController organizerEventController;
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
@@ -35,13 +34,13 @@ public class AddEventFragment extends Fragment {
         binding = AddEventBinding.inflate(inflater, container, false);
 
         MyApplication app = (MyApplication) requireActivity().getApplication();
+        db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                         // Update the UI with the organizer data
-                        eventController = new EventController(organizer, db);
+                        organizerEventController = new OrganizerEventController(organizer, db);
                     }
         });
-        db = FirebaseFirestore.getInstance();
 
         binding.saveEventButton.setOnClickListener(view1 -> {
             String name = binding.eventNameEdittext.getText().toString();
@@ -49,7 +48,7 @@ public class AddEventFragment extends Fragment {
 
             if (!name.isEmpty()) {
                 // Delegate the business logic to the controller
-                eventController.addEvent(name, description, imageUri, aVoid -> {
+                organizerEventController.addEvent(name, description, imageUri, aVoid -> {
 
                     NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
                     NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);

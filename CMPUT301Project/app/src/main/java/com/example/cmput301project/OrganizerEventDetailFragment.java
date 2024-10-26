@@ -14,24 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.databinding.OrganizerEventDetailBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class OrganizerEventDetailFragment extends Fragment {
     OrganizerEventDetailBinding binding;
@@ -40,7 +33,7 @@ public class OrganizerEventDetailFragment extends Fragment {
     private Uri imageUri;
     private MyApplication app;
     private ImageView eventPosterImageView;
-    private EventController ec;
+    private OrganizerEventController ec;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +46,7 @@ public class OrganizerEventDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Organizer o = app.getOrganizer();
         db = FirebaseFirestore.getInstance();
-        ec = new EventController(o, db);
+        ec = new OrganizerEventController(o, db);
 
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {

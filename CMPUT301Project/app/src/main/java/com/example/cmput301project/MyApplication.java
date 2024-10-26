@@ -13,8 +13,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MyApplication extends Application {
     private String userId;
+    private Entrant entrant;
     private Organizer organizer;
+
     private FirebaseFirestore db;
+    private MutableLiveData<Entrant> entrantLiveData = new MutableLiveData<>();
     private MutableLiveData<Organizer> organizerLiveData = new MutableLiveData<>();
 
     @Override
@@ -23,8 +26,24 @@ public class MyApplication extends Application {
         FirebaseApp.initializeApp(this);  // Initialize Firebase
     }
 
-    public void listenToFirebaseUpdates(String userId) {
-        DocumentReference docRef = getDb().collection("users").document(userId);
+    public void listenToEntrantFirebaseUpdates(String userId) {
+        DocumentReference docRef = getDb().collection("entrants").document(userId);
+
+        docRef.addSnapshotListener((snapshot, e) -> {
+            if (e != null) {
+                Log.w("Firebase", "Listen failed.", e);
+                return;
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                Entrant entrant = snapshot.toObject(Entrant.class);
+                entrantLiveData.setValue(entrant);  // Update LiveData with the new organizer
+            }
+        });
+    }
+
+    public void listenToOrganizerFirebaseUpdates(String userId) {
+        DocumentReference docRef = getDb().collection("organizers").document(userId);
 
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
@@ -35,6 +54,11 @@ public class MyApplication extends Application {
             if (snapshot != null && snapshot.exists()) {
                 Organizer organizer = snapshot.toObject(Organizer.class);
                 organizerLiveData.setValue(organizer);  // Update LiveData with the new organizer
+            }
+            else if (snapshot != null && !snapshot.exists()) {
+                // when organizer in the database get deleted, needing update
+                Organizer organizer = new Organizer(userId);
+                organizerLiveData.setValue(organizer);
             }
         });
     }
@@ -81,5 +105,22 @@ public class MyApplication extends Application {
     public void setOrganizerLiveData(Organizer organizer) {
         this.organizer = organizer;
         this.organizerLiveData.setValue(organizer);
+    }
+
+    public Entrant getEntrant() {
+        return entrant;
+    }
+
+    public void setEntrant(Entrant entrant) {
+        this.entrant = entrant;
+    }
+
+    public MutableLiveData<Entrant> getEntrantLiveData() {
+        return entrantLiveData;
+    }
+
+    public void setEntrantLiveData(Entrant entrant) {
+        this.entrantLiveData.setValue(entrant);
+        this.entrant = entrant;
     }
 }

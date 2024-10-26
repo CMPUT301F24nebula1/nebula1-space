@@ -1,6 +1,5 @@
 package com.example.cmput301project;
 
-import android.app.Application;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
@@ -16,12 +15,11 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-public class EventController {
+public class OrganizerEventController {
     private Organizer organizer;
     private FirebaseFirestore db;
-    //private Application app;
 
-    public EventController(Organizer organizer, FirebaseFirestore db) {
+    public OrganizerEventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
         this.db = db;
     }
@@ -112,14 +110,14 @@ public class EventController {
 
 
     private void saveEventToFirestore(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        DocumentReference userDocRef = db.collection("users").document(organizer.getId());
+        DocumentReference userDocRef = db.collection("organizers").document(organizer.getId());
         userDocRef.update("events", FieldValue.arrayUnion(event))
                 .addOnSuccessListener(successListener)
                 .addOnFailureListener(failureListener);
     }
 
     private void updateEventInFirebase(String userId, Event updatedEvent) {
-        DocumentReference userDocRef = db.collection("users").document(userId);
+        DocumentReference userDocRef = db.collection("organizers").document(userId);
 
         userDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {

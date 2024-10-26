@@ -9,9 +9,11 @@ public class Organizer extends User{
 
     public Organizer() {
         this.events = new ArrayList<Event>();
+        addOrganizerRole();
     }
     public Organizer(String id) {
         super(id);
+        addOrganizerRole();
         this.events = new ArrayList<Event>();
     }
 

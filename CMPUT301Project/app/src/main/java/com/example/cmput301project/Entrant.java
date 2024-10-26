@@ -9,7 +9,7 @@ public class Entrant extends User{
     protected String phone;
 
     public Entrant() {
-        ;
+        this.joinedEvents = new ArrayList<Event>();;
     }
     public Entrant(String id) {
         super(id);

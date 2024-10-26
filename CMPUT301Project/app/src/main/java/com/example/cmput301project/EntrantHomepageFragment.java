@@ -1,5 +1,6 @@
 package com.example.cmput301project;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,6 +18,7 @@ import com.example.cmput301project.databinding.EntrantHomepageBinding;
 
 public class EntrantHomepageFragment extends Fragment {
     private EntrantHomepageBinding binding;
+    private MyApplication app;
 
     @Override
     public View onCreateView(
@@ -26,6 +28,7 @@ public class EntrantHomepageFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = EntrantHomepageBinding.inflate(inflater, container, false);
+        app = (MyApplication) requireActivity().getApplication();
         return binding.getRoot();
     }
 
@@ -35,10 +38,21 @@ public class EntrantHomepageFragment extends Fragment {
                         .navigate(R.id.action_EntrantHomepage_to_EntrantProfile)
         );
 
-        binding.organizerViewButton.setOnClickListener(v ->
+        binding.organizerViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserController.updateUserRole(app.getUserId(), "organizer");
                 NavHostFragment.findNavController(EntrantHomepageFragment.this)
-                        .navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage)
-        );
+                        .navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage);
+            }
+        });
+
+        binding.scanQrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
     }
 

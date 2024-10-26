@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
@@ -29,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference userRef;
     private String id;
-    private Organizer o;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
         db = ((MyApplication) this.getApplication()).getDb();
         retrieveUser(id);
-        ((MyApplication) this.getApplication()).listenToFirebaseUpdates(id);
+        ((MyApplication) this.getApplication()).listenToOrganizerFirebaseUpdates(id);
+        ((MyApplication) this.getApplication()).listenToEntrantFirebaseUpdates(id);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -85,25 +87,48 @@ public class MainActivity extends AppCompatActivity {
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                Organizer organizer = documentSnapshot.toObject(Organizer.class);
-                if (organizer != null) {
-                    // Set the retrieved organizer to the Application class
-                    ((MyApplication) getApplication()).setOrganizer(organizer);
-                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+                ArrayList<String> roles = (ArrayList<String>) documentSnapshot.get("role");
+                if (roles != null && roles.contains("entrant")) {
+                    // set up entrant part for this user
+
+                    db.collection("entrants").document(userId).get()
+                            .addOnSuccessListener(entrantSnapshot -> {
+                                if (entrantSnapshot.exists()) {
+                                    Entrant entrant = entrantSnapshot.toObject(Entrant.class);
+                                    ((MyApplication) getApplication()).setEntrant(entrant);
+                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
+
                 }
+                else if (roles != null && roles.contains("organizer")) {
+                    // set up organizer part for this user
+
+                    db.collection("organizers").document(userId).get()
+                            .addOnSuccessListener(organizerSnapshot -> {
+                                if (organizerSnapshot.exists()) {
+                                    Organizer organizer = organizerSnapshot.toObject(Organizer.class);
+                                    ((MyApplication) getApplication()).setOrganizer(organizer);
+                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
+                }
+
             } else {
-                Organizer newOrganizer = new Organizer(userId);
-                ((MyApplication) getApplication()).setOrganizer(newOrganizer);
-                addUser(newOrganizer);
+                User u = new User(userId);
+                addUser(u);
+                addEntrant(new Entrant(userId));
             }
         }).addOnFailureListener(e -> {
             Log.e("Firebase", "Error retrieving organizer", e);
         });
     }
 
-    public void addUser(Organizer organizer) {
-        db.collection("users").document(organizer.getId())
-                .set(organizer)
+    public void addUser(User user) {
+        db.collection("users").document(user.getId())
+                .set(user)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "User successfully added!");
                 })
@@ -112,5 +137,15 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void addEntrant(Entrant e) {
+        db.collection("entrants").document(e.getId())
+                .set(e)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "User successfully added!");
+                })
+                .addOnFailureListener(f -> {
+                    Log.w("Firestore", "Error adding user", f);
+                });
+    }
 
 }
