@@ -39,13 +39,6 @@ public class OrganizerEventDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = OrganizerEventDetailBinding.inflate(inflater, container, false);
         e = OrganizerEventDetailFragmentArgs.fromBundle(getArguments()).getE();
-//        if (getArguments() != null) {
-//            e = (Event) getArguments().getSerializable("event");
-//            if (e != null) {
-//                // 处理接收到的 event 对象
-//                Log.d("EventDetailFragment", "Received event: " + e.getName());
-//            }
-//        }
         app = (MyApplication) requireActivity().getApplication();
         return binding.getRoot();
     }

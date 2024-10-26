@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
-        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
             findEventInAllOrganizers(eventId, navController);
 
         }
-
     }
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {

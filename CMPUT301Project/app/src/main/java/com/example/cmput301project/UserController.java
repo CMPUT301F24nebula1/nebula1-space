@@ -21,6 +21,16 @@ public class UserController {
                             .addOnSuccessListener(aVoid -> Log.d("Firestore", "User role successfully updated!"))
                             .addOnFailureListener(e -> Log.w("Firestore", "Error updating user role", e));
                     addOrganizer(new Organizer(userId));
+
+                    DocumentReference entrantRef = db.collection("entrants").document(userId);
+                    entrantRef.get().addOnSuccessListener(documentSnapshot1 -> {
+//                        ArrayList<String> roles1 = (ArrayList<String>) documentSnapshot.get("role");
+//                        roles1.add("organizer");
+                        entrantRef.update("role", roles)
+                                .addOnSuccessListener(aVoid -> Log.e("Firestore", "Entrant role successfully updated!"))
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating entrant role", e));
+                    }).addOnFailureListener(e -> Log.e("Firestore", "Error getting entrant document", e));
+
                 } else {
                     Log.d("Firestore", "Role already exists or roles is null");
                 }
