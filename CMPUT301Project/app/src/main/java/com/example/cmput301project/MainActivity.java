@@ -64,12 +64,9 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        if ("eventDetailFragment".equals(navigateTo)) {
-            Log.d("MainActivity", "Navigating to EntrantProfile");
-            Bundle bundle = new Bundle();
-
+        if ("entrantEventViewFragment".equals(navigateTo)) {
+            Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
-
         }
     }
 
@@ -93,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("e", event);
-                                nc.navigate(R.id.action_EntrantHomepage_to_EventDetail, bundle);
+                                nc.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
                             }
                         } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
                             Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);

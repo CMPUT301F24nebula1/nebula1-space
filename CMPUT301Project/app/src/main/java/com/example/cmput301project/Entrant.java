@@ -3,17 +3,17 @@ package com.example.cmput301project;
 import java.util.ArrayList;
 
 public class Entrant extends User{
-    protected ArrayList<Event> joinedEvents;
+    protected ArrayList<String> waitlistEventIds;
     protected String name;
     protected String email;
     protected String phone;
 
     public Entrant() {
-        this.joinedEvents = new ArrayList<Event>();;
+        this.waitlistEventIds = new ArrayList<String>();;
     }
     public Entrant(String id) {
         super(id);
-        this.joinedEvents = new ArrayList<Event>();
+        this.waitlistEventIds = new ArrayList<String>();
     }
 
     public void join_event(Event event) {

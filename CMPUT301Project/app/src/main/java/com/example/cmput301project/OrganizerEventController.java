@@ -23,7 +23,7 @@ import java.util.Map;
 public class OrganizerEventController {
     private Organizer organizer;
     private FirebaseFirestore db;
-    private Event e;
+    private Event event;
 
     public OrganizerEventController(Organizer organizer, FirebaseFirestore db) {
         this.organizer = organizer;
@@ -32,7 +32,7 @@ public class OrganizerEventController {
 
     public void addEvent(String name, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
 
-        Event event = new Event();
+        event = new Event();
 
         Bitmap b = QRCodeGenerator.generateQRCode(event.getId());
 
@@ -83,37 +83,6 @@ public class OrganizerEventController {
         }
     }
 
-    public Event findEventInAllOrganizers(String eventId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        CollectionReference organizersRef = db.collection("organizers");
-
-        // 获取 organizers 集合中的所有文档
-        organizersRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Organizer organizer = document.toObject(Organizer.class);
-                    if (organizer != null && organizer.getEvents() != null) {
-                        // 遍历 Organizer 的 events 列表，查找匹配的 eventId
-                        for (Event event : organizer.getEvents()) {
-                            if (event.getId().equals(eventId)) {
-                                // 找到匹配的 event，可以在这里处理相关逻辑
-                                Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizer.getId());
-                                e = event;
-                                return;
-                            }
-                        }
-                    }
-                }
-                Log.d("Firestore", "No matching event found with ID: " + eventId);
-            } else {
-                Log.w("Firestore", "Error getting documents", task.getException());
-            }
-        });
-        return e;
-    }
-
-
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
@@ -142,15 +111,20 @@ public class OrganizerEventController {
                             String downloadUrl = downloadUri.toString();
                             successListener.onSuccess(downloadUrl);  // Return URL
                         }))
-                .addOnFailureListener(failureListener);
+                .addOnFailureListener(e -> {
+                    Log.e("Firebase", "Error uploading bitmap", e);
+                    if (failureListener != null) {
+                        failureListener.onFailure(e);  // 失败时调用 failureListener
+                    }
+                });
     }
 
 
     private void saveEventToFirestore(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        DocumentReference userDocRef = db.collection("organizers").document(organizer.getId());
-        userDocRef.update("events", FieldValue.arrayUnion(event))
-                .addOnSuccessListener(successListener)
-                .addOnFailureListener(failureListener);
+//        DocumentReference userDocRef = db.collection("organizers").document(organizer.getId());
+//        userDocRef.update("events", FieldValue.arrayUnion(event))
+//                .addOnSuccessListener(successListener)
+//                .addOnFailureListener(failureListener);
 
         CollectionReference eventsCollection = db.collection("organizers")
                 .document(organizer.getId())
