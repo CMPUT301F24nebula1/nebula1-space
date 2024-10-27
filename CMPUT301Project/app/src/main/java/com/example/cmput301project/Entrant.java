@@ -3,7 +3,7 @@ package com.example.cmput301project;
 import java.util.ArrayList;
 
 public class Entrant extends User{
-    protected ArrayList<String> waitlistEventIds;
+    protected transient ArrayList<String> waitlistEventIds;
     protected String name;
     protected String email;
     protected String phone;
@@ -18,10 +18,12 @@ public class Entrant extends User{
 
     public void join_event(Event event) {
         event.add_entrant(this);
+        waitlistEventIds.add(event.getId());
     }
 
     public void leave_event(Event event) {
         event.remove_entrant(this);
+        waitlistEventIds.remove(event.getId());
     }
 
     public String getName() {
@@ -46,5 +48,13 @@ public class Entrant extends User{
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public ArrayList<String> getWaitlistEventIds() {
+        return waitlistEventIds;
+    }
+
+    public void setWaitlistEventIds(ArrayList<String> waitlistEventIds) {
+        this.waitlistEventIds = waitlistEventIds;
     }
 }

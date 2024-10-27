@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String navigateTo = intent.getStringExtra("navigateTo");
         String eventId = intent.getStringExtra("eventId");
 
-        Log.e("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+        Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 

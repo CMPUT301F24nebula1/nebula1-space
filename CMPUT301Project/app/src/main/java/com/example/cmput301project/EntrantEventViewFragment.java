@@ -13,11 +13,16 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.databinding.EntrantEventViewBinding;
 import com.example.cmput301project.databinding.EntrantHomepageBinding;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class EntrantEventViewFragment extends Fragment {
     private EntrantEventViewBinding binding;
     MyApplication app;
     Event e;
+    EntrantController ec;
 
     @Override
     public View onCreateView(
@@ -29,6 +34,7 @@ public class EntrantEventViewFragment extends Fragment {
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
         e = OrganizerEventDetailFragmentArgs.fromBundle(getArguments()).getE();
         app = (MyApplication) requireActivity().getApplication();
+        ec = new EntrantController(app.getEntrant());
         return binding.getRoot();
     }
 
@@ -64,13 +70,32 @@ public class EntrantEventViewFragment extends Fragment {
         binding.joinClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                    app.getEntrant().join_event(e);
+                    e.add_entrant(app.getEntrant());
 
+                    ec.joinEventWaitingList(e);
+
+                    ec.addToEventWaitingList(e);
+
+                }
+                else {
+                    Log.d("join event", "you are already in the waitlist");
+                }
             }
         });
 
         binding.leaveClassButton.setOnClickListener(view1 -> {
-//            NavHostFragment.findNavController(EntrantEventViewFragment.this)
-//                    .navigate(R.id.action_EntrantEventView_to_EntrantHomepage);
+            if (app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                app.getEntrant().leave_event(e);
+                e.remove_entrant(app.getEntrant());
+
+                ec.leaveEventWaitingList(e);
+                ec.removeFromEventWaitingList(e);
+            }
+            else {
+                Log.d("leave event", "you are not in the waitlist");
+            }
         });
     }
 }

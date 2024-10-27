@@ -121,17 +121,15 @@ public class OrganizerEventController {
 
 
     private void saveEventToFirestore(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-//        DocumentReference userDocRef = db.collection("organizers").document(organizer.getId());
-//        userDocRef.update("events", FieldValue.arrayUnion(event))
-//                .addOnSuccessListener(successListener)
-//                .addOnFailureListener(failureListener);
-
         CollectionReference eventsCollection = db.collection("organizers")
                 .document(organizer.getId())
                 .collection("events");
         eventsCollection.document(event.getId())
                 .set(event)
-                .addOnSuccessListener(eventVoid -> Log.d("Firestore", "Event successfully added: " + event.getId()))
+                .addOnSuccessListener(eventVoid -> {
+                    Log.d("Firestore", "Event successfully added: " + event.getId());
+                    successListener.onSuccess(null);
+                })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error adding event: " + event.getId(), e));
     }
 
