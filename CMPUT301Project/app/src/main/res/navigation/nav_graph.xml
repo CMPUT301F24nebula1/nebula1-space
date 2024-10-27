@@ -3,26 +3,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/EntrantHomepageFragment"
+    >
+
+    <!--app:startDestination="@id/EventListFragment"-->
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.cmput301project.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
+        android:id="@+id/EntrantHomepageFragment"
+        android:name="com.example.cmput301project.EntrantHomepageFragment"
+        android:label="@string/homepage_fragment_label"
+        tools:layout="@layout/entrant_homepage">
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_EntrantHomepage_to_EntrantProfile"
+            app:destination="@id/EntrantProfileFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_OrganizerHomepage"
+            app:destination="@id/OrganizerHomepageFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_EventDetail"
+            app:destination="@+id/OrganizerEventDetailFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.cmput301project.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
 
+    <fragment
+        android:id="@+id/EntrantProfileFragment"
+        android:name="com.example.cmput301project.EntrantProfileFragment"
+        android:label="@string/profile_fragment_label"
+        tools:layout="@layout/entrant_profile">
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerHomepageFragment"
+        android:name="com.example.cmput301project.OrganizerHomepageFragment"
+        android:label="@string/organizer_homepage_fragment_label"
+        tools:layout="@layout/organizer_homepage">
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_OrganizerHomepage_to_EntrantHomepage"
+            app:destination="@id/EntrantHomepageFragment" />
+        <action
+            android:id="@+id/action_OrganizerHomepage_to_EventList"
+            app:destination="@+id/EventListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/AddEventFragment"
+        android:name="com.example.cmput301project.AddEventFragment"
+        android:label="@string/add_event_fragment_label"
+        tools:layout="@layout/add_event">
+        <action
+            android:id="@+id/action_AddEvent_to_EventList"
+            app:destination="@+id/EventListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/EventListFragment"
+        android:name="com.example.cmput301project.EventListFragment"
+        android:label="@string/event_list_fragment_label"
+        tools:layout="@layout/event_list">
+        <action
+            android:id="@+id/action_EventList_to_AddEvent"
+            app:destination="@id/AddEventFragment" />
+        <action
+            android:id="@+id/action_EventList_to_OrganizerEventDetail"
+            app:destination="@id/OrganizerEventDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerEventDetailFragment"
+        android:name="com.example.cmput301project.OrganizerEventDetailFragment"
+        android:label="@string/event_list_fragment_label"
+        tools:layout="@layout/organizer_event_detail">
+        <argument
+            android:name="e"
+            app:argType="com.example.cmput301project.Event" />
     </fragment>
 </navigation>
