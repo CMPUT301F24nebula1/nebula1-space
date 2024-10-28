@@ -10,6 +10,18 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/btnEditSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit" />
+    </LinearLayout>
     <ScrollView
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -86,11 +98,11 @@
                             <EditText
                                 android:id="@+id/entrant_profile_name"
                                 android:layout_width="match_parent"
-                                android:layout_height="36dp"
-                                android:text="Input"
+                                android:layout_height="38dp"
+                                android:focusedByDefault="true"
+                                android:text=""
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp"
-                                android:focusedByDefault="true"/>
+                                android:textSize="16sp" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -147,8 +159,8 @@
                             <EditText
                                 android:id="@+id/entrant_profile_email"
                                 android:layout_width="match_parent"
-                                android:layout_height="34dp"
-                                android:text="Input"
+                                android:layout_height="38dp"
+                                android:text=""
                                 android:textColor="#1D1B20"
                                 android:textSize="16sp" />
                         </LinearLayout>
@@ -208,8 +220,8 @@
                             <EditText
                                 android:id="@+id/entrant_profile_phone"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp"
-                                android:text="Input Phone"
+                                android:layout_height="38dp"
+                                android:text=""
                                 android:textColor="#1D1B20"
                                 android:textSize="16sp" />
                         </LinearLayout>

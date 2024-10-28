@@ -7,6 +7,7 @@ public class Entrant extends User{
     protected String name;
     protected String email;
     protected String phone;
+    private String profilePictureUrl;
 
     public Entrant() {
         this.waitlistEventIds = new ArrayList<String>();;
@@ -56,5 +57,13 @@ public class Entrant extends User{
 
     public void setWaitlistEventIds(ArrayList<String> waitlistEventIds) {
         this.waitlistEventIds = waitlistEventIds;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

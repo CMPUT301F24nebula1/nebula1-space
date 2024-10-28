@@ -145,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
                             .addOnSuccessListener(entrantSnapshot -> {
                                 if (entrantSnapshot.exists()) {
                                     Entrant entrant = entrantSnapshot.toObject(Entrant.class);
-                                    ((MyApplication) getApplication()).setEntrant(entrant);
+                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                }
+                                else {
+                                    Entrant entrant = new Entrant(userId);
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                             })

@@ -1,17 +1,67 @@
 package com.example.cmput301project;
 
+import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class EntrantController {
     private Entrant entrant;
 
     public EntrantController(Entrant e) {
         this.entrant = e;
+    }
+
+    public void saveEntrantToDatabase(Entrant entrant, Uri u) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> entrantData = new HashMap<>();
+        entrantData.put("name", entrant.getName());
+        entrantData.put("email", entrant.getEmail());
+        entrantData.put("phone", entrant.getPhone());
+
+        if (u != null) {
+            uploadImageToFirebase(u, new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String downloadUrl) {
+                    Log.e("upload profile image", "success");
+                    entrant.setProfilePictureUrl(downloadUrl);
+                    entrantData.put("profilePictureUrl", downloadUrl);
+                    db.collection("entrants")
+                            .document(entrant.getId())
+                            .update(entrantData)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
+                            });
+                }
+            }, e -> {
+                Log.e("upload profile image", "failure uploading profile image");
+            });
+        }
+        else {
+            db.collection("entrants")
+                    .document(entrant.getId())
+                    .update(entrantData)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
+                    });
+        }
+        Log.d("save entrant profile", entrant.toString());
+
+
     }
 
     public void joinEventWaitingList(Event event) {
@@ -138,6 +188,20 @@ public class EntrantController {
                 });
     }
 
+    public void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
+                            String downloadUrl = downloadUri.toString();
+                            Log.d("uploadImageToFirebase", "Image URI: " + imageUri.toString());
+                            successListener.onSuccess(downloadUrl);  // Pass the string URL
+                        }))
+                .addOnFailureListener(failureListener);
+
+    }
 
 
 
