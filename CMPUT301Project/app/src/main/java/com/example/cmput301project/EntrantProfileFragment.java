@@ -1,11 +1,15 @@
 package com.example.cmput301project;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -18,11 +22,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +36,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
 
 import java.io.IOException;
@@ -38,12 +45,14 @@ public class EntrantProfileFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private EntrantProfileBinding binding;
-    MyApplication app;
+    private MyApplication app;
     private Entrant entrant;
+    private EntrantController ec;
     private TextView t_name, t_email, t_phone;
-    protected Button editImageButton;
+    protected Button editImageButton, btnEditSave;
     private ImageView imageView;
     private Uri imageUri;
+    private boolean isEditMode = false;
 
     @Nullable
     @Override
@@ -52,18 +61,83 @@ public class EntrantProfileFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-//        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.entrant_profile, container, false);
         app = (MyApplication) requireActivity().getApplication();
         binding = EntrantProfileBinding.inflate(inflater, container, false);
-//        View view = binding.getRoot();
-
-        // Access your application instance
-//        MyApplication myApp = (MyApplication) getActivity().getApplication();
-
-
-//        binding.editProfilePictureButton.setOnClickListener(v -> captureProfilePicture());
         return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        entrant = app.getEntrant();
+        ec = new EntrantController(app.getEntrant());
+
+        t_name = binding.entrantProfileName;
+        t_email = binding.entrantProfileEmail;
+        t_phone = binding.entrantProfilePhone;
+
+        app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+            entrant = entrant1;
+            populateEntrantInfo(entrant1);
+        });
+
+        editImageButton = view.findViewById(R.id.edit_profile_picture_button);
+
+        editImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openImagePicker(); // Call the method when the button is clicked
+            }
+        });
+        imageView = binding.profileImageview;
+        btnEditSave = binding.btnEditSave;
+
+
+        setEditMode(false);
+
+        btnEditSave.setOnClickListener(v -> {
+            if (!isEditMode) {
+                // Enable edit mode
+                setEditMode(true);
+                btnEditSave.setText("Save");
+            } else {
+                if (entrant != null) {
+                    // Save changes and go back
+                    if (t_name.getText().toString().isEmpty() || t_email.getText().toString().isEmpty()) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Alert")
+                                .setMessage("Name and email can not be empty.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();  // Close the dialog
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        return;
+                    }
+                    saveChanges();
+                    setEditMode(false);
+                    btnEditSave.setText("Edit");
+//                onBackPressed();  // Navigate back
+                }
+                else {
+                    Log.e("save profile", "wait for loading information");
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Alert")
+                            .setMessage("wait for loading information.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();  // Close the dialog
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                    return;
+                }
+            }
+        });
+
+        app.setEntrantLiveData(entrant);
     }
 
     private void openImagePicker() {
@@ -87,21 +161,25 @@ public class EntrantProfileFragment extends Fragment {
                 }
             }
     );
-    private void populateEntrantInfo() {
+    private void populateEntrantInfo(Entrant entrant) {
         if (entrant != null) {
-//            binding.rcmftz4npudn.setText(entrant.getName()); // Name field
-//            binding.rpplfbkhl9ui.setText(entrant.getEmail()); // Email field
-//            binding.ruob2m4jmcmj.setText(entrant.getPhone()); // Phone field
-
             // Name field
             t_name.setText(entrant.getName());
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
-//            if (entrant.getProfilePicture() != null) {
-//                binding.eventImageview.setImageBitmap(entrant.getProfilePicture());
-//            } else {
             binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
-//            }
+            try {
+                if (!entrant.getProfilePictureUrl().isEmpty()) {
+                    Glide.with(getContext())
+                            .load(entrant.getProfilePictureUrl())
+                            .placeholder(R.drawable.placeholder_image)  // placeholder
+                            .error(R.drawable.error_image)              // error image
+                            .into(binding.profileImageview);
+                }
+            } catch (NullPointerException e) {
+                Log.e("profile picture", "No picture");
+            }
+
         }
     }
 
@@ -126,7 +204,7 @@ public class EntrantProfileFragment extends Fragment {
     }
 
     private String getInitials(String name) {
-        if (TextUtils.isEmpty(name)) return "JD";
+        if (TextUtils.isEmpty(name)) return "";
         String[] parts = name.trim().split(" ");
         String initials = "";
         for (String part : parts) {
@@ -137,30 +215,49 @@ public class EntrantProfileFragment extends Fragment {
         return initials.toUpperCase();
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private void setEditMode(boolean enabled) {
+        isEditMode = enabled;
+        t_name.setEnabled(enabled);
+        t_name.setFocusable(enabled);
+        t_name.setFocusableInTouchMode(enabled);
+        if (enabled) {
+            t_name.requestFocus(); // Request focus for EditText
+//            /showKeyboard(editText) // Show the keyboard
+        } else {
+            // Optionally, clear focus when disabling edit mode
+            t_name.clearFocus();
+        }
+        t_email.setEnabled(enabled);
+        t_email.setFocusable(enabled);
+        t_email.setFocusableInTouchMode(enabled);
+        t_phone.setEnabled(enabled);
+        t_phone.setFocusable(enabled);
+        t_phone.setFocusableInTouchMode(enabled);
+        editImageButton.setEnabled(enabled);
+    }
 
-//        Entrant entrant = app.getEntrant();
-// Now you can use myApp to access methods or properties from your MyApplication class
-        // For example: myApp.someMethod();
-        entrant = app.getEntrant();
-        t_name = binding.entrantProfileName;
-        t_email = binding.entrantProfileEmail;
-        t_phone = binding.entrantProfilePhone;
+    private void showKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
 
-//        editImageButton = binding.editProfilePictureButton;
-        editImageButton = view.findViewById(R.id.edit_profile_picture_button);
-// Assuming you've already initialized editImageButton
-        editImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openImagePicker(); // Call the method when the button is clicked
-            }
-        });
-        imageView = binding.profileImageview;
-
-        populateEntrantInfo();
-
-        app.setEntrantLiveData(entrant);
+    public void onBackPressed() {
+        if (isEditMode) {
+            // Exit edit mode without navigating back
+            setEditMode(false);
+        } else {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        }
+    }
+    private void saveChanges() {
+        // Implement the logic to save the changes
+        entrant.setName(t_name.getText().toString());
+        entrant.setEmail(t_email.getText().toString());
+        entrant.setPhone(t_phone.getText().toString());
+        // Save data1 and data2 to database or shared preferences
+        ec.saveEntrantToDatabase(entrant, imageUri);
+        app.setEntrantLiveData(entrant); // Save data to the application variable
     }
 }

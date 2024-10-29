@@ -91,7 +91,7 @@ public class ScannerActivity extends Activity {
 
                     Intent intent = new Intent(ScannerActivity.this, MainActivity.class);
                     intent.putExtra("eventId", qrCodeContent);
-                    intent.putExtra("navigateTo", "eventDetailFragment");
+                    intent.putExtra("navigateTo", "entrantEventViewFragment");
                     startActivity(intent);
 
                 } else {

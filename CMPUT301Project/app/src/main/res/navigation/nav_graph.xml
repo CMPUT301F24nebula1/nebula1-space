@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/EntrantHomepageFragment"
+
+
     >
 
-    <!--app:startDestination="@id/EventListFragment"-->
+    <!--app:startDestination="@+id/EntrantEventViewFragment"-->
 
     <fragment
         android:id="@+id/EntrantHomepageFragment"
@@ -22,6 +24,9 @@
         <action
             android:id="@+id/action_EntrantHomepage_to_EventDetail"
             app:destination="@+id/OrganizerEventDetailFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_EntrantEventView"
+            app:destination="@+id/EntrantEventViewFragment" />
     </fragment>
 
     <fragment
@@ -72,6 +77,19 @@
         android:name="com.example.cmput301project.OrganizerEventDetailFragment"
         android:label="@string/event_list_fragment_label"
         tools:layout="@layout/organizer_event_detail">
+        <argument
+            android:name="e"
+            app:argType="com.example.cmput301project.Event" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/EntrantEventViewFragment"
+        android:name="com.example.cmput301project.EntrantEventViewFragment"
+        android:label="@string/event_list_fragment_label"
+        tools:layout="@layout/entrant_event_view">
+        <action
+            android:id="@+id/action_EntrantEventView_to_EntrantHomepage"
+            app:destination="@id/EntrantHomepageFragment" />
         <argument
             android:name="e"
             app:argType="com.example.cmput301project.Event" />
