@@ -57,6 +57,8 @@ public class EntrantTests {
     public void testSetWaitlist() {
         ArrayList<String> waitlist = new ArrayList<>();
         waitlist.add(event.getId());
+        entrant.setWaitlistEventIds(waitlist);
+        assertEquals(waitlist, entrant.getWaitlistEventIds());
     }
 
     //Test 7: Entrants profile picture URL is successfully set
