@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,26 +48,27 @@ public class AddEventFragment extends Fragment {
             String description = binding.eventDescriptionEdittext.getText().toString();
 
             if (!name.isEmpty()) {
-                // Delegate the business logic to the controller
+
                 organizerEventController.addEvent(name, description, imageUri, aVoid -> {
 
                     NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
                     NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
+
                 }, e -> {
+                    Log.e("save event", "Error: " + e.getMessage());
                     Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                new AlertDialog.Builder(getContext())  // 'this' refers to the current context, can be 'getContext()' if inside a Fragment
-                        .setTitle("Alert")  // Set the title of the dialog
-                        .setMessage("An event has to have a name.")  // Set the message for the dialog
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Alert")
+                        .setMessage("An event has to have a name.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // Action to take when the user presses the "OK" button
                                 dialog.dismiss();  // Close the dialog
                             }
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();  // Display the dialog
+                        .show();
                 return;
             }
         });

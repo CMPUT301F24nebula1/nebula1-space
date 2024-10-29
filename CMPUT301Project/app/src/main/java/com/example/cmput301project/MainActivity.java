@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String navigateTo = intent.getStringExtra("navigateTo");
         String eventId = intent.getStringExtra("eventId");
 
-        Log.e("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+        Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
@@ -64,12 +64,9 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        if ("eventDetailFragment".equals(navigateTo)) {
-            Log.d("MainActivity", "Navigating to EntrantProfile");
-            Bundle bundle = new Bundle();
-
+        if ("entrantEventViewFragment".equals(navigateTo)) {
+            Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
-
         }
     }
 
@@ -93,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("e", event);
-                                nc.navigate(R.id.action_EntrantHomepage_to_EventDetail, bundle);
+                                nc.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
                             }
                         } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
                             Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
@@ -148,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
                             .addOnSuccessListener(entrantSnapshot -> {
                                 if (entrantSnapshot.exists()) {
                                     Entrant entrant = entrantSnapshot.toObject(Entrant.class);
-                                    ((MyApplication) getApplication()).setEntrant(entrant);
+                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                }
+                                else {
+                                    Entrant entrant = new Entrant(userId);
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                             })

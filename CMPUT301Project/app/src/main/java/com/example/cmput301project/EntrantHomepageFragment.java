@@ -2,6 +2,7 @@ package com.example.cmput301project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,21 @@ public class EntrantHomepageFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         binding.profileButton.setOnClickListener(v ->
-                NavHostFragment.findNavController(EntrantHomepageFragment.this)
-                        .navigate(R.id.action_EntrantHomepage_to_EntrantProfile)
+                app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+                    if (entrant1 != null) {
+                        try {
+                            Log.d("profileButton", entrant1.getName());
+                        } catch (NullPointerException e) {
+                            Log.d("profileButton", "No name");
+                        }
+
+                        NavHostFragment.findNavController(EntrantHomepageFragment.this)
+                                .navigate(R.id.action_EntrantHomepage_to_EntrantProfile);
+                    } else {
+                        Log.d("profileButton", "Entrant data is not ready yet");
+                        // Optionally, you can show a loading indicator to the user.
+                    }
+                })
         );
 
         binding.organizerViewButton.setOnClickListener(new View.OnClickListener() {
