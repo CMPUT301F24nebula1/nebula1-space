@@ -21,6 +21,10 @@ public class Organizer extends User{
         events.add(e);
     }
 
+    public void delete_event(Event e) {
+        events.remove(e);
+    }
+
     public ArrayList<Event> getEvents() {
         return events;
     }

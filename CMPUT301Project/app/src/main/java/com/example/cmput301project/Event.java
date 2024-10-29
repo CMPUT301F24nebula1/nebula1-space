@@ -31,6 +31,10 @@ public class Event extends Observable implements Serializable {
         this.id = UUID.randomUUID().toString();
     }
 
+    public ArrayList<Entrant> getWaitlist() {
+        return waitlist;
+    }
+
     public void add_entrant(Entrant e) {
         waitlist.add(e);
     }
