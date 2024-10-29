@@ -33,6 +33,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity for scanning the QR code
+ * @author Xinjia Fan
+ */
 public class ScannerActivity extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
 

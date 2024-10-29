@@ -41,6 +41,10 @@ import com.example.cmput301project.databinding.EntrantProfileBinding;
 
 import java.io.IOException;
 
+/**
+ * Fragment for entrant profile
+ * @author Xinjia Fan
+ */
 public class EntrantProfileFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 

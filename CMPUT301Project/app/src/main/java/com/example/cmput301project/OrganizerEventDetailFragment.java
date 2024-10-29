@@ -26,6 +26,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 
+/**
+ * Fragment for organizers to view their event details.
+ * @author Xinjia Fan
+ */
 public class OrganizerEventDetailFragment extends Fragment {
     OrganizerEventDetailBinding binding;
     private FirebaseFirestore db;

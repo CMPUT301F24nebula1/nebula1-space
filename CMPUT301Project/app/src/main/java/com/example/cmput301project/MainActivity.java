@@ -25,6 +25,10 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MainActivity
+ * @author Xinjia Fan
+ */
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;

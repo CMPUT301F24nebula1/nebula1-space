@@ -20,6 +20,10 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom ArrayAdapter for event list
+ * @author Xinjia Fan
+ */
 public class EventArrayAdapter extends ArrayAdapter<Event> {
 
     public EventArrayAdapter(@NonNull Context context, @NonNull ArrayList<Event> events) {

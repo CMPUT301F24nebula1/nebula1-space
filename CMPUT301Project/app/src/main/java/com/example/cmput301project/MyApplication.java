@@ -14,6 +14,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * Holding global variables
+ * @author Xinjia Fan
+ */
 public class MyApplication extends Application {
     private String userId;
     private Entrant entrant;

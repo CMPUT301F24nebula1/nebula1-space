@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Acts as the controller for organizer to manipulate events.
+ * @author Xinjia Fan
+ */
 public class OrganizerEventController {
     private Organizer organizer;
     private FirebaseFirestore db;

@@ -18,6 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
+/**
+ * Fragment for entrants to view an event after scanning the QR code
+ * @author Xinjia Fan
+ */
 public class EntrantEventViewFragment extends Fragment {
     private EntrantEventViewBinding binding;
     MyApplication app;
@@ -32,7 +36,7 @@ public class EntrantEventViewFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
-        e = OrganizerEventDetailFragmentArgs.fromBundle(getArguments()).getE();
+        e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
         app = (MyApplication) requireActivity().getApplication();
         ec = new EntrantController(app.getEntrant());
         return binding.getRoot();

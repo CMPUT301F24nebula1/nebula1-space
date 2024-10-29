@@ -13,6 +13,10 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Acts as the controller for an entrant.
+ * @author Xinjia Fan
+ */
 public class EntrantController {
     private Entrant entrant;
 

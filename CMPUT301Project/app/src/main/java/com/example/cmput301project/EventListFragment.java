@@ -17,6 +17,10 @@ import com.example.cmput301project.databinding.EventListBinding;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment for organizer to view their events
+ * @author Xinjia Fan
+ */
 public class EventListFragment extends Fragment {
     private EventListBinding binding;
 

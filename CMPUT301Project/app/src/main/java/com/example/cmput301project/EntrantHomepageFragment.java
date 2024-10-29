@@ -13,6 +13,10 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.databinding.EntrantHomepageBinding;
 
+/**
+ * Fragment for entrant homepage
+ * @author Xinjia Fan
+ */
 public class EntrantHomepageFragment extends Fragment {
     private EntrantHomepageBinding binding;
     private MyApplication app;

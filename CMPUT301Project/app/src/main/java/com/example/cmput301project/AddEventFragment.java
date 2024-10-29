@@ -24,6 +24,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 
+/**
+ * Fragment for organizers to add an event
+ * @author Xinjia Fan
+ */
+
 public class AddEventFragment extends Fragment {
     private OrganizerEventController organizerEventController;
     private AddEventBinding binding;

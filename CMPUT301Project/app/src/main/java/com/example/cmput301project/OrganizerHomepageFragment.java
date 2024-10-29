@@ -12,6 +12,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cmput301project.databinding.EntrantHomepageBinding;
 import com.example.cmput301project.databinding.OrganizerHomepageBinding;
 
+/**
+ * Fragment for organizer homepage.
+ * @author Xinjia Fan
+ */
 public class OrganizerHomepageFragment extends Fragment {
     private OrganizerHomepageBinding binding;
 
