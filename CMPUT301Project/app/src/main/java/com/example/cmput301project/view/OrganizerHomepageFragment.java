@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.cmput301project.databinding.EntrantHomepageBinding;
+import com.example.cmput301project.R;
 import com.example.cmput301project.databinding.OrganizerHomepageBinding;
 
 /**

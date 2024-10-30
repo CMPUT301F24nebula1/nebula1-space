@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,11 +9,14 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.cmput301project.databinding.AddEventBinding;
+import com.example.cmput301project.view.EventListFragmentDirections;
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.R;
+import com.example.cmput301project.controller.EventArrayAdapter;
 import com.example.cmput301project.databinding.EventListBinding;
+import com.example.cmput301project.model.Event;
 
 import java.util.ArrayList;
 

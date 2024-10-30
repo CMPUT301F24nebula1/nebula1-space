@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.graphics.Bitmap;
 import android.util.Base64;

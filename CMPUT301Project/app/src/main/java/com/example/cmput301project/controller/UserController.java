@@ -1,7 +1,9 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.util.Log;
 
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;

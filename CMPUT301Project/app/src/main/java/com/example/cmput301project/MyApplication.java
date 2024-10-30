@@ -7,6 +7,9 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;

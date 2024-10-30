@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.model;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Xinjia Fan
  */
 
-public class Entrant extends User{
+public class Entrant extends User {
     protected transient ArrayList<String> waitlistEventIds;
     protected String name;
     protected String email;

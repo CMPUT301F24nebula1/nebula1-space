@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.model.Organizer;
+import com.example.cmput301project.R;
+import com.example.cmput301project.model.User;
 import com.example.cmput301project.databinding.ActivityMainBinding;
+import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Event;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MainActivity

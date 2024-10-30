@@ -1,8 +1,10 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Entrant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;

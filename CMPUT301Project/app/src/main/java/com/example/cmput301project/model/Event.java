@@ -1,13 +1,8 @@
-package com.example.cmput301project;
-
-import androidx.lifecycle.Observer;
+package com.example.cmput301project.model;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Observable;
-import java.util.Set;
 import java.util.UUID;
 
 /**

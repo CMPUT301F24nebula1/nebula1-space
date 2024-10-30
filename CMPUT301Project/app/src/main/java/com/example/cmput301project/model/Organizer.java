@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.model;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * An Organizer can create events and has personal information such as name.
  * @author Xinjia Fan
  */
-public class Organizer extends User{
+public class Organizer extends User {
     private transient ArrayList<Event> events;
 
     private String name;
