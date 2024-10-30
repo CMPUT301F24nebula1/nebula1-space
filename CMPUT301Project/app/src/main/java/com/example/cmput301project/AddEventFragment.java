@@ -31,6 +31,7 @@ import java.io.IOException;
 
 public class AddEventFragment extends Fragment {
     private OrganizerEventController organizerEventController;
+
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;

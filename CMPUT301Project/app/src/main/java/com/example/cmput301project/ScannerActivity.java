@@ -60,7 +60,6 @@ public class ScannerActivity extends Activity {
         closeButton.setOnClickListener(v -> finish()); // 关闭按钮
 
         selectFromGalleryButton.setOnClickListener(v -> {
-            // 从相册选择图片
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });

@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    //implementation(files("C:/Users/fxj/AppData/Local/Android/Sdk/platforms/android-34/android.jar"))
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage:20.0.0")
@@ -47,8 +48,6 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     implementation("com.google.android.material:material:1.9.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
-
-
 
 
     implementation(libs.appcompat)

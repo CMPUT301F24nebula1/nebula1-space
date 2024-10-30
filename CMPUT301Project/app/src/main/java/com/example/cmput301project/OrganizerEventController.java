@@ -118,7 +118,7 @@ public class OrganizerEventController {
                 .addOnFailureListener(e -> {
                     Log.e("Firebase", "Error uploading bitmap", e);
                     if (failureListener != null) {
-                        failureListener.onFailure(e);  // 失败时调用 failureListener
+                        failureListener.onFailure(e);  // failureListener
                     }
                 });
     }
