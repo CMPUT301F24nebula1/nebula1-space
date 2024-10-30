@@ -39,6 +39,14 @@ public class Event extends Observable implements Serializable {
     }
 
     /**
+     * Gets the waitlist.
+     * @return waitlist.
+     */
+    public ArrayList<Entrant> getWaitlist() {
+        return waitlist;
+    }
+
+    /**
      * Adds an entrant to the event's waitlist.
      * @param e The entrant to add.
      */

@@ -39,6 +39,14 @@ public class Organizer extends User {
     }
 
     /**
+     * Delete the event from the waitlist of the event.
+     * @param e The event to delete.
+     */
+    public void delete_event(Event e) {
+        events.remove(e);
+    }
+
+    /**
      * Gets the list of events created by the organizer.
      * @return The list of events.
      */
