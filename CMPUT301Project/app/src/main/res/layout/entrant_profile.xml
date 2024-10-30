@@ -54,7 +54,8 @@
                     android:contentDescription="Event image"
                     android:scaleType="centerCrop"
                     android:src="@drawable/cr100beaddff"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:adjustViewBounds="true"/>
 
                 <Button
                     android:id="@+id/edit_profile_picture_button"
@@ -160,9 +161,10 @@
                                 android:id="@+id/entrant_profile_email"
                                 android:layout_width="match_parent"
                                 android:layout_height="38dp"
-                                android:text=""
+                                android:text="Your Email"
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:inputType="textEmailAddress"/>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout

@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -26,6 +28,7 @@ import com.example.cmput301project.databinding.AddEventBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Fragment for organizers to add an event
@@ -34,10 +37,11 @@ import java.io.IOException;
 
 public class AddEventFragment extends Fragment {
     private OrganizerEventController organizerEventController;
-
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
+    private TextView startDateText, endDateText;
+    private Calendar startDate, endDate;    // haven't added this to firebase
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,9 +51,9 @@ public class AddEventFragment extends Fragment {
         db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
-                        // Update the UI with the organizer data
-                        organizerEventController = new OrganizerEventController(organizer, db);
-                    }
+                // Update the UI with the organizer data
+                organizerEventController = new OrganizerEventController(organizer, db);
+            }
         });
 
         binding.saveEventButton.setOnClickListener(view1 -> {
@@ -82,6 +86,27 @@ public class AddEventFragment extends Fragment {
             }
         });
 
+        // Find views and add click listeners
+        startDateText = binding.startDateText;
+        endDateText = binding.endDateText;
+
+        if (startDateText == null || endDateText == null) {
+            Log.e("DatePicker", "startDateText or endDateText is null, check your layout ID"); // Log if null
+//            return view;
+        }
+
+        // Initialize Calendar instances
+        startDate = Calendar.getInstance();
+        endDate = Calendar.getInstance();
+
+        startDateText.setOnClickListener(v -> {
+            Log.d("DatePicker", "Start Date Clicked");
+            showDatePickerDialog(true);
+        });
+        endDateText.setOnClickListener(v -> {
+            Log.d("DatePicker", "End Date Clicked");
+            showDatePickerDialog(false);
+        });
         return binding.getRoot();
     }
 
@@ -110,4 +135,39 @@ public class AddEventFragment extends Fragment {
                 }
             }
     );
+
+    private void showDatePickerDialog(final boolean isStartDate) {
+        Calendar calendar = isStartDate ? startDate : endDate;
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(year, month, dayOfMonth);
+                    updateDateText(isStartDate);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        if (!isStartDate && startDate != null) {
+            // Set minimum date for endDate picker as the selected start date
+            datePickerDialog.getDatePicker().setMinDate(startDate.getTimeInMillis());
+        }
+
+        datePickerDialog.show();
+    }
+
+    private void updateDateText(boolean isStartDate) {
+        Calendar calendar = isStartDate ? startDate : endDate;
+        String dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                (calendar.get(Calendar.MONTH) + 1) + "/" +
+                calendar.get(Calendar.YEAR);
+
+        if (isStartDate) {
+            startDateText.setText("Start Date: " + dateText);
+        } else {
+            endDateText.setText("End Date: " + dateText);
+        }
+    }
 }

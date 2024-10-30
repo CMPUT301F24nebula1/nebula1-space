@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -30,7 +31,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/event_name_edittext"
             app:layout_constraintVertical_bias="0.3" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_horizontal"
+            tools:ignore="MissingConstraints">
 
+            <TextView
+                android:id="@+id/startDateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Select Start Date"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/endDateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Select End Date"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"/>
+        </LinearLayout>
         <!-- ImageView for displaying selected image -->
         <ImageView
             android:id="@+id/event_imageview"

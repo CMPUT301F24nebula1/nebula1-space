@@ -11,16 +11,20 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import android.os.Bundle;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -54,6 +58,7 @@ public class EntrantProfileFragment extends Fragment {
     private ImageView imageView;
     private Uri imageUri;
     private boolean isEditMode = false;
+    private boolean isImageEnlarged = false;
 
     @Nullable
     @Override
@@ -138,7 +143,61 @@ public class EntrantProfileFragment extends Fragment {
             }
         });
 
+        imageView.setOnClickListener(v -> toggleImageSize());
+
+        t_email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No action needed here
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Call the validation function whenever text changes
+                validateEmail(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // No action needed here
+            }
+        });
         app.setEntrantLiveData(entrant);
+    }
+
+    private void validateEmail(String email) {
+        // Use Android's Patterns utility class to check if the email format is valid
+        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            t_email.setError(null); // Clear error if email is valid
+        } else {
+            t_email.setError("Invalid email format");
+        }
+    }
+
+    private void toggleImageSize() {
+        if (isImageEnlarged) {
+            // Shrink back to original size
+            ScaleAnimation shrinkAnimation = new ScaleAnimation(
+                    2.0f, 1.0f,   // Start and end values for the X axis scaling
+                    2.0f, 1.0f,   // Start and end values for the Y axis scaling
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
+            shrinkAnimation.setDuration(300);
+            shrinkAnimation.setFillAfter(true); // Keeps the result of the animation
+            imageView.startAnimation(shrinkAnimation);
+        } else {
+            // Enlarge the image
+            ScaleAnimation enlargeAnimation = new ScaleAnimation(
+                    1.0f, 2.0f,   // Start and end values for the X axis scaling
+                    1.0f, 2.0f,   // Start and end values for the Y axis scaling
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
+            enlargeAnimation.setDuration(300);
+            enlargeAnimation.setFillAfter(true); // Keeps the result of the animation
+            imageView.startAnimation(enlargeAnimation);
+        }
+        // Toggle the boolean flag
+        isImageEnlarged = !isImageEnlarged;
     }
 
     private void openImagePicker() {
