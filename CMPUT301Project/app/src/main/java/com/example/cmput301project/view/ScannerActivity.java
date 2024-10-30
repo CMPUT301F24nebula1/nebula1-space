@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,10 +11,11 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
+import com.example.cmput301project.R;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -22,7 +23,6 @@ import com.google.zxing.FormatException;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
-import com.google.zxing.ResultPoint;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -30,9 +30,11 @@ import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
+/**
+ * Activity for scanning the QR code
+ * @author Xinjia Fan
+ */
 public class ScannerActivity extends Activity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -56,7 +58,6 @@ public class ScannerActivity extends Activity {
         closeButton.setOnClickListener(v -> finish()); // 关闭按钮
 
         selectFromGalleryButton.setOnClickListener(v -> {
-            // 从相册选择图片
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });

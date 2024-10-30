@@ -1,25 +1,25 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
+/**
+ * Acts as the controller for organizer to manipulate events.
+ * @author Xinjia Fan
+ */
 public class OrganizerEventController {
     private Organizer organizer;
     private FirebaseFirestore db;
@@ -114,7 +114,7 @@ public class OrganizerEventController {
                 .addOnFailureListener(e -> {
                     Log.e("Firebase", "Error uploading bitmap", e);
                     if (failureListener != null) {
-                        failureListener.onFailure(e);  // 失败时调用 failureListener
+                        failureListener.onFailure(e);  // failureListener
                     }
                 });
     }

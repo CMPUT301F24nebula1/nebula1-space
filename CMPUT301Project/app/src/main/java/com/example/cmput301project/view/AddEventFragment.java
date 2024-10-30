@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,13 +19,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.controller.OrganizerEventController;
+import com.example.cmput301project.R;
 import com.example.cmput301project.databinding.AddEventBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 
+/**
+ * Fragment for organizers to add an event
+ * @author Xinjia Fan
+ */
+
 public class AddEventFragment extends Fragment {
     private OrganizerEventController organizerEventController;
+
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;

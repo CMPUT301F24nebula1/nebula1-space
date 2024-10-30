@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -25,22 +24,24 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.R;
+import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
+import com.example.cmput301project.model.Entrant;
 
 import java.io.IOException;
 
+/**
+ * Fragment for entrant profile
+ * @author Xinjia Fan
+ */
 public class EntrantProfileFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 

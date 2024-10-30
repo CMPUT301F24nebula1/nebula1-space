@@ -1,13 +1,19 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.util.Log;
 
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Acts as controller for user.
+ * @author Xinjia Fan
+ */
 public class UserController {
 
     public static void updateUserRole(String userId, String roleToAdd) {
@@ -41,18 +47,6 @@ public class UserController {
         }).addOnFailureListener(e -> Log.w("Firestore", "Error getting document", e));
     }
 
-//    public static void addOrganizer(Organizer o) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("organizers").document(o.getId())
-//                .set(o)
-//                .addOnSuccessListener(aVoid -> {
-//                    Log.d("Firestore", "User successfully added!");
-//                })
-//                .addOnFailureListener(f -> {
-//                    Log.w("Firestore", "Error adding user", f);
-//                });
-//    }
-
     public static void addOrganizer(Organizer organizer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -60,7 +54,7 @@ public class UserController {
         db.collection("organizers").document(organizer.getId())
                 .set(organizer)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "User successfully added!");
+                    Log.d("Firestore", "Organizer successfully added!");
 
                     // Now add each event as a subdocument in the "events" subcollection
                     if (organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
