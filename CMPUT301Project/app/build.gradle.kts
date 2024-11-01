@@ -56,8 +56,10 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
+    //implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(kotlin("script-runtime"))
+    //implementation(kotlin("script-runtime"))
+
 }
