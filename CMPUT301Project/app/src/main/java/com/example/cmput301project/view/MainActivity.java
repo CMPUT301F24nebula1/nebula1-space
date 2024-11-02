@@ -18,6 +18,7 @@ import com.example.cmput301project.model.User;
 import com.example.cmput301project.databinding.ActivityMainBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,6 +28,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -72,6 +74,17 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        // hide toolbar if it's homepage
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.EntrantHomepageFragment) {
+                toolbar.setVisibility(View.GONE);
+            } else {
+                toolbar.setVisibility(View.VISIBLE);
+            }
+        });
 
         if ("entrantEventViewFragment".equals(navigateTo)) {
             Log.d("MainActivity", "Navigating to entrantEventView");
