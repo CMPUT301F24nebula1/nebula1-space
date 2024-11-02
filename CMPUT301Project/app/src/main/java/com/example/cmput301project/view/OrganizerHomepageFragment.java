@@ -25,16 +25,11 @@ public class OrganizerHomepageFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        // Inflate the layout for this fragment
         binding = OrganizerHomepageBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        binding.entrantViewButton.setOnClickListener(v ->
-                NavHostFragment.findNavController(OrganizerHomepageFragment.this)
-                        .navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage)
-        );
         binding.manageEventsButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(OrganizerHomepageFragment.this)
                         .navigate(R.id.action_OrganizerHomepage_to_EventList)
