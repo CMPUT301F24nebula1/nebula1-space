@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -37,6 +38,9 @@ public class EntrantHomepageFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
+        super.onViewCreated(view, savedInstanceState);
+
         binding.profileButton.setOnClickListener(v ->
                 app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
                     if (entrant1 != null) {
