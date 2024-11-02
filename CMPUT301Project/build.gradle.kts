@@ -7,7 +7,8 @@ plugins {
 buildscript {
     repositories {
         google()
-        mavenCentral() // Add mavenCentral if it’s missing
+        mavenCentral()
+        // Remove Kotlin plugin repository if not using Kotlin
     }
     dependencies {
         val nav_version = "2.7.0"
