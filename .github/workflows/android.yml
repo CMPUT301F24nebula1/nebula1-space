@@ -28,6 +28,6 @@ jobs:
       run: chmod +x gradlew
       working-directory: CMPUT301Project
 
-    - name: Build with Gradle
+    - name: Build with Gradle and run tests
       working-directory: CMPUT301Project
-      run: ./gradlew build
+      run: ./gradlew build test connectedAndroidTest
