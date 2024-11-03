@@ -2,13 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches: 
-      - "main"
-      - "xinjia"
+    branches: [ "main" ]
   pull_request:
-    branches: 
-      - "main"
-      - "xinjia"
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -28,6 +24,15 @@ jobs:
       run: chmod +x gradlew
       working-directory: CMPUT301Project
 
-    - name: Build with Gradle and run tests
+    - name: Build with Gradle and run unit tests
       working-directory: CMPUT301Project
-      run: ./gradlew build test connectedAndroidTest
+      run: ./gradlew build test
+
+    - name: Set up Android Emulator
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+        target: default
+        arch: x86_64
+        profile: Nexus 6
+        script: ./gradlew connectedAndroidTest
