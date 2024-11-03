@@ -21,6 +21,9 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x CMPUT301Project/gradlew
+      run: chmod +x gradlew
+      working-directory: CMPUT301Project
+
     - name: Build with Gradle
-      run: CMPUT301Project/./gradlew build
+      working-directory: CMPUT301Project
+      run: ./gradlew build
