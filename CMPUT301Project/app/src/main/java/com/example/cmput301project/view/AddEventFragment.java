@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Fragment for organizers to add an event
@@ -59,13 +60,21 @@ public class AddEventFragment extends Fragment {
         binding.saveEventButton.setOnClickListener(view1 -> {
             String name = binding.eventNameEdittext.getText().toString();
             String description = binding.eventDescriptionEdittext.getText().toString();
+            // check if date is ok
+            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
-            if (!name.isEmpty()) {
+            if (!name.isEmpty() &&
+                    startDateText.getText().toString().matches(pattern) &&
+                    endDateText.getText().toString().matches(pattern)) {
+                organizerEventController.addEvent(name,
+                        startDateText.getText().toString(),
+                        endDateText.getText().toString(),
+                        description, imageUri, aVoid -> {
 
-                organizerEventController.addEvent(name, description, imageUri, aVoid -> {
-
-                    NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
+                    NavHostFragment.findNavController(this).
+                            navigate(R.id.action_AddEvent_to_EventList);
+                    NavHostFragment.findNavController(this).
+                            popBackStack(R.id.AddEventFragment, true);
 
                 }, e -> {
                     Log.e("save event", "Error: " + e.getMessage());
@@ -74,7 +83,7 @@ public class AddEventFragment extends Fragment {
             } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Alert")
-                        .setMessage("An event has to have a name.")
+                        .setMessage("An event has to have a name, start date and end date.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();  // Close the dialog
@@ -160,14 +169,19 @@ public class AddEventFragment extends Fragment {
 
     private void updateDateText(boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
-        String dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
-                (calendar.get(Calendar.MONTH) + 1) + "/" +
-                calendar.get(Calendar.YEAR);
+        String dateText = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));
+
+//        String dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+//                (calendar.get(Calendar.MONTH) + 1) + "/" +
+//                calendar.get(Calendar.YEAR);
 
         if (isStartDate) {
-            startDateText.setText("Start Date: " + dateText);
+            startDateText.setText(dateText);
         } else {
-            endDateText.setText("End Date: " + dateText);
+            endDateText.setText(dateText);
         }
     }
 }
