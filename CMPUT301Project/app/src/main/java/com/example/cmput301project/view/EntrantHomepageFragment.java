@@ -59,15 +59,6 @@ public class EntrantHomepageFragment extends Fragment {
                 })
         );
 
-        binding.organizerViewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UserController.updateUserRole(app.getUserId(), "organizer");
-                NavHostFragment.findNavController(EntrantHomepageFragment.this)
-                        .navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage);
-            }
-        });
-
         binding.scanQrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

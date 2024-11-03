@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,6 +21,7 @@ import com.example.cmput301project.databinding.ActivityMainBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference userRef;
     private String id;
 
+    // manages whether it's entrant homepage or organizer homepage
+    private MaterialButtonToggleGroup toggleGroup;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,20 +75,51 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
-        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
+        toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        // hide toolbar if it's homepage
+        // Set the initial fragment (e.g., EntrantFragment)
+        if (savedInstanceState == null) {
+            replaceFragment(new EntrantHomepageFragment());
+            toggleGroup.check(R.id.btn_entrant); // Set Entrant as default selected
+        }
+
+        // Add listener to toggle group for switching fragments
+        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                if (checkedId == R.id.btn_organizer) {
+                    Log.d("Navigation", "Navigating to Organizer Homepage");
+                    // Navigate to OrganizerFragment
+                    if (navController.getCurrentDestination().getId() != R.id.OrganizerHomepageFragment) {
+                        navController.navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage);
+                    }
+                } else if (checkedId == R.id.btn_entrant) {
+                    Log.d("Navigation", "Navigating to Entrant Homepage");
+                    // Navigate to EntrantFragment
+                    if (navController.getCurrentDestination().getId() != R.id.EntrantHomepageFragment) {
+                        navController.navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage);
+                    }
+                }
+            }
+        });
+
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if (destination.getId() == R.id.EntrantHomepageFragment) {
+            // hide toolbar if it's homepage
+            if (destination.getId() == R.id.EntrantHomepageFragment || destination.getId() == R.id.OrganizerHomepageFragment) {
                 toolbar.setVisibility(View.GONE);
             } else {
                 toolbar.setVisibility(View.VISIBLE);
+            }
+
+            if (destination.getId() == R.id.OrganizerHomepageFragment || destination.getId() == R.id.EntrantHomepageFragment) {
+                toggleGroup.setVisibility(View.VISIBLE); // Show toggle group on Organizer and Entrant fragments
+            } else {
+                toggleGroup.setVisibility(View.GONE); // Hide toggle group on other fragments
             }
         });
 
@@ -90,6 +127,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
         }
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commitNow();;
     }
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {
