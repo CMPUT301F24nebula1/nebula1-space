@@ -35,4 +35,8 @@ jobs:
         target: default
         arch: x86_64
         profile: Nexus 6
+        disable-animations: true
+        headless: true
+        emulator-boot-timeout: 600
+        working-directory: CMPUT301Project
         script: ./gradlew connectedAndroidTest
