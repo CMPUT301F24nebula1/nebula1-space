@@ -55,6 +55,7 @@ public class EntrantController {
             });
         }
         else {
+            entrantData.put("profilePictureUrl", null);
             db.collection("entrants")
                     .document(entrant.getId())
                     .update(entrantData)

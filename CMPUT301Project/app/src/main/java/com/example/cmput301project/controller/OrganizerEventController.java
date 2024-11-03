@@ -30,7 +30,7 @@ public class OrganizerEventController {
         this.db = db;
     }
 
-    public void addEvent(String name, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+    public void addEvent(String name, String startDate, String endDate, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
 
         event = new Event();
 
@@ -43,6 +43,8 @@ public class OrganizerEventController {
                 event.setHashedQRCode(hashedQRCode);
                 event.setName(name);
                 event.setQrCode(s);
+                event.setStartDate(startDate);
+                event.setEndDate(endDate);
                 if (description != null)
                     event.setDescription(description);
 

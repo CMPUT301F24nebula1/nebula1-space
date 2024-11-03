@@ -18,6 +18,8 @@ public class Event extends Observable implements Serializable {
     private String posterUrl;
     private String qrCode;
     private String hashedQRCode;
+    private String startDate;
+    private String endDate;
     private final String id;
 
     /**
@@ -164,5 +166,21 @@ public class Event extends Observable implements Serializable {
      */
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 }

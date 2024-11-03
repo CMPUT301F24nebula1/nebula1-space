@@ -91,7 +91,8 @@ public class EntrantProfileFragment extends Fragment {
         editImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openImagePicker(); // Call the method when the button is clicked
+                showImageOptionsDialog();
+                //openImagePicker(); // Call the method when the button is clicked
             }
         });
         imageView = binding.profileImageview;
@@ -121,13 +122,26 @@ public class EntrantProfileFragment extends Fragment {
                                 .show();
                         return;
                     }
+                    else if (!validateEmail(t_email.getText().toString())) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Alert")
+                                .setMessage("Invalid email form.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();  // Close the dialog
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        return;
+                    }
                     saveChanges();
                     setEditMode(false);
                     btnEditSave.setText("Edit");
 //                onBackPressed();  // Navigate back
                 }
                 else {
-                    Log.e("save profile", "wait for loading information");
+                    Log.d("save profile", "wait for loading information");
                     new AlertDialog.Builder(getContext())
                             .setTitle("Alert")
                             .setMessage("wait for loading information.")
@@ -165,12 +179,37 @@ public class EntrantProfileFragment extends Fragment {
         app.setEntrantLiveData(entrant);
     }
 
-    private void validateEmail(String email) {
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Edit Profile Picture");
+
+        String[] options = {"Select Picture", "Remove Picture"};
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0: // Select Picture
+                        openImagePicker();
+                        break;
+                    case 1:
+                        removeProfilePicture();
+                        break;
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+
+    private boolean validateEmail(String email) {
         // Use Android's Patterns utility class to check if the email format is valid
         if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             t_email.setError(null); // Clear error if email is valid
+            return true;
         } else {
             t_email.setError("Invalid email format");
+            return false;
         }
     }
 
@@ -241,6 +280,13 @@ public class EntrantProfileFragment extends Fragment {
             }
 
         }
+    }
+
+    private void removeProfilePicture() {
+        imageUri = null; // Clear the image URI
+        imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
+        entrant.setProfilePictureUrl(null); // Remove URL from entrant
+        ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
     private void captureProfilePicture() {
