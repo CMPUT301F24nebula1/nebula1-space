@@ -87,3 +87,103 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
+
+<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:http="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:fillViewport="true">-->
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="16dp">-->
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/frame_layout_name"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            &lt;!&ndash; TextInputLayout with TextInputEditText inside &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/event_name_textview"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint=" "-->
+<!--                android:layout_marginStart="80dp"-->
+<!--                android:layout_marginEnd="80dp"-->
+<!--                app:boxBackgroundMode="outline"-->
+<!--                app:boxStrokeColor="#6200EE"-->
+<!--                app:endIconMode="clear_text">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="text"/>-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/labelText1"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Event Name"-->
+<!--                android:textSize="13sp"-->
+<!--                android:backgroundTint="#FBD0EF"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:layout_marginStart="96dp"-->
+<!--                android:layout_marginTop="-4dp"-->
+<!--                android:background="#FFFFFFFF"/>-->
+<!--        </FrameLayout>-->
+
+<!--        <FrameLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/frame_layout_name">-->
+
+<!--            &lt;!&ndash; TextInputLayout with TextInputEditText inside &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/start_date_text"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint=" "-->
+<!--                android:layout_marginStart="80dp"-->
+<!--                android:layout_marginEnd="80dp"-->
+<!--                android:background="?attr/selectableItemBackground"-->
+<!--                android:gravity="center"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                app:boxBackgroundMode="outline"-->
+<!--                app:boxStrokeColor="#6200EE"-->
+<!--                app:endIconMode="clear_text">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="text"/>-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/labelText2"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Waiting List Starts Date"-->
+<!--                android:textSize="13sp"-->
+<!--                android:backgroundTint="#FBD0EF"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:layout_marginStart="96dp"-->
+<!--                android:layout_marginTop="-4dp"-->
+<!--                android:background="#FFFFFFFF"/>-->
+<!--        </FrameLayout>-->
+
+
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--</ScrollView>-->
