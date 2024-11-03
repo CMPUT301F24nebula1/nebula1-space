@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.graphics.Bitmap;
 import android.util.Base64;
@@ -12,6 +12,10 @@ import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Generates QR code.
+ * @author Xinjia Fan
+ */
 public class QRCodeGenerator {
     // Method to generate the QR code for the event
     public static Bitmap generateQRCode(String eventId) {

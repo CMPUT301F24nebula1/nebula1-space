@@ -3,6 +3,10 @@ package com.example.cmput301project;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Event;
+
 import java.util.UUID;
 
 public class EventTests {

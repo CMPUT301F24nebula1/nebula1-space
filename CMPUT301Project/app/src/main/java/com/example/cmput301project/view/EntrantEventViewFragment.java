@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -8,16 +8,19 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.example.cmput301project.view.EntrantEventViewFragmentArgs;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.R;
+import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.databinding.EntrantEventViewBinding;
-import com.example.cmput301project.databinding.EntrantHomepageBinding;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-
+/**
+ * Fragment for entrants to view an event after scanning the QR code
+ * @author Xinjia Fan
+ */
 public class EntrantEventViewFragment extends Fragment {
     private EntrantEventViewBinding binding;
     MyApplication app;
@@ -32,7 +35,7 @@ public class EntrantEventViewFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
-        e = OrganizerEventDetailFragmentArgs.fromBundle(getArguments()).getE();
+        e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
         app = (MyApplication) requireActivity().getApplication();
         ec = new EntrantController(app.getEntrant());
         return binding.getRoot();

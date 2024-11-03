@@ -1,4 +1,4 @@
-package com.example.cmput301project;
+package com.example.cmput301project.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.R;
+import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.databinding.EntrantHomepageBinding;
 
+/**
+ * Fragment for entrant homepage
+ * @author Xinjia Fan
+ */
 public class EntrantHomepageFragment extends Fragment {
     private EntrantHomepageBinding binding;
     private MyApplication app;
@@ -30,6 +38,9 @@ public class EntrantHomepageFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
+        super.onViewCreated(view, savedInstanceState);
+
         binding.profileButton.setOnClickListener(v ->
                 app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
                     if (entrant1 != null) {

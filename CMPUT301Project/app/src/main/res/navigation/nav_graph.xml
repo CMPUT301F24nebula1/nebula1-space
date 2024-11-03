@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/EntrantHomepageFragment"
-
-
     >
 
     <!--app:startDestination="@+id/EntrantEventViewFragment"-->
 
     <fragment
         android:id="@+id/EntrantHomepageFragment"
-        android:name="com.example.cmput301project.EntrantHomepageFragment"
+        android:name="com.example.cmput301project.view.EntrantHomepageFragment"
         android:label="@string/homepage_fragment_label"
         tools:layout="@layout/entrant_homepage">
         <action
@@ -31,14 +29,14 @@
 
     <fragment
         android:id="@+id/EntrantProfileFragment"
-        android:name="com.example.cmput301project.EntrantProfileFragment"
+        android:name="com.example.cmput301project.view.EntrantProfileFragment"
         android:label="@string/profile_fragment_label"
         tools:layout="@layout/entrant_profile">
     </fragment>
 
     <fragment
         android:id="@+id/OrganizerHomepageFragment"
-        android:name="com.example.cmput301project.OrganizerHomepageFragment"
+        android:name="com.example.cmput301project.view.OrganizerHomepageFragment"
         android:label="@string/organizer_homepage_fragment_label"
         tools:layout="@layout/organizer_homepage">
         <action
@@ -51,7 +49,7 @@
 
     <fragment
         android:id="@+id/AddEventFragment"
-        android:name="com.example.cmput301project.AddEventFragment"
+        android:name="com.example.cmput301project.view.AddEventFragment"
         android:label="@string/add_event_fragment_label"
         tools:layout="@layout/add_event">
         <action
@@ -61,7 +59,7 @@
 
     <fragment
         android:id="@+id/EventListFragment"
-        android:name="com.example.cmput301project.EventListFragment"
+        android:name="com.example.cmput301project.view.EventListFragment"
         android:label="@string/event_list_fragment_label"
         tools:layout="@layout/event_list">
         <action
@@ -74,17 +72,17 @@
 
     <fragment
         android:id="@+id/OrganizerEventDetailFragment"
-        android:name="com.example.cmput301project.OrganizerEventDetailFragment"
+        android:name="com.example.cmput301project.view.OrganizerEventDetailFragment"
         android:label="@string/event_list_fragment_label"
         tools:layout="@layout/organizer_event_detail">
         <argument
             android:name="e"
-            app:argType="com.example.cmput301project.Event" />
+            app:argType="com.example.cmput301project.model.Event" />
     </fragment>
 
     <fragment
         android:id="@+id/EntrantEventViewFragment"
-        android:name="com.example.cmput301project.EntrantEventViewFragment"
+        android:name="com.example.cmput301project.view.EntrantEventViewFragment"
         android:label="@string/event_list_fragment_label"
         tools:layout="@layout/entrant_event_view">
         <action
@@ -92,6 +90,6 @@
             app:destination="@id/EntrantHomepageFragment" />
         <argument
             android:name="e"
-            app:argType="com.example.cmput301project.Event" />
+            app:argType="com.example.cmput301project.model.Event" />
     </fragment>
 </navigation>

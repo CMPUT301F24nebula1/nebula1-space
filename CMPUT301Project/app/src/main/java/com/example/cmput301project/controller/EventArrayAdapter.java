@@ -1,9 +1,6 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +13,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.example.cmput301project.R;
+import com.example.cmput301project.model.Event;
 
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Custom ArrayAdapter for event list
+ * @author Xinjia Fan
+ */
 public class EventArrayAdapter extends ArrayAdapter<Event> {
 
     public EventArrayAdapter(@NonNull Context context, @NonNull ArrayList<Event> events) {

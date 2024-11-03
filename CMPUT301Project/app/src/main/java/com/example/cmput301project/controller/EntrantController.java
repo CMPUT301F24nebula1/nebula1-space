@@ -1,8 +1,10 @@
-package com.example.cmput301project;
+package com.example.cmput301project.controller;
 
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Entrant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -13,6 +15,10 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Acts as the controller for an entrant.
+ * @author Xinjia Fan
+ */
 public class EntrantController {
     private Entrant entrant;
 
