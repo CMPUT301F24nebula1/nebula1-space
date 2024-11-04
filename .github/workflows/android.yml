@@ -30,4 +30,4 @@ jobs:
 
     - name: Run Unit Tests
       working-directory: CMPUT301Project
-      run: ./gradlew test
+      run: ./gradlew test --rerun-tasks
