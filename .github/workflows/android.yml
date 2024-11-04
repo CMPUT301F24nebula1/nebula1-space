@@ -24,6 +24,10 @@ jobs:
       run: chmod +x gradlew
       working-directory: CMPUT301Project
 
-    - name: Build with Gradle and run unit tests
+    - name: Build with Gradle
       working-directory: CMPUT301Project
-      run: ./gradlew :app:testDebugUnitTest --info
+      run: ./gradlew build
+
+    - name: Run Unit Tests
+      working-directory: CMPUT301Project
+      run: ./gradlew test
