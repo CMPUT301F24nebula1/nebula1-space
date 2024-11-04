@@ -26,4 +26,4 @@ jobs:
 
     - name: Build with Gradle and run unit tests
       working-directory: CMPUT301Project
-      run: ./gradlew :app:testDebugUnitTest
+      run: ./gradlew :app:testDebugUnitTest --info
