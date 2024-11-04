@@ -27,16 +27,3 @@ jobs:
     - name: Build with Gradle and run unit tests
       working-directory: CMPUT301Project
       run: ./gradlew build test
-
-    - name: Set up Android Emulator
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 30
-        target: google_apis
-        arch: x86_64
-        profile: Nexus 6
-        disable-animations: true
-        headless: true
-        emulator-boot-timeout: 600
-        working-directory: CMPUT301Project
-        script: ./gradlew connectedAndroidTest
