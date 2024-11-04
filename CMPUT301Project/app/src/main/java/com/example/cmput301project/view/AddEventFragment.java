@@ -49,73 +49,73 @@ public class AddEventFragment extends Fragment {
         binding = AddEventBinding.inflate(inflater, container, false);
 
         MyApplication app = (MyApplication) requireActivity().getApplication();
-        db = app.getDb();
-        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
-            if (organizer != null) {
-                // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, db);
-            }
-        });
-
-        binding.saveEventButton.setOnClickListener(view1 -> {
-            String name = binding.eventNameEdittext.getText().toString();
-            String description = binding.eventDescriptionEdittext.getText().toString();
-            // check if date is ok
-            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
-
-            if (!name.isEmpty() &&
-                    startDateText.getText().toString().matches(pattern) &&
-                    endDateText.getText().toString().matches(pattern)) {
-                organizerEventController.addEvent(name,
-                        startDateText.getText().toString(),
-                        endDateText.getText().toString(),
-                        description, imageUri, aVoid -> {
-
-                    NavHostFragment.findNavController(this).
-                            navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).
-                            popBackStack(R.id.AddEventFragment, true);
-
-                }, e -> {
-                    Log.e("save event", "Error: " + e.getMessage());
-                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
-                });
-            } else {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Alert")
-                        .setMessage("An event has to have a name, start date and end date.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();  // Close the dialog
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-                return;
-            }
-        });
-
-        // Find views and add click listeners
-        startDateText = binding.startDateText;
-        endDateText = binding.endDateText;
-
-        if (startDateText == null || endDateText == null) {
-            Log.e("DatePicker", "startDateText or endDateText is null, check your layout ID"); // Log if null
-//            return view;
-        }
-
-        // Initialize Calendar instances
-        startDate = Calendar.getInstance();
-        endDate = Calendar.getInstance();
-
-        startDateText.setOnClickListener(v -> {
-            Log.d("DatePicker", "Start Date Clicked");
-            showDatePickerDialog(true);
-        });
-        endDateText.setOnClickListener(v -> {
-            Log.d("DatePicker", "End Date Clicked");
-            showDatePickerDialog(false);
-        });
+//        db = app.getDb();
+//        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+//            if (organizer != null) {
+//                // Update the UI with the organizer data
+//                organizerEventController = new OrganizerEventController(organizer, db);
+//            }
+//        });
+//
+//        binding.saveEventButton.setOnClickListener(view1 -> {
+//            String name = binding.eventNameEdittext.getText().toString();
+//            String description = binding.eventDescriptionEdittext.getText().toString();
+//            // check if date is ok
+//            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
+//
+//            if (!name.isEmpty() &&
+//                    startDateText.getText().toString().matches(pattern) &&
+//                    endDateText.getText().toString().matches(pattern)) {
+//                organizerEventController.addEvent(name,
+//                        startDateText.getText().toString(),
+//                        endDateText.getText().toString(),
+//                        description, imageUri, aVoid -> {
+//
+//                    NavHostFragment.findNavController(this).
+//                            navigate(R.id.action_AddEvent_to_EventList);
+//                    NavHostFragment.findNavController(this).
+//                            popBackStack(R.id.AddEventFragment, true);
+//
+//                }, e -> {
+//                    Log.e("save event", "Error: " + e.getMessage());
+//                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+//                });
+//            } else {
+//                new AlertDialog.Builder(getContext())
+//                        .setTitle("Alert")
+//                        .setMessage("An event has to have a name, start date and end date.")
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();  // Close the dialog
+//                            }
+//                        })
+//                        .setIcon(android.R.drawable.ic_dialog_alert)
+//                        .show();
+//                return;
+//            }
+//        });
+//
+//        // Find views and add click listeners
+//        startDateText = binding.startDateText;
+//        endDateText = binding.endDateText;
+//
+//        if (startDateText == null || endDateText == null) {
+//            Log.e("DatePicker", "startDateText or endDateText is null, check your layout ID"); // Log if null
+////            return view;
+//        }
+//
+//        // Initialize Calendar instances
+//        startDate = Calendar.getInstance();
+//        endDate = Calendar.getInstance();
+//
+//        startDateText.setOnClickListener(v -> {
+//            Log.d("DatePicker", "Start Date Clicked");
+//            showDatePickerDialog(true);
+//        });
+//        endDateText.setOnClickListener(v -> {
+//            Log.d("DatePicker", "End Date Clicked");
+//            showDatePickerDialog(false);
+//        });
         return binding.getRoot();
     }
 
