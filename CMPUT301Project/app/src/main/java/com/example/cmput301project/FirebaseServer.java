@@ -2,6 +2,7 @@ package com.example.cmput301project;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +80,7 @@ public class FirebaseServer implements FirebaseInterface {
         });
     }
 
+    // observe firebase changes
     @Override
     public void listenToOrganizerUpdates(String userId) {
         DocumentReference docRef = db.collection("organizers").document(userId);
@@ -102,14 +105,20 @@ public class FirebaseServer implements FirebaseInterface {
                                         eventsList.add(event);
                                     }
                                     organizer.setEvents(eventsList);
-                                    organizerLiveData.setValue(organizer);
+                                    if (!organizer.equals(organizerLiveData.getValue())) {
+                                        isUpdatingFromLocal = false;
+                                        organizerLiveData.setValue(organizer);
+                                        isUpdatingFromLocal = true;
+                                    }
                                     Log.d("Firestore", "Organizer and events successfully updated and loaded.");
                                 }
                             });
                 }
             } else if (snapshot != null && !snapshot.exists()) {
                 Organizer organizer = new Organizer(userId);
+                isUpdatingFromLocal = false;
                 organizerLiveData.setValue(organizer);
+                isUpdatingFromLocal = true;
             }
         });
     }
@@ -276,6 +285,78 @@ public class FirebaseServer implements FirebaseInterface {
                     Log.e("FirebaseServer", "Failed to upload image", e);
                     listener.onUploadFailure(e);
                 });
+    }
+
+    public void uploadBitmapToFirebase(Bitmap bitmap, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".png");
+
+        imageRef.putBytes(data)
+                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
+                            String downloadUrl = downloadUri.toString();
+                            successListener.onSuccess(downloadUrl);  // Return URL
+                        }))
+                .addOnFailureListener(e -> {
+                    Log.e("Firebase", "Error uploading bitmap", e);
+                    if (failureListener != null) {
+                        failureListener.onFailure(e);  // failureListener
+                    }
+                });
+    }
+
+    @Override
+    public void updateOrganizerInFirebase(Organizer organizer) {
+        if (isUpdatingFromLocal) {
+            // Only update Firebase if there are real changes
+//            if (!organizer.equals(organizerLiveData.getValue())) {
+                isUpdatingFromLocal = false;  // Prevent recursive update loop
+
+                DocumentReference docRef = FirebaseFirestore.getInstance()
+                        .collection("organizers")
+                        .document(organizer.getId());
+
+                docRef.set(organizer).addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseServer", "Organizer data successfully updated in Firebase");
+
+                    // Update the events subcollection if needed
+                    updateOrganizerEvents(organizer.getId(), organizer.getEvents());
+
+                    // After completing Firebase write, re-enable local updates
+                    isUpdatingFromLocal = true;
+
+                }).addOnFailureListener(e -> {
+                    Log.w("FirebaseServer", "Error updating organizer data", e);
+                    isUpdatingFromLocal = true;  // Reset flag in case of failure
+                });
+//            }
+        }
+    }
+
+
+    @Override
+    public void updateOrganizerEvents(String id, ArrayList<Event> events) {
+        CollectionReference eventsRef = FirebaseFirestore.getInstance()
+                .collection("organizers")
+                .document(id)
+                .collection("events");
+
+        eventsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                doc.getReference().delete();
+            }
+
+            for (Event event : events) {
+                eventsRef.document(event.getId()).set(event);
+            }
+            Log.d("FirebaseServer", "Organizer events successfully updated in Firebase");
+        }).addOnFailureListener(e -> {
+            Log.e("FirebaseServer", "Organizer events successfully updated in Firebase");
+        });
     }
 
     private void updateWaitlistEventIds(String userId, List<String> waitlistEventIds) {

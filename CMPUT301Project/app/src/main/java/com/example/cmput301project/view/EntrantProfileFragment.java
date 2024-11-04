@@ -275,7 +275,9 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setText(entrant.getName());
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
-            binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+                binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            }
             try {
                 if (!entrant.getProfilePictureUrl().isEmpty()) {
                     Glide.with(getContext())
@@ -295,6 +297,7 @@ public class EntrantProfileFragment extends Fragment {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
         entrant.setProfilePictureUrl(null); // Remove URL from entrant
+        entrant.setUri(null);
         app.setEntrantLiveData(entrant);
         //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
@@ -372,8 +375,10 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setName(t_name.getText().toString());
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
-        entrant.setUri(imageUri.toString());
-        app.uploadImageAndSetEntrant(imageUri, entrant);
+        if (imageUri != null) {
+            entrant.setUri(imageUri.toString());
+            app.uploadImageAndSetEntrant(imageUri, entrant);
+        }
         // Save data1 and data2 to database or shared preferences
         //ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable

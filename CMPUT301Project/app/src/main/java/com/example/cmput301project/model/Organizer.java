@@ -1,5 +1,7 @@
 package com.example.cmput301project.model;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.util.ArrayList;
 
 /**
@@ -8,6 +10,7 @@ import java.util.ArrayList;
  * @author Xinjia Fan
  */
 public class Organizer extends User {
+    @Exclude
     private transient ArrayList<Event> events;
 
     private String name;

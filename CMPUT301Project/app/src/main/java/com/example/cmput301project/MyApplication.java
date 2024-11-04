@@ -41,6 +41,14 @@ public class MyApplication extends Application {
             }
         });
 
+        organizerLiveData.observeForever(new Observer<Organizer>() {
+            @Override
+            public void onChanged(Organizer organizer) {
+                Log.d("MyApplication", "Organizer data updated locally, pushing to Firebase");
+                fb.updateOrganizerInFirebase(organizer);
+            }
+        });
+
         fb.getEntrantLiveData().observeForever(new Observer<Entrant>() {
             @Override
             public void onChanged(Entrant entrant) {
@@ -72,7 +80,22 @@ public class MyApplication extends Application {
 
             @Override
             public void onUploadFailure(Exception e) {
-                Log.e("MyApplication", "Failed to upload image", e);
+                Log.e("MyApplication", "Failed to upload image for entrant", e);
+            }
+        });
+    }
+
+    public void uploadImageAndSetEvent(Uri imageUri, Event event) {
+        fb.uploadImage(imageUri, new FirebaseInterface.OnImageUploadListener() {
+
+            @Override
+            public void onUploadSuccess(String imageUrl) {
+                event.setPosterUrl(imageUrl);
+            }
+
+            @Override
+            public void onUploadFailure(Exception e) {
+                Log.e("MyApplication", "Failed to upload image for event", e);
             }
         });
     }

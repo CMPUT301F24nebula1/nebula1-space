@@ -53,82 +53,85 @@ public class OrganizerEventDetailFragment extends Fragment {
         return binding.getRoot();
     }
 
-//    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-//        Organizer o = app.getOrganizer();
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
+        Organizer o = app.getOrganizerLiveData().getValue();
 //        db = FirebaseFirestore.getInstance();
-//        ec = new OrganizerEventController(o, db);
-//
-//
-//        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
-//            // Use the organizer data here
-//            if (organizer != null) {
-//                // Use the organizer data (e.g., set organizer-related data in the UI)
-//                Log.d("Organizer", "Organizer Name: " + organizer.getName());
-//
-//                ImageView i1 = binding.eventPosterImageview;
-//                ImageView i2 = binding.eventQrcodeImageview;
-//                TextView t1 = binding.descriptionTextview;
-//                TextView t2 = binding.eventNameTextview;
-//
-//                try {
-//                    if (!e.getQrCode().isEmpty()) {
-//                        Glide.with(getContext())
-//                                .load(e.getQrCode())
-//                                .placeholder(R.drawable.placeholder_image)  // placeholder
-//                                .error(R.drawable.error_image)              // error image
-//                                .into(i2);
-//                    }
-//                } catch (NullPointerException exception) {
-//                    Log.e("Error", "Poster URL is null", exception);
-//                }
-//
-//                try {
-//                    if (!e.getPosterUrl().isEmpty()) {
-//                        Glide.with(getContext())
-//                                .load(e.getPosterUrl())
-//                                .placeholder(R.drawable.placeholder_image)  // placeholder
-//                                .error(R.drawable.error_image)              // error image
-//                                .into(i1);
-//                    }
-//                } catch (NullPointerException exception) {
-//                    Log.e("Error", "Poster URL is null", exception);
-//                }
-//
-//                try {
-//                    if (!e.getDescription().isEmpty()) {
-//                        t1.setText(e.getDescription());
-//                    }
-//                    else {
-//                        String error = "No description";
-//                        t1.setText(error);
-//                    }
-//                } catch (NullPointerException exception) {
-//                    Log.e("Error", "Description is null", exception);
-//                    String error = "No description";
-//                    t1.setText(error);
-//                }
-//
-//                try {
-//                    if (!e.getName().isEmpty()) {
-//                        t2.setText(e.getName());
-//                    }
-//                    else {
-//                        String error = "No name";
-//                        t1.setText(error);
-//                    }
-//                } catch (NullPointerException exception) {
-//                    Log.e("Error", "Name is null", exception);
-//                    String error = "No name";
-//                    t2.setText(error);
-//                }
-//            }
-//        });
-//
+        ec = new OrganizerEventController(o, app.getFb());
+
+
+
+
+        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+            // Use the organizer data here
+            if (organizer != null) {
+                // Use the organizer data (e.g., set organizer-related data in the UI)
+                Log.d("Organizer", "Organizer Name: " + organizer.getName());
+
+                ImageView i1 = binding.eventPosterImageview;
+                ImageView i2 = binding.eventQrcodeImageview;
+                TextView t1 = binding.descriptionTextview;
+                TextView t2 = binding.eventNameTextview;
+
+                try {
+                    if (!e.getQrCode().isEmpty()) {
+                        Glide.with(getContext())
+                                .load(e.getQrCode())
+                                .placeholder(R.drawable.placeholder_image)  // placeholder
+                                .error(R.drawable.error_image)              // error image
+                                .into(i2);
+                    }
+                } catch (NullPointerException exception) {
+                    Log.e("Error", "QR code is null", exception);
+                }
+
+                try {
+                    if (!e.getPosterUrl().isEmpty()) {
+                        Glide.with(getContext())
+                                .load(e.getPosterUrl())
+                                .placeholder(R.drawable.placeholder_image)  // placeholder
+                                .error(R.drawable.error_image)              // error image
+                                .into(i1);
+                    }
+                } catch (NullPointerException exception) {
+                    Log.e("Error", "Poster URL is null", exception);
+                }
+
+                try {
+                    if (!e.getDescription().isEmpty()) {
+                        t1.setText(e.getDescription());
+                    }
+                    else {
+                        String error = "No description";
+                        t1.setText(error);
+                    }
+                } catch (NullPointerException exception) {
+                    Log.e("Error", "Description is null", exception);
+                    String error = "No description";
+                    t1.setText(error);
+                }
+
+                try {
+                    if (!e.getName().isEmpty()) {
+                        t2.setText(e.getName());
+                    }
+                    else {
+                        String error = "No name";
+                        t1.setText(error);
+                    }
+                } catch (NullPointerException exception) {
+                    Log.e("Error", "Name is null", exception);
+                    String error = "No name";
+                    t2.setText(error);
+                }
+            }
+        });
+
 //        binding.editButton.setOnClickListener(view1 -> {
 //            showEditDialog(e);
 //        });
-//    }
-//
+    }
+
 //    private void showEditDialog(Event e) {
 //        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 //        LayoutInflater inflater = getLayoutInflater();
@@ -177,26 +180,26 @@ public class OrganizerEventDetailFragment extends Fragment {
 //        AlertDialog dialog = builder.create();
 //        dialog.show();
 //    }
-//
-//    private void openImagePicker() {
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
-//    }
-//
-//    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            result -> {
-//                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-//                    imageUri = result.getData().getData();
-//                    try {
-//                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-//                        eventPosterImageView.setImageBitmap(bitmap);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//    );
+
+    private void openImagePicker() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+    }
+
+    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+                        eventPosterImageView.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    );
 }

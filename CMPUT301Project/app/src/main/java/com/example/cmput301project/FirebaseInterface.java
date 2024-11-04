@@ -1,6 +1,7 @@
 package com.example.cmput301project;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
@@ -12,6 +13,8 @@ import com.example.cmput301project.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public interface FirebaseInterface {
     void listenToEntrantUpdates(String userId);
@@ -42,7 +45,14 @@ public interface FirebaseInterface {
         void onUploadFailure(Exception e);
     }
 
-    //void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener);
+    void updateOrganizerInFirebase(Organizer organizer);
+//    void addEventToFirebase(Event event, Callback callback);
+//    public interface Callback {
+//        void onSuccess();
+//        void onFailure(Exception e);
+//    }
+    void updateOrganizerEvents(String id, ArrayList<Event> events);
+    void uploadBitmapToFirebase(Bitmap bitmap, OnSuccessListener<String> successListener, OnFailureListener failureListener);
 
     LiveData<Entrant> getEntrantLiveData();
     LiveData<Organizer> getOrganizerLiveData();
