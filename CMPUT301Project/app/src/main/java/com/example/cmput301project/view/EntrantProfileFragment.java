@@ -134,7 +134,7 @@ public class EntrantProfileFragment extends Fragment {
                     else if (!validateEmail(t_email.getText().toString())) {
                         new AlertDialog.Builder(getContext())
                                 .setTitle("Alert")
-                                .setMessage("Invalid email form.")
+                                .setMessage("Invalid email format.")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();  // Close the dialog

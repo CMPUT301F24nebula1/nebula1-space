@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
@@ -39,6 +40,8 @@ public interface FirebaseInterface {
     }
 
     void updateEntrantInFirebase(Entrant entrant);
+    //void joinEventWaitingList(Event event, String id);
+    void leaveEventWaitingList(Event event, String id);
     void uploadImage(Uri imageUri, OnImageUploadListener listener);
     interface OnImageUploadListener {
         void onUploadSuccess(String imageUrl);
@@ -46,6 +49,8 @@ public interface FirebaseInterface {
     }
 
     void updateOrganizerInFirebase(Organizer organizer);
+    void removeFromEventWaitingList(Event event, String id);
+    void addToEventWaitingList(Event event, String id);
 //    void addEventToFirebase(Event event, Callback callback);
 //    public interface Callback {
 //        void onSuccess();
@@ -56,6 +61,8 @@ public interface FirebaseInterface {
 
     LiveData<Entrant> getEntrantLiveData();
     LiveData<Organizer> getOrganizerLiveData();
+//    void setEntrantLiveData(Entrant entrant);
+//    void setOrganizerLiveData(Organizer organizer);
     FirebaseFirestore getDb();
     void setDb(FirebaseFirestore db);
 }

@@ -37,6 +37,8 @@ public class MyApplication extends Application {
             @Override
             public void onChanged(Entrant entrant) {
                 Log.d("MyApplication", "Entrant data updated locally, pushing to Firebase");
+                Log.d("pass entrant event", entrant.getWaitlistEventIds().toString());
+                Log.i("livedata event", fb.getEntrantLiveData().getValue().getWaitlistEventIds().toString());
                 fb.updateEntrantInFirebase(entrant); // Push updates to Firebase
             }
         });
@@ -52,6 +54,7 @@ public class MyApplication extends Application {
         fb.getEntrantLiveData().observeForever(new Observer<Entrant>() {
             @Override
             public void onChanged(Entrant entrant) {
+                Log.i("livedata event___", fb.getEntrantLiveData().getValue().getWaitlistEventIds().toString());
                 Log.d("Entrant", "Entrant data gets updated locally");
                 entrantLiveData.setValue(entrant);
             }

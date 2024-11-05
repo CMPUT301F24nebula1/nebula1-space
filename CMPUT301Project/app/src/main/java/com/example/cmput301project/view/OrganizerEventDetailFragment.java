@@ -44,6 +44,7 @@ public class OrganizerEventDetailFragment extends Fragment {
     private MyApplication app;
     private ImageView eventPosterImageView;
     private OrganizerEventController ec;
+    Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,12 +56,9 @@ public class OrganizerEventDetailFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
-        Organizer o = app.getOrganizerLiveData().getValue();
+        o = app.getOrganizerLiveData().getValue();
 //        db = FirebaseFirestore.getInstance();
         ec = new OrganizerEventController(o, app.getFb());
-
-
-
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             // Use the organizer data here
@@ -127,59 +125,71 @@ public class OrganizerEventDetailFragment extends Fragment {
             }
         });
 
-//        binding.editButton.setOnClickListener(view1 -> {
-//            showEditDialog(e);
-//        });
+        binding.editButton.setOnClickListener(view1 -> {
+            showEditDialog(e);
+        });
     }
 
-//    private void showEditDialog(Event e) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//        LayoutInflater inflater = getLayoutInflater();
-//        View dialogView = inflater.inflate(R.layout.dialog_edit_event, null);
-//
-//        // Find views in the custom layout
-//        EditText eventNameEditText = dialogView.findViewById(R.id.edit_event_name);
-//        EditText eventDescriptionEditText = dialogView.findViewById(R.id.edit_event_description);
-//        eventPosterImageView = dialogView.findViewById(R.id.edit_event_poster_imageview);
-//        Button uploadButton = dialogView.findViewById(R.id.upload_event_image_button);
-//
-//        // Set the existing values if needed
-//        eventNameEditText.setText(e.getName());
-//        eventDescriptionEditText.setText(e.getDescription());
-//
-//        try {
-//            if (!e.getPosterUrl().isEmpty()) {
-//                Glide.with(getContext())
-//                        .load(e.getPosterUrl())
-//                        .placeholder(R.drawable.placeholder_image)  // placeholder
-//                        .error(R.drawable.error_image)              // error image
-//                        .into(eventPosterImageView);
-//            }
-//        } catch (NullPointerException exception) {
-//            Log.e("Error", "Poster URL is null", exception);
-//        }
-//
-//        uploadButton.setOnClickListener(view -> openImagePicker());
-//
-//        builder.setView(dialogView)
-//                .setPositiveButton("Save", (dialog, id) -> {
-//                    // Handle saving the edited values
-//                    String newName = eventNameEditText.getText().toString();
-//                    String newDescription = eventDescriptionEditText.getText().toString();
-//
-//                    ec.editEvent(e, newName, newDescription, imageUri, aVoid -> {
+    private void showEditDialog(Event e) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_edit_event, null);
+
+        // Find views in the custom layout
+        EditText eventNameEditText = dialogView.findViewById(R.id.edit_event_name);
+        EditText eventDescriptionEditText = dialogView.findViewById(R.id.edit_event_description);
+        eventPosterImageView = dialogView.findViewById(R.id.edit_event_poster_imageview);
+        Button uploadButton = dialogView.findViewById(R.id.upload_event_image_button);
+
+        // Set the existing values if needed
+        eventNameEditText.setText(e.getName());
+        eventDescriptionEditText.setText(e.getDescription());
+
+        try {
+            if (!e.getPosterUrl().isEmpty()) {
+                Glide.with(getContext())
+                        .load(e.getPosterUrl())
+                        .placeholder(R.drawable.placeholder_image)  // placeholder
+                        .error(R.drawable.error_image)              // error image
+                        .into(eventPosterImageView);
+            }
+        } catch (NullPointerException exception) {
+            Log.e("Error", "Poster URL is null", exception);
+        }
+
+        uploadButton.setOnClickListener(view -> openImagePicker());
+
+        builder.setView(dialogView)
+                .setPositiveButton("Save", (dialog, id) -> {
+                    // Handle saving the edited values
+                    String newName = eventNameEditText.getText().toString();
+                    String newDescription = eventDescriptionEditText.getText().toString();
+
+                    if (!newName.isEmpty()) {
+                        e.setName(newName);
+                    }
+
+                    e.setDescription(newDescription);
+
+                    if (imageUri != null) {
+                        app.uploadImageAndSetEvent(imageUri, e);
+                    }
+
+                    app.setOrganizerLiveData(o);
+
+//                    ec.editEvent(e, newName, newDescription, aVoid -> {
 //                        Log.d("Firebase", "Event edited successfully");
 //                    }, f -> {
 //                        Log.d("Firebase", "Fails.");
 //                    });
-//                })
-//                .setNegativeButton("Cancel", (dialog, id) -> {
-//                    dialog.dismiss();
-//                });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
+                })
+                .setNegativeButton("Cancel", (dialog, id) -> {
+                    dialog.dismiss();
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     private void openImagePicker() {
         Intent intent = new Intent();
