@@ -74,16 +74,25 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
 
+        entrant = app.getEntrantLiveData().getValue();
+        if (entrant != null) {
+            Log.d("Entrant1", entrant.getName());
+            populateEntrantInfo(entrant);
+            ec = new EntrantController(entrant);
+        }
+
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            entrant = entrant1;
-            populateEntrantInfo(entrant1);
+            if (entrant1 != null) {
+                Log.d("Entrant", entrant1.getName());
+                populateEntrantInfo(entrant1);
+                ec = new EntrantController(entrant1);
+                entrant = entrant1;
+            }
         });
 
         editImageButton = view.findViewById(R.id.edit_profile_picture_button);
@@ -125,7 +134,7 @@ public class EntrantProfileFragment extends Fragment {
                     else if (!validateEmail(t_email.getText().toString())) {
                         new AlertDialog.Builder(getContext())
                                 .setTitle("Alert")
-                                .setMessage("Invalid email form.")
+                                .setMessage("Invalid email format.")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();  // Close the dialog
@@ -266,7 +275,9 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setText(entrant.getName());
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
-            binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+                binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            }
             try {
                 if (!entrant.getProfilePictureUrl().isEmpty()) {
                     Glide.with(getContext())
@@ -286,7 +297,9 @@ public class EntrantProfileFragment extends Fragment {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
         entrant.setProfilePictureUrl(null); // Remove URL from entrant
-        ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
+        entrant.setUri(null);
+        app.setEntrantLiveData(entrant);
+        //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
     private void captureProfilePicture() {
@@ -362,8 +375,12 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setName(t_name.getText().toString());
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
+        if (imageUri != null) {
+            entrant.setUri(imageUri.toString());
+            app.uploadImageAndSetEntrant(imageUri, entrant);
+        }
         // Save data1 and data2 to database or shared preferences
-        ec.saveEntrantToDatabase(entrant, imageUri);
+        //ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable
     }
 }

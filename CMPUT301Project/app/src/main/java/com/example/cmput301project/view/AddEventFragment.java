@@ -25,6 +25,8 @@ import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
 import com.example.cmput301project.databinding.AddEventBinding;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -40,20 +42,21 @@ public class AddEventFragment extends Fragment {
     private OrganizerEventController organizerEventController;
     private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
-    private FirebaseFirestore db;
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
+    private Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = AddEventBinding.inflate(inflater, container, false);
 
         MyApplication app = (MyApplication) requireActivity().getApplication();
-        db = app.getDb();
+
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                 // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, db);
+                organizerEventController = new OrganizerEventController(organizer, app.getFb());
+                o = organizer;
             }
         });
 
@@ -66,11 +69,18 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty() &&
                     startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
-                organizerEventController.addEvent(name,
-                        startDateText.getText().toString(),
-                        endDateText.getText().toString(),
-                        description, imageUri, aVoid -> {
-
+                Event event = new Event();
+                event.setName(name);
+                event.setDescription(description);
+                event.setStartDate(startDateText.getText().toString());
+                event.setEndDate(endDateText.getText().toString());
+                //event.setLimit(limit);
+                if (imageUri != null) {
+                    app.uploadImageAndSetEvent(imageUri, event);
+                }
+                organizerEventController.addEvent(event, aVoid -> {
+                    //o.create_event(event);
+                    app.setOrganizerLiveData(o);
                     NavHostFragment.findNavController(this).
                             navigate(R.id.action_AddEvent_to_EventList);
                     NavHostFragment.findNavController(this).

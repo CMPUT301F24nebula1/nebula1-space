@@ -44,6 +44,7 @@ public class OrganizerEventDetailFragment extends Fragment {
     private MyApplication app;
     private ImageView eventPosterImageView;
     private OrganizerEventController ec;
+    Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,10 +55,10 @@ public class OrganizerEventDetailFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Organizer o = app.getOrganizer();
-        db = FirebaseFirestore.getInstance();
-        ec = new OrganizerEventController(o, db);
 
+        o = app.getOrganizerLiveData().getValue();
+//        db = FirebaseFirestore.getInstance();
+        ec = new OrganizerEventController(o, app.getFb());
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             // Use the organizer data here
@@ -79,7 +80,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                                 .into(i2);
                     }
                 } catch (NullPointerException exception) {
-                    Log.e("Error", "Poster URL is null", exception);
+                    Log.e("Error", "QR code is null", exception);
                 }
 
                 try {
@@ -164,11 +165,23 @@ public class OrganizerEventDetailFragment extends Fragment {
                     String newName = eventNameEditText.getText().toString();
                     String newDescription = eventDescriptionEditText.getText().toString();
 
-                    ec.editEvent(e, newName, newDescription, imageUri, aVoid -> {
-                        Log.d("Firebase", "Event edited successfully");
-                    }, f -> {
-                        Log.d("Firebase", "Fails.");
-                    });
+                    if (!newName.isEmpty()) {
+                        e.setName(newName);
+                    }
+
+                    e.setDescription(newDescription);
+
+                    if (imageUri != null) {
+                        app.uploadImageAndSetEvent(imageUri, e);
+                    }
+
+                    app.setOrganizerLiveData(o);
+
+//                    ec.editEvent(e, newName, newDescription, aVoid -> {
+//                        Log.d("Firebase", "Event edited successfully");
+//                    }, f -> {
+//                        Log.d("Firebase", "Fails.");
+//                    });
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> {
                     dialog.dismiss();

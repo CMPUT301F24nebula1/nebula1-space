@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <!-- Title bar with back arrow and profile icon -->
+    <LinearLayout
+        android:id="@+id/title_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <ImageButton
+            android:id="@+id/imageButton_back_arrow"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_back_arrow"
+            android:contentDescription="Go back"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Event"
+            android:textSize="18sp"
+            android:textAlignment="center" />
+        <ImageButton
+            android:id="@+id/imageButton_profile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_profile"
+            android:contentDescription="Go to Profile"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+    <!-- Event Icon and Title -->
+    <LinearLayout
+        android:id="@+id/event"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/title_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp">
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:backgroundTint="?attr/colorPrimary"
+            android:src="@drawable/ic_profile"
+            android:contentDescription="Event Icon" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/class_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date:"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Event Poster Image -->
+
+    <!-- Instructor and Subtitle -->
+    <ImageView
+        android:id="@+id/event_poster"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Event Poster"
+        android:scaleType="centerCrop"
+
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event"
+        />
+
+    <TextView
+        android:id="@+id/instruct_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="16dp"
+        android:text="Instructor name: "
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_poster" />
+
+    <TextView
+        android:id="@+id/instructor_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="30dp"
+        android:textSize="20sp"
+        android:text="Subtitle"
+        app:layout_constraintTop_toBottomOf="@id/instruct_name"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Description Text -->
+    <TextView
+        android:id="@+id/event_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:textSize="20sp"
+        android:text="text"
+        app:layout_constraintTop_toBottomOf="@id/instructor_subtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp" />
+
+    <!-- Buttons for View Entrants and Edit -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        app:layout_constraintTop_toBottomOf="@id/event_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <!-- Centered Add Facility Button -->
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Entrant"
+            android:textColor="#F83853E0"
+            android:textStyle="bold"
+            app:backgroundTint="#D5C8E9"
+            app:cornerRadius="24dp"
+            app:icon="@drawable/ic_view_entrants"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="#F83853E0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Entrant"
+            android:textColor="#F83853E0"
+            android:textStyle="bold"
+            app:backgroundTint="#D5C8E9"
+            app:cornerRadius="24dp"
+            app:icon="@drawable/ic_pen"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="#F83853E0" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
