@@ -24,7 +24,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
-import com.example.cmput301project.databinding.AddEventBinding;
+import com.example.cmput301project.databinding.OrganizerEventViewBinding;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,8 +39,8 @@ import java.util.Locale;
  */
 
 public class AddEventFragment extends Fragment {
+    private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
-    private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
@@ -48,9 +48,15 @@ public class AddEventFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = AddEventBinding.inflate(inflater, container, false);
+        binding = OrganizerEventViewBinding.inflate(inflater, container, false);
 
+        return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         MyApplication app = (MyApplication) requireActivity().getApplication();
+
+        setButtonsEnabled();
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
@@ -126,10 +132,7 @@ public class AddEventFragment extends Fragment {
             Log.d("DatePicker", "End Date Clicked");
             showDatePickerDialog(false);
         });
-        return binding.getRoot();
-    }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
@@ -140,6 +143,7 @@ public class AddEventFragment extends Fragment {
         binding.endDateText.setEnabled(true);
         binding.lotteryCapacity.setEnabled(true);
         binding.posterButton.setEnabled(true);
+        binding.selectImageButton.setEnabled(true);
     }
 
     private void openImagePicker() {
@@ -157,6 +161,7 @@ public class AddEventFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         binding.eventImageview.setImageBitmap(bitmap);
+                        binding.eventImageview.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

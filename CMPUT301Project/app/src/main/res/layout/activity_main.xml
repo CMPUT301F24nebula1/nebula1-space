@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:text='Home'
-            android:background="#FFCDF2"
+            android:background="#FDE0F3"
             app:titleCentered="true"/>
 
     </com.google.android.material.appbar.AppBarLayout>
