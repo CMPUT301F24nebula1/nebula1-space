@@ -1,10 +1,12 @@
 package com.example.cmput301project.view;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -47,6 +49,12 @@ public class EntrantEventViewFragment extends Fragment {
         entrant = app.getEntrantLiveData().getValue();
         if (entrant != null) {
             ec = new EntrantController(entrant);
+            if (entrant.getWaitlistEventIds().contains(e.getId())) {
+                setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
+            }
+            else {
+                setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
+            }
         }
 
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
@@ -56,6 +64,7 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("entrant event myapplication", entrant1.getWaitlistEventIds().toString());
             }
         });
+
 
         binding.eventName.setText(e.getName());
 
@@ -98,7 +107,7 @@ public class EntrantEventViewFragment extends Fragment {
                         Log.d("join event", "You join the wishlist!");
                         e.add_entrant(entrant);
                         ec.addToEventWaitingList(e);
-
+                        setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
                     }
 
                 }
@@ -115,10 +124,27 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("leave event", "You leave the wishlist");
                 app.setEntrantLiveData(entrant);
                 ec.removeFromEventWaitingList(e);
+                setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
             }
             else {
                 Log.d("leave event", "you are not in the waitlist");
             }
         });
     }
+
+    private void setButtonSelected(Button selectedButton, Button unselectedButton) {
+        // Set the background of the selected button to the solid style
+        selectedButton.setBackgroundResource(R.drawable.rounded_button_join_solid); // or the relevant solid background
+        selectedButton.setEnabled(true);
+        selectedButton.setAlpha(1f);
+        selectedButton.setTextColor(Color.parseColor("#FFFFFF"));
+
+        // Set the background of the unselected button to the outline style
+        unselectedButton.setBackgroundResource(R.drawable.rounded_button_leave_outline); // or the relevant outline background
+        unselectedButton.setEnabled(false);
+        unselectedButton.setAlpha(0.5f);
+        unselectedButton.setTextColor(Color.parseColor("#65558F"));
+
+    }
+
 }
