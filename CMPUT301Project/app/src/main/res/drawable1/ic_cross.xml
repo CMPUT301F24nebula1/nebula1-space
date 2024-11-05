@@ -1,0 +1,10 @@
+<!-- res/drawable/ic_cross.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/black"
+    android:pathData="M18.36,6.64L17.64,5.93L12,11.57L6.36,5.93L5.64,6.64L11.28,12.28L5.64,17.93L6.36,18.64L12,13L17.64,18.64L18.36,17.93L12.71,12.28L18.36,6.64Z"/>
+</vector>
