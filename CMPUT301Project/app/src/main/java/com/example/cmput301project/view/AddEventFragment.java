@@ -133,6 +133,15 @@ public class AddEventFragment extends Fragment {
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
+    public void setButtonsEnabled() {
+        binding.eventName.setEnabled(true);
+        binding.eventDescription.setEnabled(true);
+        binding.startDateText.setEnabled(true);
+        binding.endDateText.setEnabled(true);
+        binding.lotteryCapacity.setEnabled(true);
+        binding.posterButton.setEnabled(true);
+    }
+
     private void openImagePicker() {
         Intent intent = new Intent();
         intent.setType("image/*");
