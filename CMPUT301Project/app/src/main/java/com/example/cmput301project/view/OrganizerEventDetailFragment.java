@@ -57,7 +57,6 @@ public class OrganizerEventDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
         o = app.getOrganizerLiveData().getValue();
-//        db = FirebaseFirestore.getInstance();
         ec = new OrganizerEventController(o, app.getFb());
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
@@ -70,6 +69,9 @@ public class OrganizerEventDetailFragment extends Fragment {
                 ImageView i2 = binding.eventQrcodeImageview;
                 TextView t1 = binding.descriptionTextview;
                 TextView t2 = binding.eventNameTextview;
+                TextView date = binding.eventDate;
+                String dateStr = e.getStartDate() + " - " + e.getEndDate();
+                date.setText(dateStr);
 
                 try {
                     if (!e.getQrCode().isEmpty()) {
@@ -125,9 +127,9 @@ public class OrganizerEventDetailFragment extends Fragment {
             }
         });
 
-        binding.editButton.setOnClickListener(view1 -> {
-            showEditDialog(e);
-        });
+//        binding.editButton.setOnClickListener(view1 -> {
+//            showEditDialog(e);
+//        });
     }
 
     private void showEditDialog(Event e) {
