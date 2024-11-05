@@ -127,9 +127,9 @@ public class OrganizerEventDetailFragment extends Fragment {
             }
         });
 
-//        binding.editButton.setOnClickListener(view1 -> {
-//            showEditDialog(e);
-//        });
+        binding.editButton.setOnClickListener(view1 -> {
+            showEditDialog(e);
+        });
     }
 
     private void showEditDialog(Event e) {

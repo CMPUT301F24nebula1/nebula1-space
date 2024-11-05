@@ -1,69 +1,259 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="16dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-        <EditText
-            android:id="@+id/event_name_edittext"
+        <!-- Event Name Input -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/event_name_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:hint="Enter the event name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
-
-        <EditText
-            android:id="@+id/event_description_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:hint="Enter the event description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/event_name_edittext"
-            app:layout_constraintVertical_bias="0.3" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_horizontal"
-            tools:ignore="MissingConstraints">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/startDateText"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Select Start Date"
-                android:padding="8dp"
-                android:textSize="16sp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true" />
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="-6dp"
+                android:background="#DDCCFF"
+                android:elevation="4dp"
+                android:text="Event Name"
+                app:layout_constraintStart_toStartOf="@+id/event_name"
+                app:layout_constraintTop_toTopOf="@+id/event_name"></TextView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/event_name"
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/transparent"
+                android:hint="Event Name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/endDateText"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Select End Date"
-                android:padding="8dp"
-                android:textSize="16sp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"/>
-        </LinearLayout>
-        <!-- ImageView for displaying selected image -->
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="-6dp"
+                android:background="#DDCCFF"
+                android:elevation="4dp"
+                android:text="Description"
+                app:layout_constraintStart_toStartOf="@+id/event_description"
+                app:layout_constraintTop_toTopOf="@+id/event_description"></TextView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/event_description"
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/transparent"
+                android:hint="Description"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="-6dp"
+                android:background="#DDCCFF"
+                android:elevation="4dp"
+                android:text="Lottery starts date"
+                app:layout_constraintStart_toStartOf="@+id/lottery_starts_date"
+                app:layout_constraintTop_toTopOf="@+id/lottery_starts_date"/>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lottery_starts_date"
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/transparent"
+                android:hint="Lottery starts date"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconTint="#F64C4C"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/start_date_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="-6dp"
+                android:background="#DDCCFF"
+                android:elevation="4dp"
+                android:text="Lottery ends date"
+                app:layout_constraintStart_toStartOf="@+id/lottery_ends_date"
+                app:layout_constraintTop_toTopOf="@+id/lottery_ends_date">
+
+            </TextView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lottery_ends_date"
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/transparent"
+                android:hint="Lottery ends date"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconTint="#F64C4C"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/end_date_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="-6dp"
+                android:background="#DDCCFF"
+                android:elevation="4dp"
+                android:text="Lottery capacity"
+                app:layout_constraintStart_toStartOf="@+id/lottery_capacity"
+                app:layout_constraintTop_toTopOf="@+id/lottery_capacity"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lottery_capacity"
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/transparent"
+                android:hint="Lottery capacity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/lottery_capacity_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Note below Lottery Capacity -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:text="Must be greater than zero."
+            android:textSize="12sp" />
+
+        <!-- Event Poster Selection -->
+        <FrameLayout
+            android:id="@+id/poster_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/FancyTextInputLayout"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:hint="Event Poster"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_folder"
+                app:endIconTint="#FDCC44"
+                app:boxStrokeColor="#8FE7A8A8">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/select_image_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="48dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- ImageButton for the folder icon overlay -->
+<!--            <ImageButton-->
+<!--                android:id="@+id/select_image_button"-->
+<!--                android:layout_width="48dp"-->
+<!--                android:layout_height="48dp"-->
+<!--                android:layout_gravity="end|center_vertical"-->
+<!--                android:layout_marginTop="2dp"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                android:contentDescription="Select folder"-->
+<!--                android:padding="12dp"-->
+<!--                app:srcCompat="@drawable/ic_folder"-->
+<!--                app:tint="#FDCC44" />-->
+        </FrameLayout>
+
         <ImageView
             android:id="@+id/event_imageview"
             android:layout_width="200dp"
@@ -74,33 +264,172 @@
             android:src="@drawable/ic_launcher_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/event_description_edittext" />
+            app:layout_constraintTop_toBottomOf="@id/poster_button" />
 
-        <!-- Button for selecting an image -->
-        <Button
-            android:id="@+id/select_image_button"
+
+        <!-- Enable Geolocation Checkbox -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable geolocation for this event:" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#673AB7"
+                android:checked="false" />
+        </LinearLayout>
+
+        <!-- Buttons for Cancel and Save -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#673AB7"
-            android:text="Select Image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/event_imageview" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/save_event_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:backgroundTint="#673AB7"
-            android:text="Save"
-            app:layout_constraintVertical_bias="0.3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/select_image_button"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <!-- Cancel Button -->
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Cancel"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:backgroundTint="#673AB7"
+                app:cornerRadius="24dp" />
+
+            <!-- Save Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_event_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Save"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:backgroundTint="#673AB7"
+                app:cornerRadius="24dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent">-->
+
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--        xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
+
+    <!--        <EditText-->
+    <!--            android:id="@+id/event_name_edittext"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="64dp"-->
+    <!--            android:hint="Enter the event name"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent"-->
+    <!--            app:layout_constraintVertical_bias="0.3" />-->
+
+    <!--        <EditText-->
+    <!--            android:id="@+id/event_description_edittext"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="64dp"-->
+    <!--            android:hint="Enter the event description"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@+id/event_name_edittext"-->
+    <!--            app:layout_constraintVertical_bias="0.3" />-->
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="horizontal"-->
+    <!--            android:padding="16dp"-->
+    <!--            android:gravity="center_horizontal"-->
+    <!--            tools:ignore="MissingConstraints">-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/startDateText"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_weight="1"-->
+    <!--                android:text="Select Start Date"-->
+    <!--                android:padding="8dp"-->
+    <!--                android:textSize="16sp"-->
+    <!--                android:background="?attr/selectableItemBackground"-->
+    <!--                android:gravity="center"-->
+    <!--                android:clickable="true"-->
+    <!--                android:focusable="true" />-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/endDateText"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_weight="1"-->
+    <!--                android:text="Select End Date"-->
+    <!--                android:padding="8dp"-->
+    <!--                android:textSize="16sp"-->
+    <!--                android:background="?attr/selectableItemBackground"-->
+    <!--                android:gravity="center"/>-->
+    <!--        </LinearLayout>-->
+    <!--        &lt;!&ndash; ImageView for displaying selected image &ndash;&gt;-->
+    <!--        <ImageView-->
+    <!--            android:id="@+id/event_imageview"-->
+    <!--            android:layout_width="200dp"-->
+    <!--            android:layout_height="200dp"-->
+    <!--            android:layout_marginTop="16dp"-->
+    <!--            android:contentDescription="Event image"-->
+    <!--            android:scaleType="centerCrop"-->
+    <!--            android:src="@drawable/ic_launcher_background"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/event_description_edittext" />-->
+
+    <!--        &lt;!&ndash; Button for selecting an image &ndash;&gt;-->
+    <!--        <Button-->
+    <!--            android:id="@+id/select_image_button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="16dp"-->
+    <!--            android:backgroundTint="#673AB7"-->
+    <!--            android:text="Select Image"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/event_imageview" />-->
+
+    <!--        <Button-->
+    <!--            android:id="@+id/save_event_button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="64dp"-->
+    <!--            android:backgroundTint="#673AB7"-->
+    <!--            android:text="Save"-->
+    <!--            app:layout_constraintVertical_bias="0.3"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/select_image_button"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent" />-->
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</android.widget.ScrollView>
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+    <!--</android.widget.ScrollView>-->

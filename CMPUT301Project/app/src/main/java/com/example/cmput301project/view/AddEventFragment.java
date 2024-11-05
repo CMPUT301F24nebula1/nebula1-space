@@ -61,8 +61,8 @@ public class AddEventFragment extends Fragment {
         });
 
         binding.saveEventButton.setOnClickListener(view1 -> {
-            String name = binding.eventNameEdittext.getText().toString();
-            String description = binding.eventDescriptionEdittext.getText().toString();
+            String name = (binding.eventName.getEditText() != null) ? binding.eventName.getEditText().getText().toString() : "";
+            String description = (binding.eventDescription.getEditText() != null) ? binding.eventDescription.getEditText().getText().toString() : "";
             // check if date is ok
             String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 

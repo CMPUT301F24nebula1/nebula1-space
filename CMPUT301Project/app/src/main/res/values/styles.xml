@@ -26,7 +26,7 @@
         <item name="boxCornerRadiusBottomEnd">12dp</item>
 
         <!-- Box colors -->
-        <item name="boxBackgroundColor">#E0E0E0</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
         <item name="boxStrokeColor">#8FE7A8A8</item> <!-- Default border color -->
         <item name="hintTextColor">@color/colorHint</item>
 
