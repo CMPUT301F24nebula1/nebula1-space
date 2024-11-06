@@ -24,11 +24,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
-import com.example.cmput301project.databinding.AddEventBinding;
+import com.example.cmput301project.databinding.OrganizerEventViewBinding;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Fragment for organizers to add an event
@@ -36,36 +39,58 @@ import java.util.Calendar;
  */
 
 public class AddEventFragment extends Fragment {
+    private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
-    private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
-    private FirebaseFirestore db;
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
+    private Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = AddEventBinding.inflate(inflater, container, false);
+        binding = OrganizerEventViewBinding.inflate(inflater, container, false);
 
+        return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         MyApplication app = (MyApplication) requireActivity().getApplication();
-        db = app.getDb();
+
+        setButtonsEnabled();
+
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                 // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, db);
+                organizerEventController = new OrganizerEventController(organizer, app.getFb());
+                o = organizer;
             }
         });
 
         binding.saveEventButton.setOnClickListener(view1 -> {
-            String name = binding.eventNameEdittext.getText().toString();
-            String description = binding.eventDescriptionEdittext.getText().toString();
+            String name = (binding.eventName.getEditText() != null) ? binding.eventName.getEditText().getText().toString() : "";
+            String description = (binding.eventDescription.getEditText() != null) ? binding.eventDescription.getEditText().getText().toString() : "";
+            // check if date is ok
+            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
-            if (!name.isEmpty()) {
-
-                organizerEventController.addEvent(name, description, imageUri, aVoid -> {
-
-                    NavHostFragment.findNavController(this).navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
+            if (!name.isEmpty() &&
+                    startDateText.getText().toString().matches(pattern) &&
+                    endDateText.getText().toString().matches(pattern)) {
+                Event event = new Event();
+                event.setName(name);
+                event.setDescription(description);
+                event.setStartDate(startDateText.getText().toString());
+                event.setEndDate(endDateText.getText().toString());
+                //event.setLimit(limit);
+                if (imageUri != null) {
+                    app.uploadImageAndSetEvent(imageUri, event);
+                }
+                organizerEventController.addEvent(event, aVoid -> {
+                    //o.create_event(event);
+                    app.setOrganizerLiveData(o);
+                    NavHostFragment.findNavController(this).
+                            navigate(R.id.action_AddEvent_to_EventList);
+                    NavHostFragment.findNavController(this).
+                            popBackStack(R.id.AddEventFragment, true);
 
                 }, e -> {
                     Log.e("save event", "Error: " + e.getMessage());
@@ -74,7 +99,7 @@ public class AddEventFragment extends Fragment {
             } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Alert")
-                        .setMessage("An event has to have a name.")
+                        .setMessage("An event has to have a name, start date and end date.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();  // Close the dialog
@@ -107,11 +132,18 @@ public class AddEventFragment extends Fragment {
             Log.d("DatePicker", "End Date Clicked");
             showDatePickerDialog(false);
         });
-        return binding.getRoot();
+
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+    public void setButtonsEnabled() {
+        binding.eventName.setEnabled(true);
+        binding.eventDescription.setEnabled(true);
+        binding.startDateText.setEnabled(true);
+        binding.endDateText.setEnabled(true);
+        binding.lotteryCapacity.setEnabled(true);
+        binding.posterButton.setEnabled(true);
+        binding.selectImageButton.setEnabled(true);
     }
 
     private void openImagePicker() {
@@ -129,6 +161,7 @@ public class AddEventFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         binding.eventImageview.setImageBitmap(bitmap);
+                        binding.eventImageview.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -160,14 +193,19 @@ public class AddEventFragment extends Fragment {
 
     private void updateDateText(boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
-        String dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
-                (calendar.get(Calendar.MONTH) + 1) + "/" +
-                calendar.get(Calendar.YEAR);
+        String dateText = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));
+
+//        String dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+//                (calendar.get(Calendar.MONTH) + 1) + "/" +
+//                calendar.get(Calendar.YEAR);
 
         if (isStartDate) {
-            startDateText.setText("Start Date: " + dateText);
+            startDateText.setText(dateText);
         } else {
-            endDateText.setText("End Date: " + dateText);
+            endDateText.setText(dateText);
         }
     }
 }

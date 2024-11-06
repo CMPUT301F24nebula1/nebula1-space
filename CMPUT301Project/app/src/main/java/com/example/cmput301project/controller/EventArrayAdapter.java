@@ -41,21 +41,24 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         Event e = getItem(position);
         ImageView poster = view.findViewById(R.id.event_poster);
         TextView name = view.findViewById(R.id.event_name);
+        TextView endDateTextView = view.findViewById(R.id.lottery_ends_date);
+        if (e != null) {
+            String text = "Ends date: " + e.getEndDate();
+            endDateTextView.setText(text);
 
-        try {
-            if (!e.getPosterUrl().isEmpty()) {
+            name.setText(e.getName());
+
+            if (!(e.getPosterUrl() == null) && !e.getPosterUrl().isEmpty()) {
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
                         .error(R.drawable.error_image)              // error image
                         .into(poster);
             }
-        } catch (NullPointerException exception) {
-            Log.e("Error", "Poster URL is null", exception);
+            else {
+                Log.e("Error", "Poster URL is null");
+            }
         }
-        name.setText(e.getName());
-
-
         return view;
     }
 }

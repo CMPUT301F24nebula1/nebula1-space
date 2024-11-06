@@ -14,6 +14,7 @@ public class Entrant extends User {
     protected String email;
     protected String phone;
     private String profilePictureUrl;
+    private String uri;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -127,5 +128,13 @@ public class Entrant extends User {
      */
     public void setProfilePictureUrl(String profilePictureUrl) {
         this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

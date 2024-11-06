@@ -74,16 +74,25 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
 
+        entrant = app.getEntrantLiveData().getValue();
+        if (entrant != null) {
+            Log.d("Entrant1", entrant.getName());
+            populateEntrantInfo(entrant);
+            ec = new EntrantController(entrant);
+        }
+
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            entrant = entrant1;
-            populateEntrantInfo(entrant1);
+            if (entrant1 != null) {
+                Log.d("Entrant", entrant1.getName());
+                populateEntrantInfo(entrant1);
+                ec = new EntrantController(entrant1);
+                entrant = entrant1;
+            }
         });
 
         editImageButton = view.findViewById(R.id.edit_profile_picture_button);
@@ -91,7 +100,8 @@ public class EntrantProfileFragment extends Fragment {
         editImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openImagePicker(); // Call the method when the button is clicked
+                showImageOptionsDialog();
+                //openImagePicker(); // Call the method when the button is clicked
             }
         });
         imageView = binding.profileImageview;
@@ -121,13 +131,26 @@ public class EntrantProfileFragment extends Fragment {
                                 .show();
                         return;
                     }
+                    else if (!validateEmail(t_email.getText().toString())) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Alert")
+                                .setMessage("Invalid email format.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();  // Close the dialog
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        return;
+                    }
                     saveChanges();
                     setEditMode(false);
                     btnEditSave.setText("Edit");
 //                onBackPressed();  // Navigate back
                 }
                 else {
-                    Log.e("save profile", "wait for loading information");
+                    Log.d("save profile", "wait for loading information");
                     new AlertDialog.Builder(getContext())
                             .setTitle("Alert")
                             .setMessage("wait for loading information.")
@@ -165,12 +188,37 @@ public class EntrantProfileFragment extends Fragment {
         app.setEntrantLiveData(entrant);
     }
 
-    private void validateEmail(String email) {
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Edit Profile Picture");
+
+        String[] options = {"Select Picture", "Remove Picture"};
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0: // Select Picture
+                        openImagePicker();
+                        break;
+                    case 1:
+                        removeProfilePicture();
+                        break;
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+
+    private boolean validateEmail(String email) {
         // Use Android's Patterns utility class to check if the email format is valid
         if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             t_email.setError(null); // Clear error if email is valid
+            return true;
         } else {
             t_email.setError("Invalid email format");
+            return false;
         }
     }
 
@@ -227,7 +275,9 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setText(entrant.getName());
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
-            binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+                binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            }
             try {
                 if (!entrant.getProfilePictureUrl().isEmpty()) {
                     Glide.with(getContext())
@@ -241,6 +291,15 @@ public class EntrantProfileFragment extends Fragment {
             }
 
         }
+    }
+
+    private void removeProfilePicture() {
+        imageUri = null; // Clear the image URI
+        imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
+        entrant.setProfilePictureUrl(null); // Remove URL from entrant
+        entrant.setUri(null);
+        app.setEntrantLiveData(entrant);
+        //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
     private void captureProfilePicture() {
@@ -316,8 +375,12 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setName(t_name.getText().toString());
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
+        if (imageUri != null) {
+            entrant.setUri(imageUri.toString());
+            app.uploadImageAndSetEntrant(imageUri, entrant);
+        }
         // Save data1 and data2 to database or shared preferences
-        ec.saveEntrantToDatabase(entrant, imageUri);
+        //ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable
     }
 }

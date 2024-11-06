@@ -16,11 +16,13 @@
         android:orientation="horizontal"
         android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/btnEditSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit" />
+<!--        <Button-->
+<!--            android:id="@+id/btnEditSave"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:backgroundTint="#D09F63FA"-->
+<!--            android:text="Edit" />-->
     </LinearLayout>
     <ScrollView
         android:clipChildren="false"
@@ -46,6 +48,15 @@
                 android:clipToPadding="false"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/btnEditSave"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#D09F63FA"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Edit" />
+
                 <ImageView
                     android:id="@+id/profile_imageview"
                     android:layout_width="150dp"
@@ -65,6 +76,7 @@
                     android:layout_marginBottom="57dp"
                     android:layout_gravity="center_horizontal"
                     android:text="Edit Profile Picture"
+                    android:backgroundTint="@color/btn_background_color"
                     android:textColor="#FFFEFE"
                     android:textSize="14sp"
                     android:visibility="visible"
