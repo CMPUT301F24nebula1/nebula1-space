@@ -24,7 +24,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
-import com.example.cmput301project.databinding.AddEventBinding;
+import com.example.cmput301project.databinding.OrganizerEventViewBinding;
+import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -37,8 +39,8 @@ import java.util.Locale;
  */
 
 public class AddEventFragment extends Fragment {
+    private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
-    private AddEventBinding binding;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
     private TextView startDateText, endDateText;
@@ -46,9 +48,24 @@ public class AddEventFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = AddEventBinding.inflate(inflater, container, false);
+        binding = OrganizerEventViewBinding.inflate(inflater, container, false);
+
+
+        return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+        setButtonsEnabled();
+
+        binding.saveEventButton.setVisibility(View.VISIBLE);
+        binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
+        binding.text.setText("Save");
 
         MyApplication app = (MyApplication) requireActivity().getApplication();
+
+        setButtonsEnabled();
+
         db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
@@ -58,8 +75,8 @@ public class AddEventFragment extends Fragment {
         });
 
         binding.saveEventButton.setOnClickListener(view1 -> {
-            String name = binding.eventNameEdittext.getText().toString();
-            String description = binding.eventDescriptionEdittext.getText().toString();
+            String name = (binding.eventName.getEditText() != null) ? binding.eventName.getEditText().getText().toString() : "";
+            String description = (binding.eventDescription.getEditText() != null) ? binding.eventDescription.getEditText().getText().toString() : "";
             // check if date is ok
             String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
@@ -71,15 +88,15 @@ public class AddEventFragment extends Fragment {
                         endDateText.getText().toString(),
                         description, imageUri, aVoid -> {
 
-                    NavHostFragment.findNavController(this).
-                            navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).
-                            popBackStack(R.id.AddEventFragment, true);
+                            NavHostFragment.findNavController(this).
+                                    navigate(R.id.action_AddEvent_to_EventList);
+                            NavHostFragment.findNavController(this).
+                                    popBackStack(R.id.AddEventFragment, true);
 
-                }, e -> {
-                    Log.e("save event", "Error: " + e.getMessage());
-                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
-                });
+                        }, e -> {
+                            Log.e("save event", "Error: " + e.getMessage());
+                            Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+                        });
             } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Alert")
@@ -116,11 +133,18 @@ public class AddEventFragment extends Fragment {
             Log.d("DatePicker", "End Date Clicked");
             showDatePickerDialog(false);
         });
-        return binding.getRoot();
+
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+    public void setButtonsEnabled() {
+        binding.eventName.setEnabled(true);
+        binding.eventDescription.setEnabled(true);
+        binding.startDateText.setEnabled(true);
+        binding.endDateText.setEnabled(true);
+        binding.lotteryCapacity.setEnabled(true);
+        binding.posterButton.setEnabled(true);
+        binding.selectImageButton.setEnabled(true);
     }
 
     private void openImagePicker() {

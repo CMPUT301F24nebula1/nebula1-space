@@ -267,6 +267,9 @@ public class EntrantProfileFragment extends Fragment {
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
             binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+                binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            }
             try {
                 if (!entrant.getProfilePictureUrl().isEmpty()) {
                     Glide.with(getContext())

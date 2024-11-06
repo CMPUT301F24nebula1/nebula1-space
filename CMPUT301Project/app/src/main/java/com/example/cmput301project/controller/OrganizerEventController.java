@@ -65,13 +65,19 @@ public class OrganizerEventController {
         }, failureListener);
     }
 
-    public void editEvent(Event event, String name, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        if (name != null) {
-            event.setName(name);
-        }
-        if (description != null) {
-            event.setDescription(description);
-        }
+    public void editEvent(Event event, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+//        if (name != null) {
+//            event.setName(name);
+//        }
+//        if (description != null) {
+//            event.setDescription(description);
+//        }
+//        if (startDate != null) {
+//            event.setStartDate(startDate);
+//        }
+//        if (endDate != null) {
+//            event.setEndDate(endDate);
+//        }
         if (imageUri != null) {
             uploadImageToFirebase(imageUri, new OnSuccessListener<String>() {
                 @Override

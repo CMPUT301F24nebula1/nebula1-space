@@ -50,7 +50,7 @@
         android:id="@+id/AddEventFragment"
         android:name="com.example.cmput301project.view.AddEventFragment"
         android:label="@string/add_event_fragment_label"
-        tools:layout="@layout/add_event">
+        tools:layout="@layout/organizer_event_view">
         <action
             android:id="@+id/action_AddEvent_to_EventList"
             app:destination="@+id/EventListFragment" />
@@ -73,7 +73,7 @@
         android:id="@+id/OrganizerEventDetailFragment"
         android:name="com.example.cmput301project.view.OrganizerEventDetailFragment"
         android:label="@string/event_list_fragment_label"
-        tools:layout="@layout/organizer_event_detail">
+        tools:layout="@layout/organizer_event_view">
         <argument
             android:name="e"
             app:argType="com.example.cmput301project.model.Event" />
