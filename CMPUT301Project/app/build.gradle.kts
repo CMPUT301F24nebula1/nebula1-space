@@ -41,6 +41,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage:20.0.0")
+
     implementation("androidx.activity:activity-ktx:1.2.0")    // For Activities
     implementation("androidx.fragment:fragment-ktx:1.3.0")   // For Fragments
     implementation("com.google.zxing:core:3.3.0")

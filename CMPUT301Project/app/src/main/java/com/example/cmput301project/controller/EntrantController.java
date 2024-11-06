@@ -91,6 +91,7 @@ public class EntrantController {
 
     public void addToEventWaitingList(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        event.getWaitlistEntrantIds().add(entrant.getId());
 
         db.collection("organizers")
                 .get()

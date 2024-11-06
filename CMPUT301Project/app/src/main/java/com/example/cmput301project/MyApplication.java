@@ -4,16 +4,22 @@ import android.app.Application;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -47,7 +53,8 @@ public class MyApplication extends Application {
 
             if (snapshot != null && snapshot.exists()) {
                 Entrant entrant = snapshot.toObject(Entrant.class);
-                entrantLiveData.setValue(entrant);  // Update LiveData with the new organizer
+                retrieveEntrantWishlist(entrant);
+                setEntrantLiveData(entrant); // Update LiveData with the new organizer
             }
         });
     }
@@ -95,11 +102,36 @@ public class MyApplication extends Application {
             } else if (snapshot != null && !snapshot.exists()) {
                 // When the organizer document is deleted, update accordingly
                 Organizer organizer = new Organizer(userId);
-                organizerLiveData.setValue(organizer);
+                setOrganizerLiveData(organizer);
             }
         });
     }
 
+    private void retrieveEntrantWishlist(Entrant entrant) {
+        CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
+        ArrayList<String> wishlist = new ArrayList<>();
+
+        waitlistRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                // Assuming each document has a field "item" that is a String
+                                String item = document.getString("eventId");
+                                if (item != null) {
+                                    wishlist.add(item);
+                                }
+                            }
+                            // Now `wishlist` contains all items
+                            Log.d("Wishlist app", "Wishlist items: " + wishlist);
+                            entrant.setWaitlistEventIds(wishlist);
+                        } else {
+                            Log.e("Firestore Error", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
 
 
     public Organizer getOrganizer() {

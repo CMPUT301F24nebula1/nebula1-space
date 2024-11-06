@@ -162,6 +162,7 @@ public class AddEventFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         binding.eventImageview.setImageBitmap(bitmap);
+                        binding.eventImageview.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
