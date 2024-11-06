@@ -200,10 +200,6 @@ public class OrganizerEventDetailFragment extends Fragment {
         });
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
-
-//        binding.saveEventButton.setOnClickListener(view1 -> {
-//            showEditDialog(e);
-//        });
     }
 
     public void setButtonsEnabled() {
@@ -267,61 +263,6 @@ public class OrganizerEventDetailFragment extends Fragment {
         }
     }
 
-//    private void showEditDialog(Event e) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//        LayoutInflater inflater = getLayoutInflater();
-//        View dialogView = inflater.inflate(R.layout.dialog_edit_event, null);
-//
-//        // Find views in the custom layout
-//        EditText eventNameEditText = dialogView.findViewById(R.id.edit_event_name);
-//        EditText eventDescriptionEditText = dialogView.findViewById(R.id.edit_event_description);
-//        eventPosterImageView = dialogView.findViewById(R.id.edit_event_poster_imageview);
-//        Button uploadButton = dialogView.findViewById(R.id.upload_event_image_button);
-//
-//        // Set the existing values if needed
-//        eventNameEditText.setText(e.getName());
-//        eventDescriptionEditText.setText(e.getDescription());
-//
-//        try {
-//            if (!e.getPosterUrl().isEmpty()) {
-//                Glide.with(getContext())
-//                        .load(e.getPosterUrl())
-//                        .placeholder(R.drawable.placeholder_image)  // placeholder
-//                        .error(R.drawable.error_image)              // error image
-//                        .into(eventPosterImageView);
-//            }
-//        } catch (NullPointerException exception) {
-//            Log.e("Error", "Poster URL is null", exception);
-//        }
-//
-//        uploadButton.setOnClickListener(view -> openImagePicker());
-//
-//        builder.setView(dialogView)
-//                .setPositiveButton("Save", (dialog, id) -> {
-//                    // Handle saving the edited values
-//                    String newName = eventNameEditText.getText().toString();
-//                    String newDescription = eventDescriptionEditText.getText().toString();
-//
-//                    if (!newName.isEmpty()) {
-//                        e.setName(newName);
-//                    }
-//
-//                    e.setDescription(newDescription);
-//
-//                    if (imageUri != null) {
-//                        app.uploadImageAndSetEvent(imageUri, e);
-//                    }
-//
-//                    app.setOrganizerLiveData(o);
-//                })
-//                .setNegativeButton("Cancel", (dialog, id) -> {
-//                    dialog.dismiss();
-//                });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-
     private void openImagePicker() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -336,7 +277,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                     imageUri = result.getData().getData();
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                        eventPosterImageView.setImageBitmap(bitmap);
+                        posterImageview.setImageBitmap(bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -32,6 +32,7 @@ public class EntrantController {
         entrantData.put("name", entrant.getName());
         entrantData.put("email", entrant.getEmail());
         entrantData.put("phone", entrant.getPhone());
+        entrantData.put("profilePictureUrl", entrant.getProfilePictureUrl());
 
         if (u != null) {
             uploadImageToFirebase(u, new OnSuccessListener<String>() {
@@ -55,7 +56,7 @@ public class EntrantController {
             });
         }
         else {
-            entrantData.put("profilePictureUrl", null);
+//            entrantData.put("profilePictureUrl", null);
             db.collection("entrants")
                     .document(entrant.getId())
                     .update(entrantData)

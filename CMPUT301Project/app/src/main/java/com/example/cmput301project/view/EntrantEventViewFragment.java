@@ -46,6 +46,8 @@ public class EntrantEventViewFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        String date;
+
         entrant = app.getEntrantLiveData().getValue();
         if (entrant != null) {
             ec = new EntrantController(entrant);
@@ -94,6 +96,18 @@ public class EntrantEventViewFragment extends Fragment {
             binding.eventDescription.setText(error);
         }
 
+        try {
+            if (!e.getStartDate().isEmpty()) {
+                date = e.getStartDate();
+                if (!e.getEndDate().isEmpty()) {
+                    date = date + '-' + e.getEndDate();
+                }
+                binding.registrationCloseDate.setText(date);
+            }
+        } catch (NullPointerException exception) {
+            binding.registrationCloseDate.setVisibility(View.INVISIBLE);
+        }
+
         binding.joinClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +118,8 @@ public class EntrantEventViewFragment extends Fragment {
                     ec.joinEventWaitingList(e);
 
                     ec.addToEventWaitingList(e);
-
+                    setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
+                    Log.d("join event", "You join the waiting list.");
                 }
                 else {
                     Log.d("join event", "you are already in the waitlist");
@@ -120,6 +135,7 @@ public class EntrantEventViewFragment extends Fragment {
                 ec.leaveEventWaitingList(e);
                 Log.d("leave event", "You leave the wishlist");
                 ec.removeFromEventWaitingList(e);
+                setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
             }
             else {
                 Log.d("leave event", "you are not in the waitlist");
