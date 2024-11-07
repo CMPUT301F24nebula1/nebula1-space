@@ -1,0 +1,202 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <!-- Top App Bar with title and icons -->
+    <LinearLayout
+        android:id="@+id/top_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButton_back_arrow"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Go back"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_back_arrow" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Event Entrants"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/imageButton_profile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Go to Profile"
+            app:srcCompat="@drawable/ic_profile" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_section"
+        android:layout_width="361dp"
+        android:layout_height="267dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Select Participants button -->
+
+        <!-- Slider and capacity indicator -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/select_button"
+                android:layout_width="162dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Select Z Participants"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/select_button3"
+                android:layout_width="168dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Geolocation Map"
+                android:textColor="@color/white"
+                app:cornerRadius="50dp"
+                app:icon="@drawable/ic_geolocation"
+                app:iconGravity="textStart"
+                app:iconSize="24dp" />
+
+        </LinearLayout>
+
+        <!-- Notify buttons -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Adjust participant selection limit"
+            android:stepSize="1"
+            android:valueFrom="0"
+            android:valueTo="100"
+            app:thumbColor="@color/design_default_color_primary"
+            app:trackColor="@color/design_default_color_primary" />
+
+        <TextView
+            android:id="@+id/capacity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Capacity: x/y"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notify_not_selected_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:icon="@drawable/ic_chat_bubble_outline"
+                android:iconGravity="textStart"
+                android:text="Notify Not Selected"
+                android:textColor="@color/design_default_color_primary"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/design_default_color_primary"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notify_selected_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:icon="@drawable/ic_chat_bubble_outline"
+                android:iconGravity="textStart"
+                android:text="Notify Selected"
+                android:textColor="@color/white"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/design_default_color_primary"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/listView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_app_bar"
+        app:layout_constraintVertical_bias="0.183"
+        app:tabIndicatorColor="@color/design_default_color_primary"
+        app:tabIndicatorFullWidth="false"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="@color/design_default_color_primary"
+        app:tabTextColor="@color/black">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_waitlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waitlist" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selected" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_cancelled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelled" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_final"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Final" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <ListView
+        android:id="@+id/listView3"
+        android:layout_width="352dp"
+        android:layout_height="356dp"
+        android:layout_marginBottom="68dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_section"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
