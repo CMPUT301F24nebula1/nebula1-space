@@ -1,0 +1,210 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:id="@+id/bottom_section"
+        android:layout_width="361dp"
+        android:layout_height="267dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Slider and capacity indicator -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/select_button"
+                android:layout_width="162dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Select Z Participants"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/select_button3"
+                android:layout_width="168dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:text="Geolocation Map"
+                android:textColor="@color/white"
+                app:cornerRadius="50dp"
+                app:icon="@drawable/ic_geolocation"
+                app:iconSize="24dp" />
+
+        </LinearLayout>
+
+        <!-- Notify buttons -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Adjust participant selection limit"
+            android:stepSize="1"
+            android:valueFrom="0"
+            android:valueTo="100"
+            app:thumbColor="@color/design_default_color_primary"
+            app:trackColor="@color/design_default_color_primary" />
+
+        <TextView
+            android:id="@+id/capacity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Capacity: x/y"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notify_not_selected_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/transparent"
+                android:icon="@drawable/ic_chat_bubble_outline"
+                android:text="Notify Not Selected"
+                android:textColor="@color/design_default_color_primary"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/design_default_color_primary"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notify_selected_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:icon="@drawable/ic_chat_bubble_outline"
+                android:text="Notify Selected"
+                android:textColor="@color/white"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/design_default_color_primary"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/listToggleGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        app:checkedButton="@id/btn_waitlist"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_waitlist"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Waitlist"
+            android:textColor="@color/btn_text_selector"
+            android:textSize="10dp"
+            app:backgroundTint="@color/btn_background_selector"
+            app:iconSize="10dp"
+            app:icon="@drawable/ic_check_selector"
+            app:iconPadding="0dp"
+            app:iconTint="@color/btn_text_selector"
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_selected"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Selected"
+            android:textColor="@color/btn_text_selector"
+            android:textSize="10dp"
+            app:backgroundTint="@color/btn_background_selector"
+            app:icon="@drawable/ic_check_selector"
+            app:iconPadding="0dp"
+            app:iconSize="10dp"
+            app:iconTint="@color/btn_text_selector"
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_canceled"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.1"
+            android:text="Canceled"
+            android:textColor="@color/btn_text_selector"
+            android:textSize="10dp"
+            app:backgroundTint="@color/btn_background_selector"
+            app:icon="@drawable/ic_check_selector"
+            app:iconPadding="0dp"
+            app:iconTint="@color/btn_text_selector"
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_final"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Final"
+            android:textColor="@color/btn_text_selector"
+            android:textSize="10dp"
+            app:backgroundTint="@color/btn_background_selector"
+            app:icon="@drawable/ic_check_selector"
+            app:iconPadding="0dp"
+            app:iconTint="@color/btn_text_selector"
+            app:shapeAppearanceOverlay="@style/RightRoundedButtonShape" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <ListView
+        android:id="@+id/participant_list"
+        android:layout_width="352dp"
+        android:layout_height="356dp"
+        android:layout_marginBottom="48dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@+id/listToggleGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:text='Home'
+            android:background="#FDE0F3"
+            app:titleCentered="true"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

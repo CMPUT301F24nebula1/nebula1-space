@@ -1,5 +1,6 @@
 package com.example.cmput301project.view;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE;
 
 import android.app.AlertDialog;
@@ -35,10 +36,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
@@ -46,6 +49,7 @@ import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
 import com.google.android.material.card.MaterialCardView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -335,6 +339,13 @@ public class EntrantProfileFragment extends Fragment {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(50f);
         canvas.drawText(initials, size / 2, size / 2 + 15, paint);
+
+//        int MyVersion = Build.VERSION.SDK_INT;
+//        if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+//            checkIfAlreadyhavePermission();
+//        }
+//        imageUri = getImageUri(this.getContext(), bitmap);
+
         return new BitmapDrawable(getResources(), bitmap);
     }
 
@@ -349,6 +360,33 @@ public class EntrantProfileFragment extends Fragment {
         }
         return initials.toUpperCase();
     }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+//    private boolean checkIfAlreadyhavePermission() {
+//
+//        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        if((checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED)) {
+//
+//            //show dialog to ask permission
+//            ActivityCompat.requestPermissions(this.getActivity(),
+//                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                    1);
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+//    }
+
+
 
     private void setEditMode(boolean enabled) {
         isEditMode = enabled;
