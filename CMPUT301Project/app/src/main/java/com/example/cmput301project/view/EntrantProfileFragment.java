@@ -83,16 +83,25 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
 
+        entrant = app.getEntrantLiveData().getValue();
+        if (entrant != null) {
+            Log.d("Entrant1", entrant.getName());
+            populateEntrantInfo(entrant);
+            ec = new EntrantController(entrant);
+        }
+
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            entrant = entrant1;
-            populateEntrantInfo(entrant1);
+            if (entrant1 != null) {
+                Log.d("Entrant", entrant1.getName());
+                populateEntrantInfo(entrant1);
+                ec = new EntrantController(entrant1);
+                entrant = entrant1;
+            }
         });
 
         editImageButton = view.findViewById(R.id.edit_profile_picture_button);
@@ -136,7 +145,7 @@ public class EntrantProfileFragment extends Fragment {
                     else if (!validateEmail(t_email.getText().toString())) {
                         new AlertDialog.Builder(getContext())
                                 .setTitle("Alert")
-                                .setMessage("Invalid email form.")
+                                .setMessage("Invalid email format.")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();  // Close the dialog
@@ -280,6 +289,7 @@ public class EntrantProfileFragment extends Fragment {
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
             //binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+
             if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
                 binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
             }

@@ -54,6 +54,7 @@
 <!--        <action-->
 <!--            android:id="@+id/action_AddEvent_to_EventList"-->
 <!--            app:destination="@+id/EventListFragment" />-->
+
         <action
             android:id="@+id/action_AddEvent_to_EventDetail"
             app:destination="@+id/OrganizerEventDetailFragment"/>

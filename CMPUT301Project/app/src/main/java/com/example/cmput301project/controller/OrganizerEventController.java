@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+
+import com.example.cmput301project.FirebaseInterface;
+import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,23 +26,27 @@ import java.io.ByteArrayOutputStream;
  */
 public class OrganizerEventController {
     private Organizer organizer;
-    private FirebaseFirestore db;
+    //private FirebaseFirestore db;
+    private FirebaseInterface fb;
     private Event event;
 
-    public OrganizerEventController(Organizer organizer, FirebaseFirestore db) {
+    public OrganizerEventController(Organizer organizer, FirebaseInterface fb) {
         this.organizer = organizer;
-        this.db = db;
+        this.fb = fb;
     }
+
 
     public void addEvent(Event event, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
 
+
         Bitmap b = QRCodeGenerator.generateQRCode(event.getId());
 
-        uploadBitmapToFirebase(b, new OnSuccessListener<String>() {
+        fb.uploadBitmapToFirebase(b, new OnSuccessListener<String>() {
             @Override
             public void onSuccess(String s) {
                 String hashedQRCode = QRCodeGenerator.hashQRCode(QRCodeGenerator.convertBitmapToByteArray(b));
                 event.setHashedQRCode(hashedQRCode);
+
 //                event.setName(name);
                 event.setQrCode(s);
 //                event.setStartDate(startDate);
@@ -58,9 +66,11 @@ public class OrganizerEventController {
                     saveEventToFirestore(event, successListener, failureListener);
                 }
                 organizer.create_event(event);
+                successListener.onSuccess(null);
             }
         }, failureListener);
     }
+
 
     public void editEvent(Event event, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
         if (imageUri != null) {
@@ -133,20 +143,6 @@ public class OrganizerEventController {
                 .collection("events")
                 .document(updatedEvent.getId());
 
-        // Update the event document directly in Firestore
-        eventDocRef.set(updatedEvent)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Firebase", "Event successfully updated!");
-                    if (successListener != null) {
-                        successListener.onSuccess(aVoid);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firebase", "Error updating event", e);
-                    if (failureListener != null) {
-                        failureListener.onFailure(e);
-                    }
-                });
     }
 }
 

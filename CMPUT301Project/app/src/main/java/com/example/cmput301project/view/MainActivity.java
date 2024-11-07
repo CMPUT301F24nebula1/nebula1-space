@@ -14,6 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.cmput301project.FirebaseInterface;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Organizer;
@@ -51,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
-    private FirebaseFirestore db;
-    private CollectionReference userRef;
+    private MyApplication app;
     private String id;
 
     // manages whether it's entrant homepage or organizer homepage
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (MyApplication) getApplication();
         id = getDeviceId(this);
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -81,11 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        Intent intent = getIntent();
-        String navigateTo = intent.getStringExtra("navigateTo");
-        String eventId = intent.getStringExtra("eventId");
-
-        Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
 
         toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -121,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             // hide toolbar if it's homepage
             if (destination.getId() == R.id.EntrantHomepageFragment || destination.getId() == R.id.OrganizerHomepageFragment) {
@@ -136,9 +133,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // after scanning qr code
+        Intent intent = getIntent();
+        String navigateTo = intent.getStringExtra("navigateTo");
+        String eventId = intent.getStringExtra("eventId");
+
+        Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+
         if ("entrantEventViewFragment".equals(navigateTo)) {
             Log.d("MainActivity", "Navigating to entrantEventView");
-            findEventInAllOrganizers(eventId, navController);
+            app.getFb().findEventInAllOrganizers(eventId, new FirebaseInterface.OnEventFoundListener() {
+                @Override
+                public void onEventFound(Event event) {
+                    Log.d("MainActivity", "Event found: " + event.getName());
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("e", event);
+                    navController.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
+                }
+
+                @Override
+                public void onEventNotFound() {
+                    Log.d("MainActivity", "Event not found with ID: " + eventId);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e("MainActivity", "Error finding event: " + e.getMessage());
+                }
+            });
         }
     }
 
@@ -149,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, fragment)
                 .commitNow();;
     }
+
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {
         Log.d("wishlist before nav1", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
@@ -358,5 +381,4 @@ public class MainActivity extends AppCompatActivity {
                     Log.w("Firestore", "Error adding user", f);
                 });
     }
-
 }

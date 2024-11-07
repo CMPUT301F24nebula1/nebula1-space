@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -144,10 +145,7 @@ public class EntrantEventViewFragment extends Fragment {
         });
 
         binding.leaveClassButton.setOnClickListener(view1 -> {
-            if (app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
-                app.getEntrant().leave_event(e);
-                e.remove_entrant(app.getEntrant());
-
+            if (entrant.getWaitlistEventIds().contains(e.getId())) {
                 ec.leaveEventWaitingList(e);
                 Log.d("leave event", "You leave the wishlist");
                 Toast.makeText(getContext(), "You leaved the waiting list!", Toast.LENGTH_SHORT).show();

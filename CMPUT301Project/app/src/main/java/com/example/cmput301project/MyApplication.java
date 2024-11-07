@@ -1,16 +1,19 @@
 package com.example.cmput301project;
 
 import android.app.Application;
+import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -21,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+
 import java.util.ArrayList;
 
 /**
@@ -28,28 +32,45 @@ import java.util.ArrayList;
  * @author Xinjia Fan
  */
 public class MyApplication extends Application {
-    private String userId;
-    private Entrant entrant;
-    private Organizer organizer;
+    private FirebaseInterface fb;
 
-    private FirebaseFirestore db;
+    private String userId;
+
     private MutableLiveData<Entrant> entrantLiveData = new MutableLiveData<>();
     private MutableLiveData<Organizer> organizerLiveData = new MutableLiveData<>();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        FirebaseApp.initializeApp(this);  // Initialize Firebase
-    }
+        fb = new FirebaseServer(this);
 
-    public void listenToEntrantFirebaseUpdates(String userId) {
-        DocumentReference docRef = getDb().collection("entrants").document(userId);
-
-        docRef.addSnapshotListener((snapshot, e) -> {
-            if (e != null) {
-                Log.w("Firebase", "Listen failed.", e);
-                return;
+        // observe local data
+        entrantLiveData.observeForever(new Observer<Entrant>() {
+            @Override
+            public void onChanged(Entrant entrant) {
+                Log.d("MyApplication", "Entrant data updated locally, pushing to Firebase");
+                Log.d("pass entrant event", entrant.getWaitlistEventIds().toString());
+                Log.i("livedata event", fb.getEntrantLiveData().getValue().getWaitlistEventIds().toString());
+                fb.updateEntrantInFirebase(entrant); // Push updates to Firebase
             }
+        });
+
+        organizerLiveData.observeForever(new Observer<Organizer>() {
+            @Override
+            public void onChanged(Organizer organizer) {
+                Log.d("MyApplication", "Organizer data updated locally, pushing to Firebase");
+                fb.updateOrganizerInFirebase(organizer);
+            }
+        });
+
+        fb.getEntrantLiveData().observeForever(new Observer<Entrant>() {
+            @Override
+            public void onChanged(Entrant entrant) {
+                Log.i("livedata event___", fb.getEntrantLiveData().getValue().getWaitlistEventIds().toString());
+                Log.d("Entrant", "Entrant data gets updated locally");
+                entrantLiveData.setValue(entrant);
+            }
+        });
 
             if (snapshot != null && snapshot.exists()) {
                 Entrant entrant = snapshot.toObject(Entrant.class);
@@ -59,15 +80,19 @@ public class MyApplication extends Application {
         });
     }
 
-    public void listenToOrganizerFirebaseUpdates(String userId) {
-        DocumentReference docRef = getDb().collection("organizers").document(userId);
+    public void uploadImageAndSetEntrant(Uri imageUri, Entrant entrant) {
+        fb.uploadImage(imageUri, new FirebaseInterface.OnImageUploadListener() {
+            @Override
+            public void onUploadSuccess(String imageUrl) {
+                // Set the profile picture URL in the entrant
+                entrant.setProfilePictureUrl(imageUrl);
 
-        // Listen to the organizer document for updates
-        docRef.addSnapshotListener((snapshot, e) -> {
-            if (e != null) {
-                Log.w("Firebase", "Listen failed.", e);
-                return;
+                // Save the updated entrant data with the new URL in Firebase
+                entrantLiveData.setValue(entrant); // This will update Firebase and LiveData
+
+                Log.d("MyApplication", "Image uploaded and Entrant updated with new URL.");
             }
+
 
             if (snapshot != null && snapshot.exists()) {
                 Organizer organizer = snapshot.toObject(Organizer.class);
@@ -133,27 +158,24 @@ public class MyApplication extends Application {
                 });
     }
 
+            @Override
+            public void onUploadSuccess(String imageUrl) {
+                event.setPosterUrl(imageUrl);
+            }
 
-    public Organizer getOrganizer() {
-        if (organizer == null) {
-            organizer = new Organizer(userId);
-        }
-        return organizer;
+            @Override
+            public void onUploadFailure(Exception e) {
+                Log.e("MyApplication", "Failed to upload image for event", e);
+            }
+        });
     }
 
-    public void setOrganizer(Organizer organizer) {
-        this.organizer = organizer;
+    public void listenToEntrantFirebaseUpdates(String userId) {
+        fb.listenToEntrantUpdates(userId);
     }
 
-    public FirebaseFirestore getDb() {
-        if (db == null) {
-            db = FirebaseFirestore.getInstance();
-        }
-        return db;
-    }
-
-    public void setDb(FirebaseFirestore db) {
-        this.db = db;
+    public void listenToOrganizerFirebaseUpdates(String userId) {
+        fb.listenToOrganizerUpdates(userId);
     }
 
     public String getUserId() {
@@ -173,16 +195,8 @@ public class MyApplication extends Application {
     }
 
     public void setOrganizerLiveData(Organizer organizer) {
-        this.organizer = organizer;
+//        this.organizer = organizer;
         this.organizerLiveData.setValue(organizer);
-    }
-
-    public Entrant getEntrant() {
-        return entrant;
-    }
-
-    public void setEntrant(Entrant entrant) {
-        this.entrant = entrant;
     }
 
     public MutableLiveData<Entrant> getEntrantLiveData() {
@@ -191,6 +205,14 @@ public class MyApplication extends Application {
 
     public void setEntrantLiveData(Entrant entrant) {
         this.entrantLiveData.setValue(entrant);
-        this.entrant = entrant;
+//        this.entrant = entrant;
+    }
+
+    public FirebaseInterface getFb() {
+        return fb;
+    }
+
+    public void setFb(FirebaseInterface fb) {
+        this.fb = fb;
     }
 }

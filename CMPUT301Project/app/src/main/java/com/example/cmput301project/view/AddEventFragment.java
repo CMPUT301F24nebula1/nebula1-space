@@ -44,13 +44,14 @@ public class AddEventFragment extends Fragment {
     private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
     private Uri imageUri;  // Store image URI after selecting it
-    private FirebaseFirestore db;
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
+    private Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = OrganizerEventViewBinding.inflate(inflater, container, false);
+
 
 
         return binding.getRoot();
@@ -64,15 +65,21 @@ public class AddEventFragment extends Fragment {
         binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
         binding.text.setText("Save");
 
+        return binding.getRoot();
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         MyApplication app = (MyApplication) requireActivity().getApplication();
 
         setButtonsEnabled();
 
         db = app.getDb();
+
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                 // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, db);
+                organizerEventController = new OrganizerEventController(organizer, app.getFb());
+                o = organizer;
             }
         });
 
