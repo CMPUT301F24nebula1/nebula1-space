@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/homepage"
 
-    tools:context=".MainActivity">
-
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/options"
         android:layout_width="279dp"
