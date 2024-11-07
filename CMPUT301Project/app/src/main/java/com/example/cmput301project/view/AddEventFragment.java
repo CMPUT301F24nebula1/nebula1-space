@@ -19,6 +19,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.MyApplication;
@@ -35,6 +37,7 @@ import java.util.Locale;
 
 /**
  * Fragment for organizers to add an event
+ *
  * @author Xinjia Fan
  */
 
@@ -42,27 +45,35 @@ public class AddEventFragment extends Fragment {
     private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
     private Uri imageUri;  // Store image URI after selecting it
+    private FirebaseFirestore db;
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
-    private Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = OrganizerEventViewBinding.inflate(inflater, container, false);
 
+
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+        setButtonsEnabled();
+
+        binding.saveEventButton.setVisibility(View.VISIBLE);
+        binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
+        binding.text.setText("Save");
+
         MyApplication app = (MyApplication) requireActivity().getApplication();
 
         setButtonsEnabled();
 
+        db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                 // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, app.getFb());
-                o = organizer;
+                organizerEventController = new OrganizerEventController(organizer, db);
             }
         });
 
@@ -75,22 +86,20 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty() &&
                     startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
+
                 Event event = new Event();
                 event.setName(name);
-                event.setDescription(description);
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
-                //event.setLimit(limit);
-                if (imageUri != null) {
-                    app.uploadImageAndSetEvent(imageUri, event);
-                }
-                organizerEventController.addEvent(event, aVoid -> {
-                    //o.create_event(event);
-                    app.setOrganizerLiveData(o);
-                    NavHostFragment.findNavController(this).
-                            navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).
-                            popBackStack(R.id.AddEventFragment, true);
+                event.setDescription(description);
+
+                organizerEventController.addEvent(event, imageUri, aVoid -> {
+                    Log.d("nav", "navigate to event detail");
+                    NavOptions navOptions = new NavOptions.Builder()
+                            .setPopUpTo(R.id.AddEventFragment, true)
+                            .build();
+                    AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
+                    NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
 
                 }, e -> {
                     Log.e("save event", "Error: " + e.getMessage());
