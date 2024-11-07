@@ -5,13 +5,16 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.MyApplication;
@@ -35,6 +40,7 @@ import java.util.Locale;
 
 /**
  * Fragment for organizers to add an event
+ *
  * @author Xinjia Fan
  */
 
@@ -42,27 +48,35 @@ public class AddEventFragment extends Fragment {
     private OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
     private Uri imageUri;  // Store image URI after selecting it
+    private FirebaseFirestore db;
     private TextView startDateText, endDateText;
     private Calendar startDate, endDate;    // haven't added this to firebase
-    private Organizer o;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = OrganizerEventViewBinding.inflate(inflater, container, false);
 
+        binding.listButton.setVisibility(View.GONE);
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+        setButtonsEnabled();
+
+        binding.saveEventButton.setVisibility(View.VISIBLE);
+        binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
+        binding.text.setText("Save");
+
         MyApplication app = (MyApplication) requireActivity().getApplication();
 
         setButtonsEnabled();
 
+        db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
                 // Update the UI with the organizer data
-                organizerEventController = new OrganizerEventController(organizer, app.getFb());
-                o = organizer;
+                organizerEventController = new OrganizerEventController(organizer, db);
             }
         });
 
@@ -75,22 +89,28 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty() &&
                     startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
+                if (!containsAlphabeticCharacter(name)) {
+                    Toast.makeText(getContext(), "Event name must include alphabetical characters.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!isValidPositiveInteger(binding.lotteryCapacity.getEditText().getText().toString())) {
+                    Toast.makeText(getContext(), "Capacity must be greater than 0.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Event event = new Event();
                 event.setName(name);
-                event.setDescription(description);
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
-                //event.setLimit(limit);
-                if (imageUri != null) {
-                    app.uploadImageAndSetEvent(imageUri, event);
-                }
-                organizerEventController.addEvent(event, aVoid -> {
-                    //o.create_event(event);
-                    app.setOrganizerLiveData(o);
-                    NavHostFragment.findNavController(this).
-                            navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).
-                            popBackStack(R.id.AddEventFragment, true);
+                event.setDescription(description);
+                event.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
+
+                organizerEventController.addEvent(event, imageUri, aVoid -> {
+                    Log.d("nav", "navigate to event detail");
+                    NavOptions navOptions = new NavOptions.Builder()
+                            .setPopUpTo(R.id.AddEventFragment, true)
+                            .build();
+                    AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
+                    NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
 
                 }, e -> {
                     Log.e("save event", "Error: " + e.getMessage());
@@ -133,6 +153,19 @@ public class AddEventFragment extends Fragment {
             showDatePickerDialog(false);
         });
 
+//        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+//
+//        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//        // Validate when input focus changes
+//        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if (!hasFocus) {
+//                String input = positiveIntegerEditText.getText().toString();
+//                if (!isValidPositiveInteger(input)) {
+//                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+//                }
+//            }
+//        });
+
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
@@ -142,8 +175,23 @@ public class AddEventFragment extends Fragment {
         binding.startDateText.setEnabled(true);
         binding.endDateText.setEnabled(true);
         binding.lotteryCapacity.setEnabled(true);
-        binding.posterButton.setEnabled(true);
+        binding.posterGroup.setEnabled(true);
         binding.selectImageButton.setEnabled(true);
+        binding.capacityNote.setVisibility(View.VISIBLE);
+    }
+
+    public boolean containsAlphabeticCharacter(String str) {
+        return str != null && str.matches(".*[a-zA-Z].*");
+    }
+
+    // Method to validate if the input is a positive integer
+    private boolean isValidPositiveInteger(String input) {
+        try {
+            int value = Integer.parseInt(input);
+            return value > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void openImagePicker() {
@@ -172,18 +220,41 @@ public class AddEventFragment extends Fragment {
     private void showDatePickerDialog(final boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
 
+        // Ensure the context is not null
+        if (getActivity() == null) {
+            Log.e("DatePicker", "Fragment not attached to an Activity");
+            return;
+        }
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(),
+                getActivity(),
                 (view, year, month, dayOfMonth) -> {
                     calendar.set(year, month, dayOfMonth);
-                    updateDateText(isStartDate);
+
+                    if (isStartDate) {
+                        startDateText.setText(formatDate(startDate));
+
+                        // Check if end date is earlier than start date
+                        if (endDate.before(startDate) && !endDateText.getText().toString().isEmpty()) {
+                            endDateText.setText("");
+                            Toast.makeText(getContext(), "Please ensure the end date is after the start date.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    } else {
+                        endDateText.setText(formatDate(endDate));
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        if (!isStartDate && startDate != null) {
+        // Restrict dates to today or later
+        datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+
+        // If setting the end date, restrict it to the selected start date as the minimum date
+
+        if (!isStartDate) {
             // Set minimum date for endDate picker as the selected start date
             datePickerDialog.getDatePicker().setMinDate(startDate.getTimeInMillis());
         }
@@ -207,5 +278,10 @@ public class AddEventFragment extends Fragment {
         } else {
             endDateText.setText(dateText);
         }
+    }
+
+    private String formatDate(Calendar date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        return sdf.format(date.getTime());
     }
 }
