@@ -33,9 +33,7 @@
 <!--    <string name="email">Email</string>-->
 <!--    <string name="phone_number">Phone Number</string>-->
     <string name="optional">Optional</string>
-    <string name="lorem_ipsum">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-    </string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</string>
     <string name="admin">Admin</string>
     <string name="image">Profile Icon\n</string>
     <string name="manage_images">Manage Images</string>
