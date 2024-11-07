@@ -104,10 +104,10 @@ public class AddEventFragment extends Fragment {
                     AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
                     NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
 
-                        }, e -> {
-                            Log.e("save event", "Error: " + e.getMessage());
-                            Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
-                        });
+                }, e -> {
+                    Log.e("save event", "Error: " + e.getMessage());
+                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Alert")
