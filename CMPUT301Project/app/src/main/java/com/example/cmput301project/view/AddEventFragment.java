@@ -169,6 +169,7 @@ public class AddEventFragment extends Fragment {
         binding.lotteryCapacity.setEnabled(true);
         binding.posterGroup.setEnabled(true);
         binding.selectImageButton.setEnabled(true);
+        binding.capacityNote.setVisibility(View.VISIBLE);
     }
 
     // Method to validate if the input is a positive integer
@@ -221,10 +222,11 @@ public class AddEventFragment extends Fragment {
                     if (isStartDate) {
                         startDateText.setText(formatDate(startDate));
 
-                        // Check if end date is earlier than start date and update it if needed
-                        if (endDate.before(startDate)) {
-                            endDate.setTime(startDate.getTime()); // Set end date to start date
-                            endDateText.setText(formatDate(endDate));
+                        // Check if end date is earlier than start date
+                        if (endDate.before(startDate) && !endDateText.getText().toString().isEmpty()) {
+                            endDateText.setText("");
+                            Toast.makeText(getContext(), "Please ensure the end date is after the start date.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                     } else {
                         endDateText.setText(formatDate(endDate));

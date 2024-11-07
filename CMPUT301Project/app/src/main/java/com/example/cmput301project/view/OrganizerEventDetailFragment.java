@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -267,23 +269,51 @@ public class OrganizerEventDetailFragment extends Fragment {
     private void showDatePickerDialog(final boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
 
+        // Ensure the context is not null
+        if (getActivity() == null) {
+            Log.e("DatePicker", "Fragment not attached to an Activity");
+            return;
+        }
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(),
+                getActivity(),
                 (view, year, month, dayOfMonth) -> {
                     calendar.set(year, month, dayOfMonth);
-                    updateDateText(isStartDate);
+
+                    if (isStartDate) {
+                        binding.startDateText.setText(formatDate(startDate));
+
+                        // Check if end date is earlier than start date
+                        if (endDate.before(startDate) && !binding.endDateText.getText().toString().isEmpty()) {
+                            binding.endDateText.setText("");
+                            Toast.makeText(getContext(), "Please ensure the end date is after the start date.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    } else {
+                        binding.endDateText.setText(formatDate(endDate));
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        if (!isStartDate && startDate != null) {
+        // Restrict dates to today or later
+        datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+
+        // If setting the end date, restrict it to the selected start date as the minimum date
+
+        if (!isStartDate) {
             // Set minimum date for endDate picker as the selected start date
             datePickerDialog.getDatePicker().setMinDate(startDate.getTimeInMillis());
         }
 
         datePickerDialog.show();
+    }
+
+    private String formatDate(Calendar date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        return sdf.format(date.getTime());
     }
 
     private void updateDateText(boolean isStartDate) {
