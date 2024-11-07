@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.MyApplication;
@@ -35,6 +36,7 @@ import java.util.Locale;
 
 /**
  * Fragment for organizers to add an event
+ *
  * @author Xinjia Fan
  */
 
@@ -83,15 +85,22 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty() &&
                     startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
-                organizerEventController.addEvent(name,
-                        startDateText.getText().toString(),
-                        endDateText.getText().toString(),
-                        description, imageUri, aVoid -> {
 
-                            NavHostFragment.findNavController(this).
-                                    navigate(R.id.action_AddEvent_to_EventList);
-                            NavHostFragment.findNavController(this).
-                                    popBackStack(R.id.AddEventFragment, true);
+                Event event = new Event();
+                event.setName(name);
+                event.setStartDate(startDateText.getText().toString());
+                event.setEndDate(endDateText.getText().toString());
+                event.setDescription(description);
+
+                organizerEventController.addEvent(event, imageUri, aVoid -> {
+                    Log.d("nav", "navigate to event detail");
+//                    NavHostFragment.findNavController(this).navigate(R.id.action);
+                    AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
+                    NavHostFragment.findNavController(AddEventFragment.this).navigate(action);
+
+//                            NavHostFragment.findNavController(this).
+//                                    navigate(R.id.action_AddEvent_to_EventList);
+                    NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
 
                         }, e -> {
                             Log.e("save event", "Error: " + e.getMessage());

@@ -362,7 +362,7 @@ public class EntrantProfileFragment extends Fragment {
             binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
             binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
         } else {
-            // Optionally, clear focus when disabling edit mode
+            // clear focus when disabling edit mode
             t_name.clearFocus();
             binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.grey_border));
             binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.grey_border));
@@ -398,15 +398,6 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
 
-//        imageView.setDrawingCacheEnabled(true);
-//        imageView.buildDrawingCache();
-//        Bitmap bitmap = Bitmap.createBitmap(imageView.getDrawingCache());
-//        imageView.setDrawingCacheEnabled(false);
-//        imageUri = getImageUriFromImageView(bitmap);
-//        Log.d("imageUri", imageUri.toString());
-
-        // Save data1 and data2 to database or shared preferences
-        //Log.d("imageUri", imageUri.toString());
         ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable
     }

@@ -30,9 +30,7 @@ public class OrganizerEventController {
         this.db = db;
     }
 
-    public void addEvent(String name, String startDate, String endDate, String description, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-
-        event = new Event();
+    public void addEvent(Event event, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
 
         Bitmap b = QRCodeGenerator.generateQRCode(event.getId());
 
@@ -41,12 +39,11 @@ public class OrganizerEventController {
             public void onSuccess(String s) {
                 String hashedQRCode = QRCodeGenerator.hashQRCode(QRCodeGenerator.convertBitmapToByteArray(b));
                 event.setHashedQRCode(hashedQRCode);
-                event.setName(name);
+//                event.setName(name);
                 event.setQrCode(s);
-                event.setStartDate(startDate);
-                event.setEndDate(endDate);
-                if (description != null)
-                    event.setDescription(description);
+//                event.setStartDate(startDate);
+//                event.setEndDate(endDate);
+//                event.setDescription(description);
 
                 // Upload image if present
                 if (imageUri != null) {
@@ -66,18 +63,6 @@ public class OrganizerEventController {
     }
 
     public void editEvent(Event event, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-//        if (name != null) {
-//            event.setName(name);
-//        }
-//        if (description != null) {
-//            event.setDescription(description);
-//        }
-//        if (startDate != null) {
-//            event.setStartDate(startDate);
-//        }
-//        if (endDate != null) {
-//            event.setEndDate(endDate);
-//        }
         if (imageUri != null) {
             uploadImageToFirebase(imageUri, new OnSuccessListener<String>() {
                 @Override
