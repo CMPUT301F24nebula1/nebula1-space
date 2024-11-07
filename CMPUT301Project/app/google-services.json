@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "463670061705",
+    "project_id": "cmput301-f24-nebula1",
+    "storage_bucket": "cmput301-f24-nebula1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463670061705:android:e88a7d7ec8d86df0a1b458",
+        "android_client_info": {
+          "package_name": "com.example.cmput301project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDatQorEG4kfAt1DSqHLifLd6Qnj5C85cU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

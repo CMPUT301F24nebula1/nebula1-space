@@ -66,8 +66,7 @@
                     android:elevation="4dp"
                     android:text="Description"
                     app:layout_constraintStart_toStartOf="@+id/event_description"
-                    app:layout_constraintTop_toTopOf="@+id/event_description"/>
-
+                    app:layout_constraintTop_toTopOf="@+id/event_description"></TextView>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/event_description"

@@ -1,7 +1,6 @@
 package com.example.cmput301project.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.view.EventListFragmentDirections;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
@@ -47,25 +45,13 @@ public class EventListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
         eventList = binding.eventList;
-        MyApplication app = (MyApplication) requireActivity().getApplication();
 
-        Organizer o = app.getOrganizer();
-        if (o != null) {
-            // Update UI
-            events = o.getEvents();
-            Log.d("event list initial", String.valueOf(events.size()));
-        }
-        if (eventList != null && events != null) {
-            // Set the adapter with the context and event data
-            eventAdapter = new EventArrayAdapter(getContext(), events);
-            eventList.setAdapter(eventAdapter);
-        }
+        MyApplication app = (MyApplication) requireActivity().getApplication();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             // Use the organizer data here
             if (organizer != null) {
                 // Update UI
                 events = organizer.getEvents();
-                Log.d("event list livedata", String.valueOf(events.size()));
             }
             if (eventList != null && events != null) {
                 // Set the adapter with the context and event data

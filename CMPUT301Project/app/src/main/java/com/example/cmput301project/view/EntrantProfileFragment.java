@@ -1,19 +1,15 @@
 package com.example.cmput301project.view;
 
-import static com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -35,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -44,10 +39,7 @@ import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
-import com.google.android.material.card.MaterialCardView;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -62,8 +54,7 @@ public class EntrantProfileFragment extends Fragment {
     private Entrant entrant;
     private EntrantController ec;
     private TextView t_name, t_email, t_phone;
-    protected Button editImageButton;
-    private MaterialCardView btnEditSave;
+    protected Button editImageButton, btnEditSave;
     private ImageView imageView;
     private Uri imageUri;
     private boolean isEditMode = false;
@@ -123,9 +114,7 @@ public class EntrantProfileFragment extends Fragment {
             if (!isEditMode) {
                 // Enable edit mode
                 setEditMode(true);
-//                btnEditSave.setText("Save");
-                binding.text.setText("Save");
-                binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
+                btnEditSave.setText("Save");
             } else {
                 if (entrant != null) {
                     // Save changes and go back
@@ -157,8 +146,7 @@ public class EntrantProfileFragment extends Fragment {
                     }
                     saveChanges();
                     setEditMode(false);
-                    binding.text.setText("Edit");
-                    binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit));
+                    btnEditSave.setText("Edit");
 //                onBackPressed();  // Navigate back
                 }
                 else {
@@ -281,15 +269,12 @@ public class EntrantProfileFragment extends Fragment {
                 }
             }
     );
-
     private void populateEntrantInfo(Entrant entrant) {
         if (entrant != null) {
             // Name field
             t_name.setText(entrant.getName());
             t_email.setText(entrant.getEmail()); // Email field
             t_phone.setText(entrant.getPhone()); // Phone field
-            //binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
-
             if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
                 binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
             }
@@ -308,23 +293,12 @@ public class EntrantProfileFragment extends Fragment {
         }
     }
 
-    private Uri getImageUriFromImageView(Bitmap bitmap) {
-        File file = new File(getContext().getCacheDir(), "imageview_image.png");
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            return FileProvider.getUriForFile(getContext(), "come.example.compute301project.fileprovider", file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
     private void removeProfilePicture() {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
         entrant.setProfilePictureUrl(null); // Remove URL from entrant
+        entrant.setUri(null);
+        app.setEntrantLiveData(entrant);
         //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
@@ -368,15 +342,9 @@ public class EntrantProfileFragment extends Fragment {
         if (enabled) {
             t_name.requestFocus(); // Request focus for EditText
 //            /showKeyboard(editText) // Show the keyboard
-            binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
-            binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
-            binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
         } else {
-            // clear focus when disabling edit mode
+            // Optionally, clear focus when disabling edit mode
             t_name.clearFocus();
-            binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.grey_border));
-            binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.grey_border));
-            binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.grey_border));
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -407,8 +375,12 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setName(t_name.getText().toString());
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
-
-        ec.saveEntrantToDatabase(entrant, imageUri);
+        if (imageUri != null) {
+            entrant.setUri(imageUri.toString());
+            app.uploadImageAndSetEntrant(imageUri, entrant);
+        }
+        // Save data1 and data2 to database or shared preferences
+        //ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable
     }
 }

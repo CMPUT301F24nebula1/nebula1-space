@@ -11,7 +11,7 @@ import java.util.UUID;
  * @author Xinjia Fan
  */
 public class Event extends Observable implements Serializable {
-    private ArrayList<String> waitlistEntrantIds;
+    private ArrayList<Entrant> waitlist;
     private int limit;
     private String name;
     private String description;
@@ -26,7 +26,7 @@ public class Event extends Observable implements Serializable {
      * Default constructor initializing an empty waitlist and a unique ID for the event.
      */
     public Event() {
-        this.waitlistEntrantIds = new ArrayList<String>();
+        this.waitlist = new ArrayList<Entrant>();
         this.id = UUID.randomUUID().toString();
     }
 
@@ -35,7 +35,7 @@ public class Event extends Observable implements Serializable {
      * @param name The name of the event.
      */
     public Event(String name) {
-        this.waitlistEntrantIds = new ArrayList<String>();
+        this.waitlist = new ArrayList<Entrant>();
         this.name = name;
         this.id = UUID.randomUUID().toString();
     }
@@ -44,12 +44,8 @@ public class Event extends Observable implements Serializable {
      * Gets the waitlist.
      * @return waitlist.
      */
-    public ArrayList<String> getWaitlistEntrantIds() {
-        return waitlistEntrantIds;
-    }
-
-    public void setWaitlistEntrantIds(ArrayList<String> waitlistEntrantIds) {
-        this.waitlistEntrantIds = waitlistEntrantIds;
+    public ArrayList<Entrant> getWaitlist() {
+        return waitlist;
     }
 
     /**
@@ -57,7 +53,7 @@ public class Event extends Observable implements Serializable {
      * @param e The entrant to add.
      */
     public void add_entrant(Entrant e) {
-        waitlistEntrantIds.add(e.getId());
+        waitlist.add(e);
     }
 
     /**
@@ -65,7 +61,7 @@ public class Event extends Observable implements Serializable {
      * @param e The entrant to remove.
      */
     public void remove_entrant(Entrant e) {
-        waitlistEntrantIds.remove(e);
+        waitlist.remove(e);
     }
 
     /**

@@ -55,7 +55,7 @@ public class ScannerActivity extends Activity {
         Button closeButton = findViewById(R.id.close_button);
         Button selectFromGalleryButton = findViewById(R.id.select_from_gallery_button);
 
-        closeButton.setOnClickListener(v -> finish());
+        closeButton.setOnClickListener(v -> finish()); // 关闭按钮
 
         selectFromGalleryButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -68,11 +68,11 @@ public class ScannerActivity extends Activity {
                 String scannedResult = result.getText();
                 Log.d("CustomScannerActivity", "Scanned Result: " + scannedResult);
 
-                Intent intent = new Intent(ScannerActivity.this, MainActivity.class);
-                intent.putExtra("eventId", scannedResult);
-                //intent.putExtra("event", findEventInAllOrganizers(scannedResult));
-                intent.putExtra("navigateTo", "entrantEventViewFragment");
-                startActivity(intent);
+//                Intent intent = new Intent(ScannerActivity.this, MainActivity.class);
+//                intent.putExtra("eventId", scannedResult);
+//                //intent.putExtra("event", findEventInAllOrganizers(scannedResult));
+//                intent.putExtra("navigateTo", "eventDetailFragment");
+//                startActivity(intent);
 
                 finish();
             }

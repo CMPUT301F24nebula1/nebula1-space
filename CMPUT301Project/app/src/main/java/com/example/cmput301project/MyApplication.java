@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -13,17 +12,6 @@ import androidx.lifecycle.Observer;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 
 import java.util.ArrayList;
 
@@ -72,10 +60,10 @@ public class MyApplication extends Application {
             }
         });
 
-            if (snapshot != null && snapshot.exists()) {
-                Entrant entrant = snapshot.toObject(Entrant.class);
-                retrieveEntrantWishlist(entrant);
-                setEntrantLiveData(entrant); // Update LiveData with the new organizer
+        fb.getOrganizerLiveData().observeForever(new Observer<Organizer>() {
+            @Override
+            public void onChanged(Organizer organizer) {
+                organizerLiveData.setValue(organizer);
             }
         });
     }
@@ -93,70 +81,15 @@ public class MyApplication extends Application {
                 Log.d("MyApplication", "Image uploaded and Entrant updated with new URL.");
             }
 
-
-            if (snapshot != null && snapshot.exists()) {
-                Organizer organizer = snapshot.toObject(Organizer.class);
-                if (organizer == null) {
-                    return;
-                }
-
-                // Listen for changes in the events subcollection
-                docRef.collection("events")
-                        .addSnapshotListener((eventsSnapshot, eventsError) -> {
-                            if (eventsError != null) {
-                                Log.w("Firestore", "Error retrieving events data", eventsError);
-                                return;
-                            }
-
-                            if (eventsSnapshot != null) {
-                                ArrayList<Event> eventsList = new ArrayList<>();
-                                for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
-                                    Event event = eventDoc.toObject(Event.class);
-                                    eventsList.add(event);
-                                }
-
-                                // Set the events list in the organizer object
-                                organizer.setEvents(eventsList);
-
-                                // Update LiveData with the new organizer object that includes updated events
-                                organizerLiveData.setValue(organizer);
-
-                                Log.d("Firestore", "Organizer and events successfully updated and loaded.");
-                            }
-                        });
-            } else if (snapshot != null && !snapshot.exists()) {
-                // When the organizer document is deleted, update accordingly
-                Organizer organizer = new Organizer(userId);
-                setOrganizerLiveData(organizer);
+            @Override
+            public void onUploadFailure(Exception e) {
+                Log.e("MyApplication", "Failed to upload image for entrant", e);
             }
         });
     }
 
-    private void retrieveEntrantWishlist(Entrant entrant) {
-        CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
-        ArrayList<String> wishlist = new ArrayList<>();
-
-        waitlistRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                // Assuming each document has a field "item" that is a String
-                                String item = document.getString("eventId");
-                                if (item != null) {
-                                    wishlist.add(item);
-                                }
-                            }
-                            // Now `wishlist` contains all items
-                            Log.d("Wishlist app", "Wishlist items: " + wishlist);
-                            entrant.setWaitlistEventIds(wishlist);
-                        } else {
-                            Log.e("Firestore Error", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
+    public void uploadImageAndSetEvent(Uri imageUri, Event event) {
+        fb.uploadImage(imageUri, new FirebaseInterface.OnImageUploadListener() {
 
             @Override
             public void onUploadSuccess(String imageUrl) {
