@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -94,13 +95,11 @@ public class AddEventFragment extends Fragment {
 
                 organizerEventController.addEvent(event, imageUri, aVoid -> {
                     Log.d("nav", "navigate to event detail");
-//                    NavHostFragment.findNavController(this).navigate(R.id.action);
+                    NavOptions navOptions = new NavOptions.Builder()
+                            .setPopUpTo(R.id.AddEventFragment, true)
+                            .build();
                     AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
-                    NavHostFragment.findNavController(AddEventFragment.this).navigate(action);
-
-//                            NavHostFragment.findNavController(this).
-//                                    navigate(R.id.action_AddEvent_to_EventList);
-                    NavHostFragment.findNavController(this).popBackStack(R.id.AddEventFragment, true);
+                    NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
 
                         }, e -> {
                             Log.e("save event", "Error: " + e.getMessage());
