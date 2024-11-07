@@ -283,6 +283,7 @@
                         android:focusable="false"
                         android:inputType="none"
                         android:paddingEnd="48dp"
+                        android:cursorVisible="false"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -341,7 +342,9 @@
                         android:clickable="true"
                         android:enabled="false"
                         android:focusable="false"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:cursorVisible="false"
+                        android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageView

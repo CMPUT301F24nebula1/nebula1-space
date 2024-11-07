@@ -54,6 +54,9 @@ public class EventListFragment extends Fragment {
             // Update UI
             events = o.getEvents();
             Log.d("event list initial", String.valueOf(events.size()));
+//            for (int i = 0; i < events.size(); i++) {
+//                Log.d("event wishlist", events.get(i).getWaitlistEntrantIds().toString());
+//            }
         }
         if (eventList != null && events != null) {
             // Set the adapter with the context and event data

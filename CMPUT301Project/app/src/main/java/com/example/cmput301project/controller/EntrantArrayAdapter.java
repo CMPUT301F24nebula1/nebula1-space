@@ -1,4 +1,4 @@
-package com.example.cmput301project.view;
+package com.example.cmput301project.controller;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.Entrant;
-import com.example.cmput301project.model.Event;
 
 import java.util.ArrayList;
 

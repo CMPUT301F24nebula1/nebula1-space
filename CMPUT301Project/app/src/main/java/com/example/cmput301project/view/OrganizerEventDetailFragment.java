@@ -2,6 +2,7 @@ package com.example.cmput301project.view;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.icu.text.SimpleDateFormat;
@@ -23,6 +24,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.MyApplication;
@@ -42,11 +45,11 @@ import java.util.Locale;
 
 /**
  * Fragment for organizers to view their event details.
+ *
  * @author Xinjia Fan
  */
 public class OrganizerEventDetailFragment extends Fragment {
     private OrganizerEventViewBinding binding;
-    //OrganizerEventDetailBinding binding;
     private FirebaseFirestore db;
     private Event e;
     private ImageView posterImageview;
@@ -64,8 +67,8 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding = OrganizerEventViewBinding.inflate(inflater, container, false);
         if (getArguments() != null) {
             e = OrganizerEventDetailFragmentArgs.fromBundle(getArguments()).getE();
+            Log.d("event wishlist", e.getWaitlistEntrantIds().toString());
         }
-        //binding = OrganizerEventDetailBinding.inflate(inflater, container, false);
 
         binding.qrLayout.setVisibility(View.VISIBLE);
 
@@ -97,51 +100,51 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding.listButton.setVisibility(View.VISIBLE);
         setButtonDisabled();
 
-        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
-            // Use the organizer data here
-            if (organizer != null) {
-                // Use the organizer data (e.g., set organizer-related data in the UI)
-                Log.d("Organizer", "Organizer Name: " + organizer.getName());
+//        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
+        // Use the organizer data here
+//            if (organizer != null) {
+//                // Use the organizer data (e.g., set organizer-related data in the UI)
+//                Log.d("Organizer", "Organizer Name: " + organizer.getName());
 
+        Glide.with(getContext())
+                .load(e.getQrCode())
+                .placeholder(R.drawable.placeholder_image)  // placeholder
+                .error(R.drawable.error_image)              // error image
+                .into(qrImageview);
+
+        try {
+            if (e.getPosterUrl() != null && !e.getPosterUrl().isEmpty()) {
+                binding.eventImageview.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
-                        .load(e.getQrCode())
+                        .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
                         .error(R.drawable.error_image)              // error image
-                        .into(qrImageview);
-
-                try {
-                    if (!e.getPosterUrl().isEmpty()) {
-                        binding.eventImageview.setVisibility(View.VISIBLE);
-                        Glide.with(getContext())
-                                .load(e.getPosterUrl())
-                                .placeholder(R.drawable.placeholder_image)  // placeholder
-                                .error(R.drawable.error_image)              // error image
-                                .into(posterImageview);
-                    }
-                    else {
-                        binding.eventImageview.setVisibility(View.GONE);
-                    }
-                } catch (Exception e) {
-                    Log.d("event poster", "poster url is null");
-                }
-
-
-                t1.getEditText().setText(e.getDescription());
-                t2.getEditText().setText(e.getName());
-                startDate.getEditText().setText(e.getStartDate());
-                endDate.getEditText().setText(e.getEndDate());
-                limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "");
-
+                        .into(posterImageview);
+            } else {
+                binding.eventImageview.setVisibility(View.GONE);
             }
-        });
+        } catch (Exception e) {
+            Log.d("event poster", "poster url is null");
+        }
+
+
+        t1.getEditText().setText(e.getDescription());
+        t2.getEditText().setText(e.getName());
+        startDate.getEditText().setText(e.getStartDate());
+        endDate.getEditText().setText(e.getEndDate());
+        limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "");
+
+        String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
+
+//            }
+//        });
 
         qr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (binding.eventQrcodeImageview.getVisibility() == View.VISIBLE) {
                     binding.eventQrcodeImageview.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     binding.eventQrcodeImageview.setVisibility(View.VISIBLE);
                 }
             }
@@ -155,37 +158,47 @@ public class OrganizerEventDetailFragment extends Fragment {
                     isEditMode = false;
                     binding.text.setText("Save");
                     binding.icon.setImageResource(R.drawable.ic_save);
-                }
-                else {
-                    e.setName(t2.getEditText().getText().toString());
-                    e.setDescription(t1.getEditText().getText().toString());
-                    e.setStartDate(startDate.getEditText().getText().toString());
-                    e.setEndDate(startDate.getEditText().getText().toString());
-//                    if (limit.getEditText().toString().isEmpty()) {
-//                        e.setLimit(0);
-//                    } else {
-//                        e.setLimit(Integer.parseInt(limit.getEditText().toString()));
-//                    }
-//                    for (int i = 0; i < o.getEvents().size(); i++) {
-//                        if (e.getId().equals(o.getEvents().get(i).getId())) {
-//                            o.getEvents().remove(o.getEvents().get(i));
-//                            o.getEvents().add(e);
-//                            break;
-//                        }
-//                    }
-                    ec.editEvent(e, imageUri, aVoid -> {
-                        Log.d("Firebase", "Event edited successfully");
-                    }, f -> {
-                        Log.d("Firebase", "Fails.");
-                    });
-                    for (int i = 0; i < o.getEvents().size(); i++) {
-                        if (e.getId().equals(o.getEvents().get(i).getId())) {
-                            o.getEvents().remove(o.getEvents().get(i));
-                            o.getEvents().add(e);
-                            break;
+                } else {
+
+                    if (!t2.getEditText().getText().toString().isEmpty() &&
+                            startDate.getEditText().getText().toString().matches(pattern) &&
+                            endDate.getEditText().getText().toString().matches(pattern)) {
+                        if (!containsAlphabeticCharacter(t2.getEditText().getText().toString())) {
+                            Toast.makeText(getContext(), "Event name must include alphabetical characters.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
+                        if (!isValidPositiveInteger(binding.lotteryCapacity.getEditText().getText().toString())) {
+                            Toast.makeText(getContext(), "Capacity must be greater than 0.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        e.setName(t2.getEditText().getText().toString());
+                        e.setStartDate(startDate.getEditText().getText().toString());
+                        e.setEndDate(endDate.getEditText().getText().toString());
+                        e.setDescription(t1.getEditText().getText().toString());
+                        e.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
+
+                        ec.editEvent(e, imageUri, aVoid -> {
+                            Log.d("Firebase", "Event edited successfully");
+                        }, f -> {
+                            Log.d("Firebase", "Fails.");
+                        });
+
+
+                    } else {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Alert")
+                                .setMessage("An event has to have a name, start date and end date.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();  // Close the dialog
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        return;
                     }
-                    //app.setOrganizerLiveData(o);
+
                     setButtonDisabled();
                     isEditMode = true;
                     binding.text.setText("Edit");
@@ -199,6 +212,7 @@ public class OrganizerEventDetailFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ParticipantListActivity.class);
                 intent.putExtra("event", e);
+                Log.d("event wishlist", e.getWaitlistEntrantIds().toString());
                 startActivity(intent);
             }
         });
@@ -214,18 +228,18 @@ public class OrganizerEventDetailFragment extends Fragment {
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
 
-        EditText positiveIntegerEditText = binding.lotteryCapacityText;
-
-        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        // Validate when input focus changes
-        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                String input = positiveIntegerEditText.getText().toString();
-                if (!isValidPositiveInteger(input)) {
-                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
-                }
-            }
-        });
+//        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+//
+//        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//        // Validate when input focus changes
+//        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if (!hasFocus) {
+//                String input = positiveIntegerEditText.getText().toString();
+//                if (!isValidPositiveInteger(input)) {
+//                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+//                }
+//            }
+//        });
     }
 
     public void setButtonsEnabled() {
@@ -254,6 +268,10 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding.lotteryStartsDate.setEndIconVisible(false);
         binding.posterGroup.setEndIconVisible(false);
         binding.capacityNote.setVisibility(View.GONE);
+    }
+
+    public boolean containsAlphabeticCharacter(String str) {
+        return str != null && str.matches(".*[a-zA-Z].*");
     }
 
     // Method to validate if the input is a positive integer
@@ -349,6 +367,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         posterImageview.setImageBitmap(bitmap);
+                        posterImageview.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

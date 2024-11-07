@@ -41,7 +41,7 @@
             android:layout_marginHorizontal="26dp"
             android:layout_marginBottom="21dp"
             android:src="@mipmap/ic_launcher"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"

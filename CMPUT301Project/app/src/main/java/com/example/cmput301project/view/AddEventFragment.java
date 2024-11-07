@@ -89,12 +89,20 @@ public class AddEventFragment extends Fragment {
             if (!name.isEmpty() &&
                     startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
-
+                if (!containsAlphabeticCharacter(name)) {
+                    Toast.makeText(getContext(), "Event name must include alphabetical characters.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!isValidPositiveInteger(binding.lotteryCapacity.getEditText().getText().toString())) {
+                    Toast.makeText(getContext(), "Capacity must be greater than 0.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Event event = new Event();
                 event.setName(name);
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
                 event.setDescription(description);
+                event.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
 
                 organizerEventController.addEvent(event, imageUri, aVoid -> {
                     Log.d("nav", "navigate to event detail");
@@ -145,18 +153,18 @@ public class AddEventFragment extends Fragment {
             showDatePickerDialog(false);
         });
 
-        EditText positiveIntegerEditText = binding.lotteryCapacityText;
-
-        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        // Validate when input focus changes
-        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                String input = positiveIntegerEditText.getText().toString();
-                if (!isValidPositiveInteger(input)) {
-                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
-                }
-            }
-        });
+//        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+//
+//        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//        // Validate when input focus changes
+//        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if (!hasFocus) {
+//                String input = positiveIntegerEditText.getText().toString();
+//                if (!isValidPositiveInteger(input)) {
+//                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+//                }
+//            }
+//        });
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
@@ -170,6 +178,10 @@ public class AddEventFragment extends Fragment {
         binding.posterGroup.setEnabled(true);
         binding.selectImageButton.setEnabled(true);
         binding.capacityNote.setVisibility(View.VISIBLE);
+    }
+
+    public boolean containsAlphabeticCharacter(String str) {
+        return str != null && str.matches(".*[a-zA-Z].*");
     }
 
     // Method to validate if the input is a positive integer

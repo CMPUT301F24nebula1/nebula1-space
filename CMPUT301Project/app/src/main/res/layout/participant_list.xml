@@ -180,7 +180,7 @@
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <ListView
-        android:id="@+id/listView3"
+        android:id="@+id/participant_list"
         android:layout_width="352dp"
         android:layout_height="356dp"
         android:layout_marginBottom="48dp"
