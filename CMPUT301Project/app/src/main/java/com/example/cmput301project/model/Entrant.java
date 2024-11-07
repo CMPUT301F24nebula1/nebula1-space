@@ -1,6 +1,7 @@
 package com.example.cmput301project.model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Represents an Entrant, extending the User class.
@@ -14,6 +15,7 @@ public class Entrant extends User {
     protected String email;
     protected String phone;
     private String profilePictureUrl;
+    private String status;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -127,5 +129,35 @@ public class Entrant extends User {
      */
     public void setProfilePictureUrl(String profilePictureUrl) {
         this.profilePictureUrl = profilePictureUrl;
+    }
+
+    /**
+     * Gets the status of the entrant.
+     * @return The status of the entrant.
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the status of the entrant.
+     * @param status The status to set.
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Entrant)) return false;
+        Entrant other = (Entrant) obj;
+        return Objects.equals(getId(), other.getId()) &&
+                Objects.equals(status, other.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), status);
     }
 }

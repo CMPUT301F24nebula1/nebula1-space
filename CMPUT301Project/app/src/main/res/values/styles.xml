@@ -27,7 +27,8 @@
 
         <!-- Box colors -->
         <item name="boxBackgroundColor">@android:color/transparent</item>
-        <item name="boxStrokeColor">#8FE7A8A8</item> <!-- Default border color -->
+        <item name="boxStrokeColor">@color/text_input_selector</item>
+<!--        <item name="boxStrokeColor">#8FE7A8A8</item> &lt;!&ndash; Default border color &ndash;&gt;-->
         <item name="hintTextColor">@color/colorHint</item>
 
         <!-- Colors for focused and error states -->

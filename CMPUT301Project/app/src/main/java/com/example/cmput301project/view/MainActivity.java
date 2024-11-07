@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.toolbar);
+//        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");

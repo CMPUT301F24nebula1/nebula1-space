@@ -12,6 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="8dp">
@@ -67,6 +68,17 @@
                     android:text="Description"
                     app:layout_constraintStart_toStartOf="@+id/event_description"
                     app:layout_constraintTop_toTopOf="@+id/event_description"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:indeterminate="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/event_description"
@@ -207,38 +219,57 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
+                        android:inputType="phone"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Note below Lottery Capacity -->
             <TextView
+                android:id="@+id/capacity_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
                 android:text="Must be greater than zero."
+                android:visibility="gone"
                 android:textSize="12sp" />
 
             <!-- Event Poster Selection -->
-            <FrameLayout
-                android:id="@+id/poster_button"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/poster_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                android:visibility="visible"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="-6dp"
+                    android:background="#DDCCFF"
+                    android:elevation="4dp"
+                    android:text="Event Poster"
+                    app:layout_constraintStart_toStartOf="@+id/poster_group"
+                    app:layout_constraintTop_toTopOf="@+id/poster_group" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/FancyTextInputLayout"
+                    android:id="@+id/poster_group"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:hint="Event Poster"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:boxBackgroundColor="@android:color/transparent"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusBottomEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="#8FE7A8A8"
                     app:endIconDrawable="@drawable/ic_folder"
                     app:endIconMode="custom"
                     app:endIconTint="#FDCC44">
@@ -254,22 +285,22 @@
                         android:paddingEnd="48dp"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
-            </FrameLayout>
 
-            <!--        android:visibility="gone"-->
-            <ImageView
-                android:id="@+id/event_imageview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:contentDescription="Event image"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background"
-                android:visibility="gone"
+                <ImageView
+                    android:id="@+id/event_imageview"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="Event image"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_launcher_background"
+                    android:visibility="gone"
 
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/poster_button" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/poster_group" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/qr_layout"
@@ -358,18 +389,17 @@
         android:layout_width="120dp"
         android:layout_height="55dp"
         android:layout_gravity="center"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#E0EDE7F6"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:padding="8dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/list_button"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
@@ -392,6 +422,49 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Edit"
+                android:textColor="#673AB7"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/list_button"
+        android:layout_width="120dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="#E0EDE7F6"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="visible"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/save_event_button">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/ic_list"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_list"
+                app:tint="#673AB7" />
+
+            <TextView
+                android:id="@+id/text_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Lists"
                 android:textColor="#673AB7"
                 android:textSize="16sp" />
         </LinearLayout>

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +92,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         qr.setEnabled(true);
         qrImageview.setVisibility(View.VISIBLE);
         binding.saveEventButton.setVisibility(View.VISIBLE);
+        binding.listButton.setVisibility(View.VISIBLE);
         setButtonDisabled();
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
@@ -190,6 +192,15 @@ public class OrganizerEventDetailFragment extends Fragment {
             }
         });
 
+        binding.listButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ParticipantListActivity.class);
+                intent.putExtra("event", e);
+                startActivity(intent);
+            }
+        });
+
         binding.startDateText.setOnClickListener(v -> {
             Log.d("DatePicker", "Start Date Clicked");
             showDatePickerDialog(true);
@@ -200,27 +211,57 @@ public class OrganizerEventDetailFragment extends Fragment {
         });
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+
+        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+
+        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        // Validate when input focus changes
+        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String input = positiveIntegerEditText.getText().toString();
+                if (!isValidPositiveInteger(input)) {
+                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+                }
+            }
+        });
     }
 
     public void setButtonsEnabled() {
         binding.eventName.setEnabled(true);
         binding.eventDescription.setEnabled(true);
-        binding.startDateText.setEnabled(true);
-        binding.endDateText.setEnabled(true);
+        binding.lotteryStartsDate.setEnabled(true);
+        binding.lotteryEndsDate.setEnabled(true);
         binding.lotteryCapacity.setEnabled(true);
-        binding.posterButton.setEnabled(true);
-        binding.selectImageButton.setEnabled(true);
+        binding.posterGroup.setEnabled(true);
+
+        binding.lotteryEndsDate.setEndIconVisible(true);
+        binding.lotteryStartsDate.setEndIconVisible(true);
+        binding.posterGroup.setEndIconVisible(true);
+        binding.capacityNote.setVisibility(View.VISIBLE);
     }
 
     public void setButtonDisabled() {
         binding.eventName.setEnabled(false);
         binding.eventDescription.setEnabled(false);
-        binding.startDateText.setEnabled(false);
-        binding.endDateText.setEnabled(false);
+        binding.lotteryStartsDate.setEnabled(false);
+        binding.lotteryEndsDate.setEnabled(false);
         binding.lotteryCapacity.setEnabled(false);
-        binding.posterButton.setEnabled(false);
-        binding.selectImageButton.setEnabled(false);
+        binding.posterGroup.setEnabled(false);
 
+        binding.lotteryEndsDate.setEndIconVisible(false);
+        binding.lotteryStartsDate.setEndIconVisible(false);
+        binding.posterGroup.setEndIconVisible(false);
+        binding.capacityNote.setVisibility(View.GONE);
+    }
+
+    // Method to validate if the input is a positive integer
+    private boolean isValidPositiveInteger(String input) {
+        try {
+            int value = Integer.parseInt(input);
+            return value > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void showDatePickerDialog(final boolean isStartDate) {

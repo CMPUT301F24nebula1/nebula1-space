@@ -5,13 +5,16 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +56,7 @@ public class AddEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = OrganizerEventViewBinding.inflate(inflater, container, false);
 
-
+        binding.listButton.setVisibility(View.GONE);
         return binding.getRoot();
     }
 
@@ -142,6 +145,19 @@ public class AddEventFragment extends Fragment {
             showDatePickerDialog(false);
         });
 
+        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+
+        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        // Validate when input focus changes
+        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String input = positiveIntegerEditText.getText().toString();
+                if (!isValidPositiveInteger(input)) {
+                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+                }
+            }
+        });
+
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
 
@@ -151,8 +167,18 @@ public class AddEventFragment extends Fragment {
         binding.startDateText.setEnabled(true);
         binding.endDateText.setEnabled(true);
         binding.lotteryCapacity.setEnabled(true);
-        binding.posterButton.setEnabled(true);
+        binding.posterGroup.setEnabled(true);
         binding.selectImageButton.setEnabled(true);
+    }
+
+    // Method to validate if the input is a positive integer
+    private boolean isValidPositiveInteger(String input) {
+        try {
+            int value = Integer.parseInt(input);
+            return value > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void openImagePicker() {
@@ -181,18 +207,40 @@ public class AddEventFragment extends Fragment {
     private void showDatePickerDialog(final boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
 
+        // Ensure the context is not null
+        if (getActivity() == null) {
+            Log.e("DatePicker", "Fragment not attached to an Activity");
+            return;
+        }
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(),
+                getActivity(),
                 (view, year, month, dayOfMonth) -> {
                     calendar.set(year, month, dayOfMonth);
-                    updateDateText(isStartDate);
+
+                    if (isStartDate) {
+                        startDateText.setText(formatDate(startDate));
+
+                        // Check if end date is earlier than start date and update it if needed
+                        if (endDate.before(startDate)) {
+                            endDate.setTime(startDate.getTime()); // Set end date to start date
+                            endDateText.setText(formatDate(endDate));
+                        }
+                    } else {
+                        endDateText.setText(formatDate(endDate));
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        if (!isStartDate && startDate != null) {
+        // Restrict dates to today or later
+        datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+
+        // If setting the end date, restrict it to the selected start date as the minimum date
+
+        if (!isStartDate) {
             // Set minimum date for endDate picker as the selected start date
             datePickerDialog.getDatePicker().setMinDate(startDate.getTimeInMillis());
         }
@@ -216,5 +264,10 @@ public class AddEventFragment extends Fragment {
         } else {
             endDateText.setText(dateText);
         }
+    }
+
+    private String formatDate(Calendar date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        return sdf.format(date.getTime());
     }
 }
