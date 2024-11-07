@@ -71,6 +71,26 @@ public class OrganizerEventDetailFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
+        Organizer o = app.getOrganizer();
+        db = FirebaseFirestore.getInstance();
+        ec = new OrganizerEventController(o, db);
+
+        startDate = Calendar.getInstance();
+        endDate = Calendar.getInstance();
+
+        posterImageview = binding.eventImageview;
+        ImageView qrImageview = binding.eventQrcodeImageview;
+        TextInputLayout t1 = binding.eventDescription;
+        TextInputLayout t2 = binding.eventName;
+        TextInputLayout startDate = binding.lotteryStartsDate;
+        TextInputLayout endDate = binding.lotteryEndsDate;
+        TextInputLayout limit = binding.lotteryCapacity;
+        TextInputEditText qr = binding.qrCodeEdittext;
+
+        qr.setEnabled(true);
+        qrImageview.setVisibility(View.VISIBLE);
+        binding.saveEventButton.setVisibility(View.VISIBLE);
+        setButtonDisabled();
 
         o = app.getOrganizerLiveData().getValue();
         ec = new OrganizerEventController(o, app.getFb());
@@ -155,14 +175,23 @@ public class OrganizerEventDetailFragment extends Fragment {
                     e.setDescription(t1.getEditText().getText().toString());
                     e.setStartDate(startDate.getEditText().getText().toString());
                     e.setEndDate(startDate.getEditText().getText().toString());
-                    if (imageUri != null) {
-                        app.uploadImageAndSetEvent(imageUri, e);
-                    }
 //                    if (limit.getEditText().toString().isEmpty()) {
 //                        e.setLimit(0);
 //                    } else {
 //                        e.setLimit(Integer.parseInt(limit.getEditText().toString()));
 //                    }
+//                    for (int i = 0; i < o.getEvents().size(); i++) {
+//                        if (e.getId().equals(o.getEvents().get(i).getId())) {
+//                            o.getEvents().remove(o.getEvents().get(i));
+//                            o.getEvents().add(e);
+//                            break;
+//                        }
+//                    }
+                    ec.editEvent(e, imageUri, aVoid -> {
+                        Log.d("Firebase", "Event edited successfully");
+                    }, f -> {
+                        Log.d("Firebase", "Fails.");
+                    });
                     for (int i = 0; i < o.getEvents().size(); i++) {
                         if (e.getId().equals(o.getEvents().get(i).getId())) {
                             o.getEvents().remove(o.getEvents().get(i));
@@ -170,7 +199,10 @@ public class OrganizerEventDetailFragment extends Fragment {
                             break;
                         }
                     }
-                    app.setOrganizerLiveData(o);
+
+                    //app.setOrganizerLiveData(o);
+                    setButtonDisabled();
+
                     isEditMode = true;
                     binding.text.setText("Edit");
                     binding.icon.setImageResource(R.drawable.ic_edit);
@@ -231,6 +263,24 @@ public class OrganizerEventDetailFragment extends Fragment {
         }
 
         datePickerDialog.show();
+    }
+
+    private void updateDateText(boolean isStartDate) {
+        Calendar calendar = isStartDate ? startDate : endDate;
+        String dateText = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));
+
+        dateText = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                (calendar.get(Calendar.MONTH) + 1) + "/" +
+                calendar.get(Calendar.YEAR);
+
+        if (isStartDate) {
+            binding.startDateText.setText(dateText);
+        } else {
+            binding.endDateText.setText(dateText);
+        }
     }
 
     private void updateDateText(boolean isStartDate) {

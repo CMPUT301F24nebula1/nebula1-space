@@ -22,7 +22,7 @@ public class EventTests {
     public void testAddEntrant() {
         Entrant entrant = new Entrant();
         event.add_entrant(entrant);
-        assertTrue(event.getWaitlist().contains(entrant));
+        assertTrue(event.getWaitlistEntrantIds().contains(entrant));
     }
 
     //Test 2: Testing remove entrant
@@ -31,7 +31,7 @@ public class EventTests {
         Entrant entrant = new Entrant();
         event.add_entrant(entrant);
         event.remove_entrant(entrant);
-        assertFalse(event.getWaitlist().contains(entrant));
+        assertFalse(event.getWaitlistEntrantIds().contains(entrant));
     }
 
     //Test 3: Testing get limit
