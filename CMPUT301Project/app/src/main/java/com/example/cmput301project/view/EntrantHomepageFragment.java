@@ -6,7 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -94,6 +97,7 @@ public class EntrantHomepageFragment extends Fragment {
         binding.scanQrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                requestPermissionLauncher.launch(android.Manifest.permission.CAMERA);
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 startActivity(intent);
             }
@@ -101,7 +105,15 @@ public class EntrantHomepageFragment extends Fragment {
 
     }
 
-
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permission is granted. You can now use the camera.
+                } else {
+                    // Permission denied. Inform the user that the feature is unavailable.
+                    Toast.makeText(getContext(), "Camera permission is required to take photos.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Override
     public void onDestroyView() {

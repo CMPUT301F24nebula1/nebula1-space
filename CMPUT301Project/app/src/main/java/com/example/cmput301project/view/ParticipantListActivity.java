@@ -46,7 +46,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
         entrants = new ArrayList<Entrant>();
 
-        Log.d("event wishlist participantactivity", event.getWaitlistEntrantIds().toString());
+        Log.d("event wishlist participantActivity", event.getWaitlistEntrantIds().toString());
 
         toggleGroup = findViewById(R.id.listToggleGroup);
 

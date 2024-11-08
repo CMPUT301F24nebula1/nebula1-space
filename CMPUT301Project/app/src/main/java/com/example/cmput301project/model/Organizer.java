@@ -15,6 +15,12 @@ public class Organizer extends User {
 
     private String name;
 
+    private String email;
+
+    private String phone;
+
+    private String profilePictureUrl;
+
     /**
      * Default constructor initializing an empty list of events and assigning the organizer role.
      */
@@ -79,5 +85,29 @@ public class Organizer extends User {
      */
     public void setEvents(ArrayList<Event> events) {
         this.events = events;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

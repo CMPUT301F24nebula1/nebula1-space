@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_OrganizerHomepage_to_EventList"
             app:destination="@+id/EventListFragment" />
+        <action
+            android:id="@+id/action_OrganizerHomepage_to_FacilityProfile"
+            app:destination="@+id/OrganizerFacilityProfileFragment" />
     </fragment>
 
     <fragment
@@ -96,5 +99,12 @@
         <argument
             android:name="e"
             app:argType="com.example.cmput301project.model.Event" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerFacilityProfileFragment"
+        android:name="com.example.cmput301project.view.OrganizerFacilityProfileFragment"
+        android:label="Facility Profile"
+        tools:layout="@layout/entrant_profile">
     </fragment>
 </navigation>
