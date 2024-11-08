@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 /**
  * MainActivity
  * @author Xinjia Fan
+ * @author Zaid Islam
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -65,19 +67,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         id = getDeviceId(this);
 
-//        if (db == null) {
-//            db = FirebaseFirestore.getInstance();
-//            db.useEmulator("10.0.2.2", 8080);
-//
-//            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                    .setPersistenceEnabled(false)
-//                    .build();
-//            db.setFirestoreSettings(settings);
-//        }
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         ((MyApplication) this.getApplication()).setUserId(id);
-//        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
-//        ((MyApplication) this.getApplication()).setDb(db);
+        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
         db = ((MyApplication) this.getApplication()).getDb();
         retrieveUser(id);
         ((MyApplication) this.getApplication()).listenToOrganizerFirebaseUpdates(id);
@@ -94,6 +90,22 @@ public class MainActivity extends AppCompatActivity {
         String eventId = intent.getStringExtra("eventId");
 
         Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+
+        Button adminModeButton = findViewById(R.id.btn_admin);
+        adminModeButton.setOnClickListener(view -> {
+            checkIfUserIsAdmin(isAdmin -> {
+                if (isAdmin) {
+                    // If the user is an admin, navigate to the admin activity
+                    Intent adminIntent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                    startActivity(adminIntent);
+                } else {
+                    // Show access denied message
+                    Toast.makeText(MainActivity.this, "Access Denied: Admins Only", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+
 
         toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -122,17 +134,6 @@ public class MainActivity extends AppCompatActivity {
                     if (navController.getCurrentDestination().getId() != R.id.EntrantHomepageFragment) {
                         navController.navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage);
                     }
-                } else if (checkedId == R.id.btn_admin) {
-                    isAdmin(id, isAdmin -> {
-                        if (isAdmin) {
-                            // the user is an admin
-                            // navigate to admin homepage
-                            ;
-                        }
-                        else {
-                            Toast.makeText(this, "Admin access required.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
                 }
             }
         });
@@ -160,34 +161,6 @@ public class MainActivity extends AppCompatActivity {
             findEventInAllOrganizers(eventId, navController);
         }
     }
-
-
-    private void isAdmin(String id, AdminCheckCallback callback) {
-        db.collection("admins").document(id).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            // Document with the given ID exists in the "admins" collection
-                            Log.d("FirestoreCheck", "ID exists in admins collection.");
-                            callback.onCheckCompleted(true); // Callback with true
-                        } else {
-                            // Document with the given ID does not exist in the "admins" collection
-                            Log.d("FirestoreCheck", "ID does not exist in admins collection.");
-                            callback.onCheckCompleted(false); // Callback with false
-                        }
-                    } else {
-                        // Handle the error and consider returning false
-                        Log.e("FirestoreError", "Error checking document in admins collection: ", task.getException());
-                        callback.onCheckCompleted(false);
-                    }
-                });
-    }
-
-    public interface AdminCheckCallback {
-        void onCheckCompleted(boolean isAdmin);
-    }
-
 
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -436,6 +409,20 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(f -> {
                     Log.w("Firestore", "Error adding user", f);
                 });
+    }
+
+    private void checkIfUserIsAdmin(OnAdminCheckListener listener) {
+        ((MyApplication) getApplication()).getUserRoles(new MyApplication.OnRolesLoadedListener() {
+            @Override
+            public void onRolesLoaded(ArrayList<String> roles) {
+                boolean isAdmin = roles != null && roles.contains("admin");
+                listener.onAdminCheckCompleted(isAdmin);
+            }
+        });
+    }
+
+    public interface OnAdminCheckListener {
+        void onAdminCheckCompleted(boolean isAdmin);
     }
 
     // for ui test

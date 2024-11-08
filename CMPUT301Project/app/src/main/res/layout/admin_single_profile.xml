@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,15 +18,15 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:navigationIcon="?attr/homeAsUpIndicator"
-            app:title="Profile"
-            app:titleTextColor="@android:color/white" />
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:navigationIcon="?attr/homeAsUpIndicator"
+                app:title="Profile"
+                app:titleTextColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/profileTitle"
@@ -47,9 +46,6 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="64dp"
             android:layout_marginEnd="32dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_event_name"
             android:src="@drawable/ic_launcher_background" />
 
         <!-- Delete Image Button -->
@@ -58,7 +54,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-
             android:text="@string/delete_image"
             android:textColor="@android:color/white"
             android:minHeight="48dp"
@@ -94,7 +89,7 @@
             android:layout_marginTop="8dp"
             android:padding="12dp" />
 
-        <!-- Optional  -->
+        <!-- Optional Label -->
         <TextView
             android:id="@+id/optionalLabel"
             android:layout_width="wrap_content"
@@ -103,15 +98,13 @@
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp"
             android:layout_gravity="start"
-            android:layout_marginStart="10dp"
-            />
+            android:layout_marginStart="10dp" />
 
         <Button
             android:id="@+id/deleteUserButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete User"
-            android:layout_marginTop="24dp"
-             />
+            android:layout_marginTop="24dp" />
     </LinearLayout>
 </ScrollView>
