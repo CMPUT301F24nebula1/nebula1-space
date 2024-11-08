@@ -45,7 +45,7 @@ import java.util.Locale;
  */
 
 public class AddEventFragment extends Fragment {
-    private OrganizerEventViewBinding binding;
+    public OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
@@ -201,7 +201,7 @@ public class AddEventFragment extends Fragment {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+    public ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {

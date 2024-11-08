@@ -65,13 +65,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         id = getDeviceId(this);
 
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        if (db == null) {
+//            db = FirebaseFirestore.getInstance();
+//            db.useEmulator("10.0.2.2", 8080);
+//
+//            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                    .setPersistenceEnabled(false)
+//                    .build();
+//            db.setFirestoreSettings(settings);
+//        }
 
         ((MyApplication) this.getApplication()).setUserId(id);
-        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
+//        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
+//        ((MyApplication) this.getApplication()).setDb(db);
         db = ((MyApplication) this.getApplication()).getDb();
         retrieveUser(id);
         ((MyApplication) this.getApplication()).listenToOrganizerFirebaseUpdates(id);
@@ -430,6 +436,11 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(f -> {
                     Log.w("Firestore", "Error adding user", f);
                 });
+    }
+
+    // for ui test
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

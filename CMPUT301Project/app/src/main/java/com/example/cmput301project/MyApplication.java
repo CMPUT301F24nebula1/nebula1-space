@@ -18,6 +18,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -40,6 +41,17 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         FirebaseApp.initializeApp(this);  // Initialize Firebase
+
+        // Initialize Firestore and set the emulator only if it's not already initialized, only for testing
+        if (db == null) {
+            db = FirebaseFirestore.getInstance();
+//            db.useEmulator("10.0.2.2", 8080);
+//
+//            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                    .setPersistenceEnabled(false)
+//                    .build();
+//            db.setFirestoreSettings(settings);
+        }
     }
 
     public void listenToEntrantFirebaseUpdates(String userId) {
@@ -148,6 +160,9 @@ public class MyApplication extends Application {
     public FirebaseFirestore getDb() {
         if (db == null) {
             db = FirebaseFirestore.getInstance();
+            // 10.0.2.2 is the special IP address to connect to the 'localhost' of
+            // the host computer from an Android emulator.
+//            db.useEmulator("10.0.2.2", 8080);
         }
         return db;
     }
@@ -168,7 +183,7 @@ public class MyApplication extends Application {
         this.userId = userId;
     }
 
-    public LiveData<Organizer> getOrganizerLiveData() {
+    public MutableLiveData<Organizer> getOrganizerLiveData() {
         return organizerLiveData;
     }
 
