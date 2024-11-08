@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Pen body -->
+    <path
+        android:fillColor="#8E24AA"
+        android:pathData="M3,21v-3l9.29,-9.29c0.39,-0.39 1.02,-0.39 1.41,0l2.29,2.29c0.39,0.39 0.39,1.02 0,1.41L6,21H3z" />
+
+    <!-- Pen tip -->
+    <path
+        android:fillColor="#8E24AA"
+        android:pathData="M14.7,9.3l-1.4,-1.4 2.29,-2.29c0.39,-0.39 1.02,-0.39 1.41,0l1.41,1.41c0.39,0.39 0.39,1.02 0,1.41L14.7,9.3z" />
+</vector>

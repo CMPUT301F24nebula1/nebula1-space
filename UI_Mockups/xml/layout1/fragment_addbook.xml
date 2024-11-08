@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/edit_bookTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/book_title"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:textColorHint="#546E7A" />
+
+    <EditText
+        android:id="@+id/edit_authorName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/author_name"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:textColorHint="#546E7A"/>
+
+    <EditText
+        android:id="@+id/edit_genre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/genre"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:textColorHint="#546E7A" />
+
+    <EditText
+        android:id="@+id/edit_publishYear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:hint="@string/publication_year"
+        android:inputType="number"
+        android:textColorHint="#546E7A"/>
+
+    <CheckBox
+        android:id="@+id/edit_checkBox_readStatus"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/read_status" />
+
+</LinearLayout>
