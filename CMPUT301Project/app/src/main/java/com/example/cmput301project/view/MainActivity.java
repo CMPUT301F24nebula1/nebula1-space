@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.toolbar);
+//        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");
@@ -270,13 +271,45 @@ public class MainActivity extends AppCompatActivity {
 
                                     if (organizer != null) {
                                         // Retrieve events from the subcollection
-                                        db.collection("organizers").document(userId).collection("events")
-                                                .get()
+                                        CollectionReference eventsRef = db.collection("organizers").document(userId).collection("events");
+                                        eventsRef.get()
                                                 .addOnSuccessListener(eventsSnapshot -> {
                                                     ArrayList<Event> eventsList = new ArrayList<>();
                                                     for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
                                                         Event event = eventDoc.toObject(Event.class);
-                                                        eventsList.add(event);
+
+                                                        eventsRef.document(event.getId()).get().addOnCompleteListener(eventTask -> {
+                                                            if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+//                                                                Event event = eventTask.getResult().toObject(Event.class);
+
+                                                                ArrayList<String> wishlishIds = new ArrayList<>();
+
+                                                                eventsRef.document(event.getId()).collection("userId").get()
+                                                                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                                                                            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                                                                // field "userId" that stores a string
+                                                                                String entrantId = document.getString("userId");
+                                                                                if (entrantId != null) {
+                                                                                    wishlishIds.add(entrantId);
+                                                                                }
+                                                                            }
+                                                                            event.setWaitlistEntrantIds(wishlishIds);
+                                                                            if (event != null) {
+                                                                                Log.d("Firestore", "Found event with ID: " + event.getId() + " in organizer: " + organizer.getId());
+                                                                                eventsList.add(event);
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(e -> {
+                                                                            // Handle any errors here
+                                                                            Log.e("FirestoreError", "Error retrieving user IDs", e);
+                                                                        });
+
+                                                            } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
+                                                                Log.d("Firestore", "No matching event found with ID: " + event.getId() + " in organizer: " + organizer.getId());
+                                                            } else {
+                                                                Log.w("Firestore", "Error getting event", eventTask.getException());
+                                                            }
+                                                        });
                                                     }
 
                                                     // Set the events list in the organizer object
