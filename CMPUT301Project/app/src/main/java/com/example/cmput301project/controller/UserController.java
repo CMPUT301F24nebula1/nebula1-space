@@ -2,11 +2,14 @@ package com.example.cmput301project.controller;
 
 import android.util.Log;
 
+import com.example.cmput301project.model.Admin;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.cmput301project.model.Admin;
+
 
 import java.util.ArrayList;
 
@@ -27,7 +30,10 @@ public class UserController {
                     userRef.update("role", roles)
                             .addOnSuccessListener(aVoid -> Log.d("Firestore", "User role successfully updated!"))
                             .addOnFailureListener(e -> Log.w("Firestore", "Error updating user role", e));
+
                     addOrganizer(new Organizer(userId));
+                    addAdmin(new Admin(userId));
+
 
                     DocumentReference entrantRef = db.collection("entrants").document(userId);
                     entrantRef.get().addOnSuccessListener(documentSnapshot1 -> {
@@ -71,6 +77,15 @@ public class UserController {
                     }
                 })
                 .addOnFailureListener(e -> Log.w("Firestore", "Error adding organizer", e));
+    }
+
+    public static void addAdmin(Admin admin) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Add the main admin document
+        db.collection("admin").document(admin.getId())
+                .set(admin)
+                .addOnSuccessListener(aVoid -> {Log.d("Firestore", "Admin successfully added!");})
+                .addOnFailureListener(e -> Log.w("Firestore", "Error adding admin", e));
     }
 
 }

@@ -7,6 +7,7 @@
     android:fitsSystemWindows="true"
     tools:context=".view.MainActivity">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,34 +23,50 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleGroup"
+
+    <com.google.android.material.button.MaterialButtonToggleGroup android:id="@+id/toggleGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginStart="16dp"
-        app:checkedButton="@id/btn_entrant"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:checkedButton="@id/btn_admin"
         app:selectionRequired="true"
         app:singleSelection="true">
 
+
+        <!-- Admin Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_organizer"
+            android:id="@+id/btn_admin"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organizer"
+            android:text="Admin"
             android:textColor="@color/btn_text_selector"
-            android:textSize="12dp"
+            android:textSize="12sp"
             app:backgroundTint="@color/btn_background_selector"
             app:icon="@drawable/ic_check_selector"
             app:iconGravity="textStart"
             app:iconPadding="4dp"
             app:iconTint="@color/btn_text_selector"
-            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape"
-            tools:ignore="TextSizeCheck" />
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape"/>
 
+        <!-- Organizer Button  -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_organizer"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organizer"
+            android:textColor="@color/btn_text_selector"
+            android:textSize="12sp"
+            app:backgroundTint="@color/btn_background_selector"
+            app:icon="@drawable/ic_check_selector"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp"
+            app:iconTint="@color/btn_text_selector"
+            />
+
+        <!-- Entrant Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_entrant"
             style="@style/Widget.MaterialComponents.Button"
@@ -57,14 +74,14 @@
             android:layout_height="wrap_content"
             android:text="Entrant"
             android:textColor="@color/btn_text_selector"
-            android:textSize="12dp"
+            android:textSize="12sp"
             app:backgroundTint="@color/btn_background_selector"
             app:icon="@drawable/ic_check_selector"
             app:iconGravity="textStart"
             app:iconPadding="4dp"
             app:iconTint="@color/btn_text_selector"
-            app:shapeAppearanceOverlay="@style/RightRoundedButtonShape"
-            tools:ignore="TextSizeCheck" />
+            app:shapeAppearanceOverlay="@style/RightRoundedButtonShape" />
+
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <FrameLayout
@@ -76,5 +93,6 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <include layout="@layout/content_main" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

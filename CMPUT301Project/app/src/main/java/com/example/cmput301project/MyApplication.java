@@ -31,6 +31,7 @@ public class MyApplication extends Application {
     private String userId;
     private Entrant entrant;
     private Organizer organizer;
+    private ArrayList<String> userRoles = new ArrayList<>();
 
     private FirebaseFirestore db;
     private MutableLiveData<Entrant> entrantLiveData = new MutableLiveData<>();
@@ -132,7 +133,39 @@ public class MyApplication extends Application {
                     }
                 });
     }
+    public void getUserRoles(OnRolesLoadedListener listener) {
+        if (!userRoles.isEmpty()) {
+            // If roles are already loaded, return them immediately
+            listener.onRolesLoaded(userRoles);
+            return;
+        }
 
+        DocumentReference docRef = db.collection("users").document(userId);
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            ArrayList<String> roles;
+            Object roleObject = documentSnapshot.get("role");
+
+            if (roleObject instanceof ArrayList) {
+                roles = (ArrayList<String>) roleObject;
+            } else {
+                roles = new ArrayList<>(); // Initialize an empty list if no roles found
+            }
+
+            // Cache roles
+            userRoles = roles;
+            listener.onRolesLoaded(userRoles); // Notify listener with roles
+
+        }).addOnFailureListener(e -> {
+            Log.e("MyApplication", "Failed to retrieve user roles", e);
+            listener.onRolesLoaded(new ArrayList<>()); // Return empty list on failure
+        });
+    }
+
+
+    // Define the OnRolesLoadedListener interface within MyApplication
+    public interface OnRolesLoadedListener {
+        void onRolesLoaded(ArrayList<String> roles);
+    }
 
     public Organizer getOrganizer() {
         if (organizer == null) {

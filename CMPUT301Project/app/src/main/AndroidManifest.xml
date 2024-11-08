@@ -53,6 +53,15 @@
             android:exported="false"/>
         <activity android:name=".pooling.PoolingActivity"
             android:exported="false"/>
+        <activity android:name=".view.AdminDashboardActivity"
+            android:exported="false"/>
+        <activity android:name=".view.AdminAllEventsActivity"
+            android:exported="false"/>
+        <activity android:name=".view.AdminAllProfilesActivity"
+            android:exported="false"/>
+
+
+
     </application>
 
 </manifest>
