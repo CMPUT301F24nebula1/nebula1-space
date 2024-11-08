@@ -47,7 +47,8 @@
             app:iconGravity="textStart"
             app:iconPadding="4dp"
             app:iconTint="@color/btn_text_selector"
-            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape"
+            tools:ignore="TextSizeCheck" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_entrant"
@@ -77,7 +78,8 @@
             app:iconGravity="textStart"
             app:iconPadding="4dp"
             app:iconTint="@color/btn_text_selector"
-            app:shapeAppearanceOverlay="@style/RightRoundedButtonShape" />
+            app:shapeAppearanceOverlay="@style/RightRoundedButtonShape"
+            tools:ignore="TextSizeCheck" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <FrameLayout
