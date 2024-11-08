@@ -87,15 +87,15 @@ public class EntrantStatusActivity extends AppCompatActivity {
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
         } else if ("SELECTED".equals(status)) {
-            tvStatus.setText("selected！");
+            tvStatus.setText("selected!");
             btnAccept.setVisibility(View.VISIBLE);
             btnDecline.setVisibility(View.VISIBLE);
         } else if ("ENROLLED".equals(status)) {
-            tvStatus.setText("enrolled！");
+            tvStatus.setText("enrolled!");
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
         } else if ("DECLINED".equals(status)) {
-            tvStatus.setText("declined。");
+            tvStatus.setText("declined");
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
         } else {
