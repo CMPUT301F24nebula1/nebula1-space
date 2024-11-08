@@ -39,12 +39,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 /**
  * MainActivity
  * @author Xinjia Fan
+ * @author Zaid Islam
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -64,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         id = getDeviceId(this);
 
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
@@ -87,6 +90,22 @@ public class MainActivity extends AppCompatActivity {
         String eventId = intent.getStringExtra("eventId");
 
         Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+
+        Button adminModeButton = findViewById(R.id.btn_admin);
+        adminModeButton.setOnClickListener(view -> {
+            checkIfUserIsAdmin(isAdmin -> {
+                if (isAdmin) {
+                    // If the user is an admin, navigate to the admin activity
+                    Intent adminIntent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                    startActivity(adminIntent);
+                } else {
+                    // Show access denied message
+                    Toast.makeText(MainActivity.this, "Access Denied: Admins Only", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+
 
         toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -390,6 +409,25 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(f -> {
                     Log.w("Firestore", "Error adding user", f);
                 });
+    }
+
+    private void checkIfUserIsAdmin(OnAdminCheckListener listener) {
+        ((MyApplication) getApplication()).getUserRoles(new MyApplication.OnRolesLoadedListener() {
+            @Override
+            public void onRolesLoaded(ArrayList<String> roles) {
+                boolean isAdmin = roles != null && roles.contains("admin");
+                listener.onAdminCheckCompleted(isAdmin);
+            }
+        });
+    }
+
+    public interface OnAdminCheckListener {
+        void onAdminCheckCompleted(boolean isAdmin);
+    }
+
+    // for ui test
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

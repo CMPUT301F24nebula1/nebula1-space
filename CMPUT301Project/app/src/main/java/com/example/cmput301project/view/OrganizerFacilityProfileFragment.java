@@ -1,13 +1,8 @@
 package com.example.cmput301project.view;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
-import static com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -15,15 +10,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
-import android.os.Bundle;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
@@ -31,41 +21,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Organizer;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Fragment for entrant profile
- * @author Xinjia Fan
- */
-public class EntrantProfileFragment extends Fragment {
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-
+public class OrganizerFacilityProfileFragment extends Fragment {
+    // use the same layout as entrant profile
     private EntrantProfileBinding binding;
     private MyApplication app;
-    private Entrant entrant;
-    private EntrantController ec;
+
+    private Organizer organizer;
+
     private TextView t_name, t_email, t_phone;
     protected Button editImageButton;
     private MaterialCardView btnEditSave;
@@ -80,7 +70,6 @@ public class EntrantProfileFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         app = (MyApplication) requireActivity().getApplication();
         binding = EntrantProfileBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -88,16 +77,15 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
+        organizer = app.getOrganizer();
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
 
-        app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            entrant = entrant1;
-            populateEntrantInfo(entrant1);
+        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer1 -> {
+            organizer = organizer1;
+            populateOrganizerInfo(organizer);
         });
 
         editImageButton = view.findViewById(R.id.edit_profile_picture_button);
@@ -112,7 +100,6 @@ public class EntrantProfileFragment extends Fragment {
         imageView = binding.profileImageview;
         btnEditSave = binding.btnEditSave;
 
-
         setEditMode(false);
 
         btnEditSave.setOnClickListener(v -> {
@@ -123,7 +110,7 @@ public class EntrantProfileFragment extends Fragment {
                 binding.text.setText("Save");
                 binding.icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
             } else {
-                if (entrant != null) {
+                if (organizer != null) {
                     // Save changes and go back
                     if (t_name.getText().toString().isEmpty() || t_email.getText().toString().isEmpty()) {
                         new AlertDialog.Builder(getContext())
@@ -193,31 +180,60 @@ public class EntrantProfileFragment extends Fragment {
                 // No action needed here
             }
         });
-        app.setEntrantLiveData(entrant);
+        app.setOrganizerLiveData(organizer);
     }
 
-    private void showImageOptionsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Edit Profile Picture");
-
-        String[] options = {"Select Picture", "Remove Picture"};
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0: // Select Picture
-                        openImagePicker();
-                        break;
-                    case 1:
-                        removeProfilePicture();
-                        break;
-                }
+    private void populateOrganizerInfo(Organizer organizer) {
+        if (organizer != null) {
+            // Name field
+            t_name.setText(organizer.getName());
+            t_email.setText(organizer.getEmail()); // Email field
+            t_phone.setText(organizer.getPhone()); // Phone field
+            //binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
+            if (organizer.getProfilePictureUrl() == null || organizer.getProfilePictureUrl().isEmpty()) {
+                binding.profileImageview.setImageDrawable(createInitialsDrawable(organizer.getName()));
             }
-        });
+            try {
+                if (!organizer.getProfilePictureUrl().isEmpty()) {
+                    Glide.with(getContext())
+                            .load(organizer.getProfilePictureUrl())
+                            .placeholder(R.drawable.placeholder_image)  // placeholder
+                            .error(R.drawable.error_image)              // error image
+                            .into(binding.profileImageview);
+                }
+            } catch (NullPointerException e) {
+                Log.e("profile picture", "No picture");
+            }
 
-        builder.show();
+        }
     }
 
+    private BitmapDrawable createInitialsDrawable(String name) {
+
+        String initials = getInitials(name);
+        int size = 150;
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(50f);
+        canvas.drawText(initials, size / 2, size / 2 + 15, paint);
+
+        return new BitmapDrawable(getResources(), bitmap);
+    }
+
+    private String getInitials(String name) {
+        if (TextUtils.isEmpty(name)) return "";
+        String[] parts = name.trim().split(" ");
+        String initials = "";
+        for (String part : parts) {
+            if (!TextUtils.isEmpty(part)) {
+                initials += part.charAt(0);
+            }
+        }
+        return initials.toUpperCase();
+    }
 
     private boolean validateEmail(String email) {
         // Use Android's Patterns utility class to check if the email format is valid
@@ -278,95 +294,10 @@ public class EntrantProfileFragment extends Fragment {
             }
     );
 
-    private void populateEntrantInfo(Entrant entrant) {
-        if (entrant != null) {
-            // Name field
-            t_name.setText(entrant.getName());
-            t_email.setText(entrant.getEmail()); // Email field
-            t_phone.setText(entrant.getPhone()); // Phone field
-            //binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
-            if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
-                binding.profileImageview.setImageDrawable(createInitialsDrawable(entrant.getName()));
-            }
-            try {
-                if (!entrant.getProfilePictureUrl().isEmpty()) {
-                    Glide.with(getContext())
-                            .load(entrant.getProfilePictureUrl())
-                            .placeholder(R.drawable.placeholder_image)  // placeholder
-                            .error(R.drawable.error_image)              // error image
-                            .into(binding.profileImageview);
-                }
-            } catch (NullPointerException e) {
-                Log.e("profile picture", "No picture");
-            }
-
-        }
-    }
-
-    private Uri getImageUriFromImageView(Bitmap bitmap) {
-        File file = new File(getContext().getCacheDir(), "imageview_image.png");
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            return FileProvider.getUriForFile(getContext(), "come.example.compute301project.fileprovider", file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
     private void removeProfilePicture() {
         imageUri = null; // Clear the image URI
-        imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
-        entrant.setProfilePictureUrl(null); // Remove URL from entrant
-        //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
-    }
-
-    private void captureProfilePicture() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    private BitmapDrawable createInitialsDrawable(String name) {
-        String initials = getInitials(name);
-        int size = 150;
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(50f);
-        canvas.drawText(initials, size / 2, size / 2 + 15, paint);
-
-//        int MyVersion = Build.VERSION.SDK_INT;
-//        if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
-//            checkIfAlreadyhavePermission();
-//        }
-//        imageUri = getImageUri(this.getContext(), bitmap);
-
-        return new BitmapDrawable(getResources(), bitmap);
-    }
-
-    private String getInitials(String name) {
-        if (TextUtils.isEmpty(name)) return "";
-        String[] parts = name.trim().split(" ");
-        String initials = "";
-        for (String part : parts) {
-            if (!TextUtils.isEmpty(part)) {
-                initials += part.charAt(0);
-            }
-        }
-        return initials.toUpperCase();
-    }
-
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
+        imageView.setImageDrawable(createInitialsDrawable(organizer.getName())); // Reset to initials
+        organizer.setProfilePictureUrl(null); // Remove URL from entrant
     }
 
     private void setEditMode(boolean enabled) {
@@ -402,28 +333,98 @@ public class EntrantProfileFragment extends Fragment {
         editImageButton.setEnabled(enabled);
     }
 
-    private void showKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
-    public void onBackPressed() {
-        if (isEditMode) {
-            // Exit edit mode without navigating back
-            setEditMode(false);
-        } else {
-            requireActivity().getSupportFragmentManager().popBackStack();
-        }
-    }
     private void saveChanges() {
         // Implement the logic to save the changes
-        entrant.setName(t_name.getText().toString());
-        entrant.setEmail(t_email.getText().toString());
-        entrant.setPhone(t_phone.getText().toString());
+        organizer.setName(t_name.getText().toString());
+        organizer.setEmail(t_email.getText().toString());
+        organizer.setPhone(t_phone.getText().toString());
 
-        ec.saveEntrantToDatabase(entrant, imageUri);
-        app.setEntrantLiveData(entrant); // Save data to the application variable
+        saveOrganizerToDatabase(organizer, imageUri);
+        app.setOrganizer(organizer); // Save data to the application variable
     }
+
+    public void saveOrganizerToDatabase(Organizer organizer, Uri u) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> organizerData = new HashMap<>();
+        organizerData.put("name", organizer.getName());
+        organizerData.put("email", organizer.getEmail());
+        organizerData.put("phone", organizer.getPhone());
+        organizerData.put("profilePictureUrl", organizer.getProfilePictureUrl());
+
+        if (u != null) {
+            uploadImageToFirebase(u, new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String downloadUrl) {
+                    Log.e("upload profile image", "success");
+                    organizer.setProfilePictureUrl(downloadUrl);
+                    organizerData.put("profilePictureUrl", downloadUrl);
+                    db.collection("organizers")
+                            .document(organizer.getId())
+                            .update(organizerData)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
+                            });
+                }
+            }, e -> {
+                Log.e("upload profile image", "failure uploading profile image");
+            });
+        }
+        else {
+            imageView.setImageDrawable(createInitialsDrawable(organizer.getName()));
+            db.collection("organizers")
+                    .document(organizer.getId())
+                    .update(organizerData)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
+                    });
+
+        }
+        Log.d("save entrant profile", organizer.toString());
+
+
+    }
+
+    public void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
+                            String downloadUrl = downloadUri.toString();
+                            Log.d("uploadImageToFirebase", "Image URI: " + imageUri.toString());
+                            successListener.onSuccess(downloadUrl);  // Pass the string URL
+                        }))
+                .addOnFailureListener(failureListener);
+
+    }
+
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Edit Profile Picture");
+
+        String[] options = {"Select Picture", "Remove Picture"};
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0: // Select Picture
+                        openImagePicker();
+                        break;
+                    case 1:
+                        removeProfilePicture();
+                        break;
+                }
+            }
+        });
+
+        builder.show();
+    }
+
 }

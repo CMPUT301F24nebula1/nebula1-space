@@ -16,19 +16,15 @@
 
         <FrameLayout
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            >
-            <!-- Initials  -->
+            android:layout_height="40dp">
             <TextView
                 android:id="@+id/initials"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:src="@drawable/ic_launcher_background"
-                 />
+                android:text="AB" /> <!-- Placeholder for initials -->
         </FrameLayout>
 
-        <!-- Name -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,24 +33,27 @@
             android:paddingStart="8dp">
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/nameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Name"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/emailTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#808080" />
         </LinearLayout>
+
         <ImageView
             android:id="@+id/profilePicture"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            android:src="@drawable/ic_launcher_background" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
-

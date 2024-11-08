@@ -14,12 +14,19 @@ import com.example.cmput301project.controller.EntrantArrayAdapter;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 
 public class ParticipantListActivity extends AppCompatActivity {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private MaterialButtonToggleGroup toggleGroup;
 
     private ArrayList<Entrant> entrants;
@@ -35,9 +42,11 @@ public class ParticipantListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        Event event = (Event)intent.getSerializableExtra("event");
+        Event event = (Event) intent.getSerializableExtra("event");
 
-        Log.d("event wishlist", event.getWaitlistEntrantIds().toString());
+        entrants = new ArrayList<Entrant>();
+
+        Log.d("event wishlist participantActivity", event.getWaitlistEntrantIds().toString());
 
         toggleGroup = findViewById(R.id.listToggleGroup);
 
@@ -46,9 +55,41 @@ public class ParticipantListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Entrant Lists");
 
+        retrieveEntrants(event);
 
+//        if (entrants != null && !entrants.isEmpty()) {
+//            entrantAdapter = new EntrantArrayAdapter(this, entrants);
+//            participantList.setAdapter(entrantAdapter);
+//        }
 
     }
+
+    public void retrieveEntrants(Event event) {
+        if (event.getWaitlistEntrantIds() != null && !event.getWaitlistEntrantIds().isEmpty()) {
+            db.collection("entrants")
+                    .whereIn(FieldPath.documentId(), event.getWaitlistEntrantIds())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Entrant entrant = document.toObject(Entrant.class);
+                                entrants.add(entrant);
+                            }
+                            if (entrants != null && !entrants.isEmpty()) {
+                                entrantAdapter = new EntrantArrayAdapter(this, entrants);
+                                participantList.setAdapter(entrantAdapter);
+                            }
+//                            entrantAdapter.notifyDataSetChanged();
+                        } else {
+                            // Handle the error
+                            Log.e("FirebaseError", "Error fetching entrants: ", task.getException());
+                        }
+                    });
+        } else {
+            Log.d("FirebaseQuery", "No wishlist IDs to query.");
+        }
+    }
+
 
     // navigate back to previous activity
     @Override
@@ -59,5 +100,4 @@ public class ParticipantListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
