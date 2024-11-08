@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -115,6 +116,17 @@ public class MainActivity extends AppCompatActivity {
                     if (navController.getCurrentDestination().getId() != R.id.EntrantHomepageFragment) {
                         navController.navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage);
                     }
+                } else if (checkedId == R.id.btn_admin) {
+                    isAdmin(id, isAdmin -> {
+                        if (isAdmin) {
+                            // the user is an admin
+                            // navigate to admin homepage
+                            ;
+                        }
+                        else {
+                            Toast.makeText(this, "Admin access required.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
@@ -142,6 +154,34 @@ public class MainActivity extends AppCompatActivity {
             findEventInAllOrganizers(eventId, navController);
         }
     }
+
+
+    private void isAdmin(String id, AdminCheckCallback callback) {
+        db.collection("admins").document(id).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Document with the given ID exists in the "admins" collection
+                            Log.d("FirestoreCheck", "ID exists in admins collection.");
+                            callback.onCheckCompleted(true); // Callback with true
+                        } else {
+                            // Document with the given ID does not exist in the "admins" collection
+                            Log.d("FirestoreCheck", "ID does not exist in admins collection.");
+                            callback.onCheckCompleted(false); // Callback with false
+                        }
+                    } else {
+                        // Handle the error and consider returning false
+                        Log.e("FirestoreError", "Error checking document in admins collection: ", task.getException());
+                        callback.onCheckCompleted(false);
+                    }
+                });
+    }
+
+    public interface AdminCheckCallback {
+        void onCheckCompleted(boolean isAdmin);
+    }
+
 
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
