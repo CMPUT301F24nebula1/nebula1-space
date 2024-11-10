@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_EntrantHomepage_to_EntrantEventView"
             app:destination="@+id/EntrantEventViewFragment" />
+        <action
+            android:id="@+id/action_EntrantHomepage_to_EntrantClass"
+            app:destination="@+id/EntrantClassFragment" />
     </fragment>
 
     <fragment
@@ -31,6 +34,14 @@
         android:name="com.example.cmput301project.view.EntrantProfileFragment"
         android:label="@string/profile_fragment_label"
         tools:layout="@layout/entrant_profile">
+    </fragment>
+
+    <fragment
+        android:id="@+id/EntrantClassFragment"
+        android:name="com.example.cmput301project.view.EntrantClassFragment"
+        android:label="My Classes"
+        tools:layout="@layout/event_list" >
+
     </fragment>
 
     <fragment
