@@ -7,13 +7,32 @@
     android:padding="16dp"
     android:background="@drawable/homepage">
 
+    <!-- AppBarLayout with MaterialToolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_profiles"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#FDE0F3"
+            app:title="Home"
+            app:titleCentered="true"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
         android:queryHint="Search Profiles"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

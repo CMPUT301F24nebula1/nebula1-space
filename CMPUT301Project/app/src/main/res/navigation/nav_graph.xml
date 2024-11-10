@@ -118,4 +118,5 @@
         android:label="Facility Profile"
         tools:layout="@layout/entrant_profile">
     </fragment>
+
 </navigation>

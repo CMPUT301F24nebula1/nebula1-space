@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Toast;
 import androidx.appcompat.widget.SearchView;
 
@@ -32,6 +33,11 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
         setContentView(R.layout.admin_profiles);
 
         db = FirebaseFirestore.getInstance();
+
+        setSupportActionBar(findViewById(R.id.toolbar_profiles));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Profiles");
 
         recyclerView = findViewById(R.id.recyclerView);
         searchView = findViewById(R.id.searchName);
@@ -83,5 +89,15 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
             }
         }
         profileAdapter.updateList(filteredList);
+    }
+
+    // navigate back to previous activity
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

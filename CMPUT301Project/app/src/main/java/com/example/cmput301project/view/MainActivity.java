@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -82,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        setSupportActionBar(binding.toolbar);
-        setSupportActionBar(findViewById(R.id.toolbar));
+        setSupportActionBar(binding.toolbar);
+//        setSupportActionBar(findViewById(R.id.toolbar));
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");
@@ -105,7 +107,12 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-
+        checkIfUserIsAdmin(isAdmin -> {
+            if (!isAdmin) {
+                // Show access denied message
+                binding.btnAdmin.setVisibility(View.GONE);
+            }
+        });
 
         toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -251,6 +258,17 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Set the Entrant button as selected in the toggle group
+        if (toggleGroup.getCheckedButtonId() != R.id.btn_entrant) {
+            toggleGroup.check(R.id.btn_entrant); // Set Entrant as the default selection
+        }
+    }
+
 
     private String getDeviceId(Context context) {
         // Retrieve ANDROID_ID as the device ID

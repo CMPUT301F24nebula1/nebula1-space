@@ -3,6 +3,7 @@ package com.example.cmput301project.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cmput301project.R;
@@ -18,6 +19,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Button manageEventsButton = findViewById(R.id.manageEventsButton);
         Button manageImagesButton = findViewById(R.id.manageImagesButton);
         Button manageQrButton = findViewById(R.id.manageQrButton);
+
+        setSupportActionBar(findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Home");
 
         manageProfilesButton.setOnClickListener(view -> {
             Log.d("AdminDashboardActivity", "Manage Profiles button clicked");
@@ -40,5 +46,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         manageQrButton.setOnClickListener(v -> {
             // TODO: Navigate to QR code management
         });
+    }
+    // navigate back to previous activity
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

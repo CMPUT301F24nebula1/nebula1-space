@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Toast;
 import androidx.appcompat.widget.SearchView; // Ensure this import is present
 import androidx.annotation.Nullable;
@@ -32,6 +33,11 @@ public class AdminAllEventsActivity extends AppCompatActivity {
 
         // Initialize Firebase Firestore
         db = FirebaseFirestore.getInstance();
+
+        setSupportActionBar(findViewById(R.id.toolbar_events));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Events");
 
         // Initialize views
         recyclerView = findViewById(R.id.recyclerView);
@@ -73,5 +79,15 @@ public class AdminAllEventsActivity extends AppCompatActivity {
             }
         }
         eventAdapter.updateList(filteredList);
+    }
+
+    // navigate back to previous activity
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
