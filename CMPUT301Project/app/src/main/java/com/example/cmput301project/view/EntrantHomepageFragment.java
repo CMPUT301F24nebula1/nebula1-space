@@ -88,6 +88,8 @@ public class EntrantHomepageFragment extends Fragment {
 
                         app.getEntrantLiveData().removeObservers(getViewLifecycleOwner());
                     } else {
+                        Toast.makeText(getContext(), "Profile data is not ready yet.", Toast.LENGTH_SHORT).show();
+
                         Log.d("profileButton", "Entrant data is not ready yet");
                         // Optionally, you can show a loading indicator to the user.
                     }
@@ -100,6 +102,33 @@ public class EntrantHomepageFragment extends Fragment {
                 requestPermissionLauncher.launch(android.Manifest.permission.CAMERA);
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        binding.myClassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+                    if (entrant1 != null) {
+                        try {
+                            Log.d("My Classes", entrant1.getWaitlistEventIds().toString());
+                            Toast.makeText(getContext(), "Loading!", Toast.LENGTH_SHORT).show();
+                        } catch (NullPointerException e) {
+                            Log.d("My Classes", "No class");
+                            Toast.makeText(getContext(), "Class data is not ready yet.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        NavHostFragment.findNavController(EntrantHomepageFragment.this)
+                                .navigate(R.id.action_EntrantHomepage_to_EntrantClass);
+
+//                        app.getEntrantLiveData().removeObservers(getViewLifecycleOwner());
+                    } else {
+                        Toast.makeText(getContext(), "Class data is not ready yet.", Toast.LENGTH_SHORT).show();
+
+                        Log.d("My class", "Class data is not ready yet");
+                    }
+                });
             }
         });
 

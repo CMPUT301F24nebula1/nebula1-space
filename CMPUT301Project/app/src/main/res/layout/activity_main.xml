@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:text="Admin"
             android:textColor="@color/btn_text_selector"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:backgroundTint="@color/btn_background_selector"
             app:icon="@drawable/ic_check_selector"
             app:iconGravity="textStart"
@@ -58,12 +58,13 @@
             android:layout_height="wrap_content"
             android:text="Organizer"
             android:textColor="@color/btn_text_selector"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:backgroundTint="@color/btn_background_selector"
             app:icon="@drawable/ic_check_selector"
             app:iconGravity="textStart"
             app:iconPadding="4dp"
             app:iconTint="@color/btn_text_selector"
+            app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape"
             />
 
         <!-- Entrant Button -->
@@ -74,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="Entrant"
             android:textColor="@color/btn_text_selector"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:backgroundTint="@color/btn_background_selector"
             app:icon="@drawable/ic_check_selector"
             app:iconGravity="textStart"
