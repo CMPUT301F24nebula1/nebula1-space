@@ -132,7 +132,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         t2.getEditText().setText(e.getName());
         startDate.getEditText().setText(e.getStartDate());
         endDate.getEditText().setText(e.getEndDate());
-        limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "");
+        limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "No limit.");
 
         String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 

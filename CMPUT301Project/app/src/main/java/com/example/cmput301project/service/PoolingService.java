@@ -1,9 +1,14 @@
 //code review from ChatGPT
 package com.example.cmput301project.service;
 
+import android.os.Bundle;
 import android.util.Log;
+
+import com.example.cmput301project.R;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Organizer;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -17,20 +22,46 @@ public class PoolingService {
 
     private static final String TAG = "PoolingService";
     private final FirebaseFirestore db;
+    private Organizer organizer;
 
     public PoolingService() {
         this.db = FirebaseFirestore.getInstance();
     }
     // this part is for the draw entrants, it will get the event and perform pooling
     public void drawEntrants(String eventId) {
+        CollectionReference eventsRef = db.collection("organizers").document(organizer.getId())
+                .collection("events");
+
         Log.d(TAG, "drawEntrants called with eventId: " + eventId);
-        db.collection("events").document(eventId)
+        eventsRef.document(eventId)
+//        db.collection("events").document(eventId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot eventDoc = task.getResult();
                         if (eventDoc.exists()) {
                             Event event = eventDoc.toObject(Event.class);
+
+                            ArrayList<String> userIdList = new ArrayList<>();
+
+                            eventsRef.document(event.getId()).collection("userId").get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                            // field "userId" that stores a string
+                                            String userId = document.getString("userId");
+                                            if (userId != null) {
+                                                userIdList.add(userId);
+                                            }
+                                        }
+                                        event.setWaitlistEntrantIds(userIdList);
+                                        Log.d("wishlist of event", event.getWaitlistEntrantIds().toString());
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle any errors here
+                                        Log.e("FirestoreError", "Error retrieving user IDs", e);
+                                    });
+
+
                             if (event != null) {
                                 Log.d(TAG, "Event retrieved successfully: " + event.getId());
                                 performPooling(event);
@@ -71,6 +102,7 @@ public class PoolingService {
                             return;
                         }
 
+                        // shouldn't be event.getLimit(), should be another number specified by organizer
                         int capacity = event.getLimit();
                         Log.d(TAG, "Event capacity: " + capacity);
 

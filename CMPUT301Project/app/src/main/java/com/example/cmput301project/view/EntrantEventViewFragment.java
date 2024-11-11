@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -124,16 +125,26 @@ public class EntrantEventViewFragment extends Fragment {
             public void onClick(View view) {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
                 if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
-                    Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
-                    app.getEntrant().join_event(e);
-                    e.add_entrant(app.getEntrant());
+                    int currentlyJoined = app.getEntrant().getWaitlistEventIds().toArray().length;
+                    if (e.getLimit() > 0 && currentlyJoined >= e.getLimit()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                        builder.setTitle("Information")
+                                .setMessage("This event if full.")
+                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                .setCancelable(false)  // prevents dialog from closing on back press
+                                .show();
+                    } else {
+                        Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
+                        app.getEntrant().join_event(e);
+                        e.add_entrant(app.getEntrant());
 
-                    ec.joinEventWaitingList(e);
+                        ec.joinEventWaitingList(e);
 
-                    ec.addToEventWaitingList(e);
-                    setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
-                    Log.d("join event", "You join the waiting list.");
-                    Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
+                        ec.addToEventWaitingList(e);
+                        setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
+                        Log.d("join event", "You join the waiting list.");
+                        Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
                     Log.d("join event", "you are already in the waitlist");

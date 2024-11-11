@@ -28,6 +28,7 @@ public class Event extends Observable implements Serializable {
     public Event() {
         this.waitlistEntrantIds = new ArrayList<String>();
         this.id = UUID.randomUUID().toString();
+        this.limit = 0;
     }
 
     /**
@@ -38,6 +39,7 @@ public class Event extends Observable implements Serializable {
         this.waitlistEntrantIds = new ArrayList<String>();
         this.name = name;
         this.id = UUID.randomUUID().toString();
+        this.limit = 0;
     }
 
     /**
