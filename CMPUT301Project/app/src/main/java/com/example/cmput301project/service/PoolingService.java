@@ -55,19 +55,19 @@ public class PoolingService {
                                         }
                                         event.setWaitlistEntrantIds(userIdList);
                                         Log.d("wishlist of event", event.getWaitlistEntrantIds().toString());
+
+                                        if (event != null) {
+                                            Log.d(TAG, "Event retrieved successfully: " + event.getId());
+                                            performPooling(event);
+                                        } else {
+                                            Log.e(TAG, "Event conversion failed.");
+                                        }
                                     })
                                     .addOnFailureListener(e -> {
                                         // Handle any errors here
                                         Log.e("FirestoreError", "Error retrieving user IDs", e);
                                     });
 
-
-                            if (event != null) {
-                                Log.d(TAG, "Event retrieved successfully: " + event.getId());
-                                performPooling(event);
-                            } else {
-                                Log.e(TAG, "Event conversion failed.");
-                            }
                         } else {
                             Log.e(TAG, "Event not found.");
                         }
@@ -102,7 +102,6 @@ public class PoolingService {
                             return;
                         }
 
-                        // shouldn't be event.getLimit(), should be another number specified by organizer
                         int capacity = event.getLimit();
                         Log.d(TAG, "Event capacity: " + capacity);
 
