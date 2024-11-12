@@ -80,6 +80,7 @@ public class EntrantController {
                 .document(event.getId())
                 .set(new HashMap<String, Object>() {{
                     put("eventId", event.getId());
+                    put("status", "WAITING");
                 }})
                 .addOnSuccessListener(aVoid -> {
                     Log.d("join event waiting list", "Entrant data updated successfully in Firebase");

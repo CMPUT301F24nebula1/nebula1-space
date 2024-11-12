@@ -80,13 +80,14 @@ public class EntrantClassFragment extends Fragment {
             });
         });
 
-//        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                EventListFragmentDirections.ActionEventListToOrganizerEventDetail action = EventListFragmentDirections.actionEventListToOrganizerEventDetail(events.get(i));
-//                NavHostFragment.findNavController(EventListFragment.this).navigate(action);
-//            }
-//        });
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action = EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
+//                EventListFragmentDirections.ActionEntrantClassToEntrantEventView action = EventListFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
+                NavHostFragment.findNavController(EntrantClassFragment.this).navigate(action);
+            }
+        });
 
     }
 

@@ -41,6 +41,8 @@ public class EntrantEventViewFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
         e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
+        Log.d("waitlist entrants", e.getName() + ' ' + String.valueOf(e.getWaitlistEntrantIds().size()));
+        Log.d("waitlist limit", e.getName() + String.valueOf(e.getLimit()));
         app = (MyApplication) requireActivity().getApplication();
 
         return binding.getRoot();
@@ -125,11 +127,11 @@ public class EntrantEventViewFragment extends Fragment {
             public void onClick(View view) {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
                 if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
-                    int currentlyJoined = app.getEntrant().getWaitlistEventIds().toArray().length;
-                    if (e.getLimit() > 0 && currentlyJoined >= e.getLimit()) {
+
+                    if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                         builder.setTitle("Information")
-                                .setMessage("This event if full.")
+                                .setMessage("This event is full.")
                                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                                 .setCancelable(false)  // prevents dialog from closing on back press
                                 .show();

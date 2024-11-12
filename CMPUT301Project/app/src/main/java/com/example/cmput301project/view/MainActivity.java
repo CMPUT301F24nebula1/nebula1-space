@@ -67,7 +67,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         id = getDeviceId(this);
+
+//        id = "3";
 
 //        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
 //                .setPersistenceEnabled(true)
@@ -264,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // Set the Entrant button as selected in the toggle group
-        if (toggleGroup.getCheckedButtonId() != R.id.btn_entrant) {
+        if (toggleGroup.getVisibility() == View.VISIBLE && toggleGroup.getCheckedButtonId() != R.id.btn_entrant) {
             toggleGroup.check(R.id.btn_entrant); // Set Entrant as the default selection
         }
     }

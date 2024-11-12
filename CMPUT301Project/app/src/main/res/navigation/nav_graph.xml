@@ -41,7 +41,9 @@
         android:name="com.example.cmput301project.view.EntrantClassFragment"
         android:label="My Classes"
         tools:layout="@layout/event_list" >
-
+        <action
+            android:id="@+id/action_EntrantClass_to_EntrantEventView"
+            app:destination="@+id/EntrantEventViewFragment" />
     </fragment>
 
     <fragment

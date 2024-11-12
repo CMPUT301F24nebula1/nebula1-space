@@ -64,7 +64,7 @@ public class EntrantStatusActivity extends AppCompatActivity {
             if (snapshot != null && snapshot.exists()) {
                 Entrant entrant = snapshot.toObject(Entrant.class);
                 if (entrant != null) {
-                    updateUI(entrant.getStatus()); // 更新UI
+                    updateUI(entrant.getStatus());
                 } else {
                     showToast("Entrant data is corrupted.");
                 }

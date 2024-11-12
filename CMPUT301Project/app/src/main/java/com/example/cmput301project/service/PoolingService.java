@@ -56,12 +56,12 @@ public class PoolingService {
                                         event.setWaitlistEntrantIds(userIdList);
                                         Log.d("wishlist of event", event.getWaitlistEntrantIds().toString());
 
-                                        if (event != null) {
-                                            Log.d(TAG, "Event retrieved successfully: " + event.getId());
-                                            performPooling(event);
-                                        } else {
-                                            Log.e(TAG, "Event conversion failed.");
-                                        }
+//                                        if (event != null) {
+//                                            Log.d(TAG, "Event retrieved successfully: " + event.getId());
+//                                            performPooling(event);
+//                                        } else {
+//                                            Log.e(TAG, "Event conversion failed.");
+//                                        }
                                     })
                                     .addOnFailureListener(e -> {
                                         // Handle any errors here
@@ -76,59 +76,95 @@ public class PoolingService {
                     }
                 });
     }
-    // this part is for the perform pooling, it will get the waitlist and select the entrants
-    private void performPooling(Event event) {
-        Log.d(TAG, "performPooling called for eventId: " + event.getId());
-        db.collection("waitingList")
-                .whereEqualTo("eventId", event.getId())
-                .whereEqualTo("status", "WAITING")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot waitlistSnapshot = task.getResult();
-                        List<Entrant> waitlist = new ArrayList<>();
-                        for (DocumentSnapshot doc : waitlistSnapshot.getDocuments()) {
-                            Entrant entrant = doc.toObject(Entrant.class);
-                            if (entrant != null) {
-                                entrant.setId(doc.getId());
-                                waitlist.add(entrant);
-                            }
-                        }
 
-                        Log.d(TAG, "Waitlist size: " + waitlist.size());
-
-                        if (waitlist.isEmpty()) {
-                            Log.e(TAG, "No entrants in the waitlist.");
-                            return;
-                        }
-
-                        int capacity = event.getLimit();
-                        Log.d(TAG, "Event capacity: " + capacity);
-
-                        if (capacity <= 0) {
-                            Log.e(TAG, "Invalid event capacity.");
-                            return;
-                        }
-
-                        Collections.shuffle(waitlist);
-                        List<Entrant> selectedEntrants = waitlist.stream()
-                                .limit(capacity)
-                                .collect(Collectors.toList());
-
-                        Log.d(TAG, "Selected entrants count: " + selectedEntrants.size());
-
-                        for (Entrant entrant : selectedEntrants) {
-                            notifyEntrant(entrant, event);
-                            updateEntrantStatus(entrant.getId(), "SELECTED");
-                        }
-
-                        listenForDeclines(event.getId());
-
-                    } else {
-                        Log.e(TAG, "Error getting waitlist: ", task.getException());
-                    }
-                });
+    public interface PoolingCallback {
+        void onSuccess();
+        void onFailure(Exception e);
     }
+
+    // this part is for the perform pooling, it will get the waitlist and select the entrants
+    public void performPooling(String eventId, ArrayList<Entrant> waitlistEntrants, int number, PoolingCallback callback) {
+        Collections.shuffle(waitlistEntrants);
+        List<Entrant> selectedEntrantIds = waitlistEntrants
+                .stream()
+
+                // should be a number passed by a parameter
+                .limit(number)
+                .collect(Collectors.toList());
+
+        Log.d(TAG, "Selected entrants count: " + selectedEntrantIds.size());
+
+        for (Entrant entrant : selectedEntrantIds) {
+            String entrantId = entrant.getId();
+            db.collection("entrants")
+                    .document(entrantId)
+                    .collection("entrantWaitList")
+                    .document(eventId)
+                    .update("status", "SELECTED")
+                    .addOnSuccessListener(aVoid -> {
+                        // Handle successful update
+                        Log.d("Firestore", "Status updated to SELECTED for entrant ID: " + entrantId);
+                        callback.onSuccess();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle failure in update
+                        Log.e("Firestore", "Error updating status for entrant ID: " + entrantId, e);
+                        callback.onFailure(e);
+                    });
+        }
+    }
+
+//        db.collection("waitingList")
+//                .whereEqualTo("eventId", event.getId())
+//                .whereEqualTo("status", "WAITING")
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        QuerySnapshot waitlistSnapshot = task.getResult();
+//                        List<Entrant> waitlist = new ArrayList<>();
+//                        for (DocumentSnapshot doc : waitlistSnapshot.getDocuments()) {
+//                            Entrant entrant = doc.toObject(Entrant.class);
+//                            if (entrant != null) {
+//                                entrant.setId(doc.getId());
+//                                waitlist.add(entrant);
+//                            }
+//                        }
+//
+//                        Log.d(TAG, "Waitlist size: " + waitlist.size());
+//
+//                        if (waitlist.isEmpty()) {
+//                            Log.e(TAG, "No entrants in the waitlist.");
+//                            return;
+//                        }
+//
+//                        int capacity = event.getLimit();
+//                        Log.d(TAG, "Event capacity: " + capacity);
+//
+//                        if (capacity <= 0) {
+//                            Log.e(TAG, "Invalid event capacity.");
+//                            return;
+//                        }
+//
+//                        Collections.shuffle(waitlist);
+//                        List<Entrant> selectedEntrants = waitlist.stream()
+//                                .limit(capacity)
+//                                .collect(Collectors.toList());
+//
+//                        Log.d(TAG, "Selected entrants count: " + selectedEntrants.size());
+//
+//                        for (Entrant entrant : selectedEntrants) {
+//                            notifyEntrant(entrant, event);
+//                            updateEntrantStatus(entrant.getId(), "SELECTED");
+//                        }
+//
+//                        listenForDeclines(event.getId());
+//
+//                    } else {
+//                        Log.e(TAG, "Error getting waitlist: ", task.getException());
+//                    }
+//                });
+//    }
+
     // this part is for the notify entrant, it will notify the entrant
     private void notifyEntrant(Entrant entrant, Event event) {
         Log.d(TAG, "notifyEntrant called for entrantId: " + entrant.getId());
