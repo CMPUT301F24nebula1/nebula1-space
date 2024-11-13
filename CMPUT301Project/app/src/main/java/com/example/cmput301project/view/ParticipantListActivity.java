@@ -95,7 +95,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                 isDataLoaded = true;
 
                 if (entrants.isEmpty()) {
-//                    setButtonState(false);
+                    setToggleButtonsAndSlider(0);
                 } else if (entrants.size() == 1) {
 //                    setButtonState(true);
 //                    slider.setVisibility(View.GONE);
@@ -270,6 +270,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                                                 if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
                                                     updateEntrantsList(new ArrayList<>(entrants_waitlist));
+                                                    setToggleButtonsAndSlider(entrants_waitlist.size());
                                                 } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
                                                     updateEntrantsList(new ArrayList<>(entrants_selected));
                                                 } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
@@ -307,6 +308,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                         }
                     });
         } else {
+            setToggleButtonsAndSlider(0);
             Log.d("FirebaseQuery", "No wishlist IDs to query.");
         }
     }
@@ -339,6 +341,31 @@ public class ParticipantListActivity extends AppCompatActivity {
             geoButton.setAlpha(0.1f);
         }
 
+    }
+
+    private void setToggleButtonsAndSlider(int waitingListLength) {
+        boolean enabled = waitingListLength > 0;
+        float alpha = 1;
+        if (!enabled) {
+            alpha = .2f;
+        }
+        slider.setAlpha(alpha);
+        slider.setEnabled(enabled);
+        if (waitingListLength > 1) {
+            slider.setValueTo(waitingListLength);
+            slider.setVisibility(View.VISIBLE);
+        }
+        else if (waitingListLength == 1) {
+            slider.setVisibility(View.GONE);
+        }
+        else if (waitingListLength == 0) {
+            slider.setVisibility(View.GONE);
+        }
+
+        selectButton.setAlpha(alpha);
+        selectButton.setClickable(enabled);
+        geoButton.setAlpha(alpha);
+        geoButton.setClickable(enabled);
     }
 
     // navigate back to previous activity
