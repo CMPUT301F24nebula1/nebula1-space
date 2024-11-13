@@ -19,10 +19,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holding global variables
@@ -75,6 +78,8 @@ public class MyApplication extends Application {
     public void listenToOrganizerFirebaseUpdates(String userId) {
         DocumentReference docRef = getDb().collection("organizers").document(userId);
 
+        Map<String, ListenerRegistration> subcollectionListeners = new HashMap<>();
+
         // Listen to the organizer document for updates
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
@@ -98,16 +103,53 @@ public class MyApplication extends Application {
 
                             if (eventsSnapshot != null) {
                                 ArrayList<Event> eventsList = new ArrayList<>();
+
+                                // Clear old subcollection listeners
+                                for (ListenerRegistration listener : subcollectionListeners.values()) {
+                                    listener.remove();
+                                }
+                                subcollectionListeners.clear();
+
                                 for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
                                     Event event = eventDoc.toObject(Event.class);
                                     eventsList.add(event);
+
+                                    // Listen to the "userId" subcollection within each "events" document
+                                    ListenerRegistration listener = eventDoc.getReference().collection("userId")
+                                            .addSnapshotListener((userIdSnapshot, userIdError) -> {
+                                                if (userIdError != null) {
+                                                    Log.w("Firestore", "Error retrieving userId data", userIdError);
+                                                    return;
+                                                }
+
+                                                if (userIdSnapshot != null) {
+                                                    ArrayList<String> userIds = new ArrayList<>();
+                                                    for (QueryDocumentSnapshot userIdDoc : userIdSnapshot) {
+                                                        String user = userIdDoc.getId();
+                                                        userIds.add(user);
+                                                    }
+
+                                                    // Update the specific event's userId list
+                                                    event.setWaitlistEntrantIds(userIds);
+
+                                                    // Update LiveData with the new organizer object, reflecting changes in events and userId data
+                                                    organizer.setEvents(eventsList);
+                                                    organizerLiveData.setValue(organizer);
+
+                                                    Log.d("Firestore", "Organizer and userId data successfully updated and loaded for event " + eventDoc.getId());
+                                                }
+                                            });
+
+                                    // Store the subcollection listener for cleanup later
+                                    subcollectionListeners.put(eventDoc.getId(), listener);
+
                                 }
 
-                                // Set the events list in the organizer object
-                                organizer.setEvents(eventsList);
-
-                                // Update LiveData with the new organizer object that includes updated events
-                                organizerLiveData.setValue(organizer);
+//                                // Set the events list in the organizer object
+//                                organizer.setEvents(eventsList);
+//
+//                                // Update LiveData with the new organizer object that includes updated events
+//                                organizerLiveData.setValue(organizer);
 
                                 Log.d("Firestore", "Organizer and events successfully updated and loaded.");
                             }
