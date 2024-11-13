@@ -182,107 +182,6 @@ public class ParticipantListActivity extends AppCompatActivity {
         void onRetrieveEntrantsCompleted(List<Entrant> entrants);
     }
 
-//    public void retrieveEntrantsWithRealtimeUpdates(Event event, String status, RetrieveEntrantsCallback callback) {
-//        Log.d("no wishlist", event.getWaitlistEntrantIds().toString());
-//
-//        if (event.getWaitlistEntrantIds() != null && !event.getWaitlistEntrantIds().isEmpty()) {
-//            db.collection("entrants")
-//                    .whereIn(FieldPath.documentId(), event.getWaitlistEntrantIds())
-//                    .get()
-//                    .addOnCompleteListener(task -> {
-//                        if (task.isSuccessful()) {
-//                            entrants_waitlist.clear(); // Clear the list to avoid duplicates
-//
-//                            entrants_selected.clear();
-//                            entrants_canceled.clear();
-//                            entrants_final.clear();
-//
-//                            int totalDocuments = task.getResult().size();
-//                            int[] completedCount = {0};
-//
-//                            for (DocumentSnapshot document : task.getResult()) {
-//                                Entrant entrant = document.toObject(Entrant.class);
-//                                String entrantId = document.getId();
-//
-//                                db.collection("entrants")
-//                                        .document(entrantId)
-//                                        .collection("entrantWaitList")
-//                                        .document(event.getId())
-//                                        .addSnapshotListener((subDocument, error) -> {
-//                                            if (error != null) {
-//                                                Log.e("FirebaseError", "Error listening for status changes", error);
-//                                                return;
-//                                            }
-//
-//                                            if (subDocument != null && subDocument.exists()) {
-//                                                String statusFirebase = subDocument.getString("status");
-//
-////                                                if (status.equals(statusFirebase)) {
-////                                                    if (!entrants_waitlist.contains(entrant)) {
-////                                                        entrants_waitlist.add(entrant);
-////                                                    }
-////                                                } else {
-////                                                    entrants_waitlist.remove(entrant);
-////                                                }
-//
-//                                                if ("WAITING".equals(statusFirebase)) {
-//                                                    if (!entrants_waitlist.contains(entrant)) {
-//                                                        entrants_waitlist.add(entrant);
-//                                                    }
-//                                                } else if ("SELECTED".equals(statusFirebase)) {
-//                                                    if (!entrants_selected.contains(entrant)) {
-//                                                        entrants_selected.add(entrant);
-//                                                    }
-//                                                } else if ("CANCELED".equals(statusFirebase)) {
-//                                                    if (!entrants_canceled.contains(entrant)) {
-//                                                        entrants_canceled.add(entrant);
-//                                                    }
-//                                                } else if ("FINAL".equals(statusFirebase)) {
-//                                                    if (!entrants_final.contains(entrant)) {
-//                                                        entrants_final.add(entrant);
-//                                                    }
-//                                                }
-//
-//                                                completedCount[0]++;
-//                                                if (completedCount[0] == totalDocuments) {
-//                                                    Log.d("waitlist debug", entrants_waitlist.toString());
-//
-//                                                    if (entrantAdapter == null) {
-//                                                        entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
-//                                                        participantList.setAdapter(entrantAdapter);
-//                                                    } else {
-//                                                        entrantAdapter.notifyDataSetChanged();
-//                                                    }
-//
-//                                                    entrantCache.put("WAITING", new ArrayList<>(entrants_waitlist));
-//                                                    entrantCache.put("SELECTED", new ArrayList<>(entrants_selected));
-//                                                    entrantCache.put("CANCELED", new ArrayList<>(entrants_canceled));
-//                                                    entrantCache.put("FINAL", new ArrayList<>(entrants_final));
-//
-//                                                    if (status.equals("WAITING")) {
-//                                                        updateEntrantsList(new ArrayList<>(entrants_waitlist));
-//                                                    } else if (status.equals("SELECTED")) {
-//                                                        updateEntrantsList(new ArrayList<>(entrants_selected));
-//                                                    } else if (status.equals("CANCELED")) {
-//                                                        updateEntrantsList(new ArrayList<>(entrants_canceled));
-//                                                    } else if (status.equals("FINAL")) {
-//                                                        updateEntrantsList(new ArrayList<>(entrants_final));
-//                                                    }
-//
-//                                                    callback.onRetrieveEntrantsCompleted(entrants_waitlist);
-//                                                }
-//                                            }
-//                                        });
-//                            }
-//                        } else {
-//                            Log.e("FirebaseError", "Error fetching entrants: ", task.getException());
-//                        }
-//                    });
-//        } else {
-//            Log.d("FirebaseQuery", "No wishlist IDs to query.");
-//        }
-//    }
-
     public void retrieveEntrantsWithRealtimeUpdates(Event event, String status, RetrieveEntrantsCallback callback) {
         Log.d("no wishlist", event.getWaitlistEntrantIds().toString());
 
@@ -319,47 +218,6 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                                             if (subDocument != null && subDocument.exists()) {
                                                 String statusFirebase = subDocument.getString("status");
-
-//                                                if (status.equals(statusFirebase)) {
-//                                                    if (!entrants_waitlist.contains(entrant)) {
-//                                                        entrants_waitlist.add(entrant);
-//                                                    }
-//                                                } else {
-//                                                    entrants_waitlist.remove(entrant);
-//                                                }
-
-
-//                                                if ("WAITING".equals(statusFirebase)) {
-//                                                    if (!entrants_waitlist.contains(entrant)) {
-//                                                        entrants_waitlist.add(entrant);
-//                                                    }
-//                                                } else {
-//                                                    entrants_waitlist.remove(entrant);
-//                                                }
-//
-//                                                if ("SELECTED".equals(statusFirebase)) {
-//                                                    if (!entrants_selected.contains(entrant)) {
-//                                                        entrants_selected.add(entrant);
-//                                                    }
-//                                                } else {
-//                                                    entrants_selected.remove(entrant);
-//                                                }
-//
-//                                                if ("CANCELED".equals(statusFirebase)) {
-//                                                    if (!entrants_canceled.contains(entrant)) {
-//                                                        entrants_canceled.add(entrant);
-//                                                    }
-//                                                } else {
-//                                                    entrants_canceled.remove(entrant);
-//                                                }
-//
-//                                                if ("FINAL".equals(statusFirebase)) {
-//                                                    if (!entrants_final.contains(entrant)) {
-//                                                        entrants_final.add(entrant);
-//                                                    }
-//                                                } else {
-//                                                    entrants_final.remove(entrant);
-//                                                }
 
                                                 switch (statusFirebase) {
                                                     case "WAITING":
@@ -428,14 +286,6 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                     entrantAdapter.notifyDataSetChanged();
                                                 }
 
-
-//                                                if (entrantAdapter == null) {
-//                                                    entrantAdapter = new EntrantArrayAdapter(this, entrants_waitlist);
-//                                                    participantList.setAdapter(entrantAdapter);
-//                                                } else {
-//                                                    entrantAdapter.notifyDataSetChanged();
-//                                                }
-
                                                 completedCount[0]++;
 
 
@@ -449,16 +299,6 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                     callback.onRetrieveEntrantsCompleted(entrants_waitlist);
                                                 }
 
-
-//                                                if (completedCount[0] == totalDocuments) {
-//                                                    if (entrantAdapter == null) {
-//                                                        entrantAdapter = new EntrantArrayAdapter(this, entrants_waitlist);
-//                                                        participantList.setAdapter(entrantAdapter);
-//                                                    } else {
-//                                                        entrantAdapter.notifyDataSetChanged();
-//                                                    }
-//                                                    callback.onRetrieveEntrantsCompleted(entrants_waitlist);
-//                                                }
                                             }
                                         });
                             }
@@ -470,18 +310,6 @@ public class ParticipantListActivity extends AppCompatActivity {
             Log.d("FirebaseQuery", "No wishlist IDs to query.");
         }
     }
-
-//    private void updateEntrantsList(ArrayList<Entrant> entrants) {
-//        entrants_waitlist.clear();
-//        entrants_waitlist.addAll(entrants);
-//        Log.d("waitlist debug entrants_store", entrants_waitlist.toString());
-//        if (entrantAdapter == null) {
-//            entrantAdapter = new EntrantArrayAdapter(this, entrants_waitlist);
-//            participantList.setAdapter(entrantAdapter);
-//        } else {
-//            entrantAdapter.notifyDataSetChanged();
-//        }
-//    }
 
     // update UI
     private void updateEntrantsList(ArrayList<Entrant> entrants) {

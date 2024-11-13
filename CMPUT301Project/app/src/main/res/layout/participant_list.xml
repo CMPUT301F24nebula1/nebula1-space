@@ -27,7 +27,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/select_button"
                 android:layout_width="162dp"
-                android:layout_height="wrap_content"
+                android:layout_height="54dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/design_default_color_primary"
                 android:text="Select Z Participants"
@@ -36,7 +36,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/select_button3"
                 android:layout_width="162dp"
-                android:layout_height="wrap_content"
+                android:layout_height="54dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/design_default_color_primary"
                 android:text="Geolocation Map"
