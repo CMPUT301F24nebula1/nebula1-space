@@ -84,7 +84,6 @@ public class EntrantClassFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action = EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
-//                EventListFragmentDirections.ActionEntrantClassToEntrantEventView action = EventListFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
                 NavHostFragment.findNavController(EntrantClassFragment.this).navigate(action);
             }
         });

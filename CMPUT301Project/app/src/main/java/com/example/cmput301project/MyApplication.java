@@ -70,7 +70,7 @@ public class MyApplication extends Application {
             if (snapshot != null && snapshot.exists()) {
                 Entrant entrant = snapshot.toObject(Entrant.class);
                 retrieveEntrantWishlist(entrant);
-                setEntrantLiveData(entrant); // Update LiveData with the new organizer
+                setEntrantLiveData(entrant);
             }
         });
     }
@@ -144,12 +144,6 @@ public class MyApplication extends Application {
                                     subcollectionListeners.put(eventDoc.getId(), listener);
 
                                 }
-
-//                                // Set the events list in the organizer object
-//                                organizer.setEvents(eventsList);
-//
-//                                // Update LiveData with the new organizer object that includes updated events
-//                                organizerLiveData.setValue(organizer);
 
                                 Log.d("Firestore", "Organizer and events successfully updated and loaded.");
                             }

@@ -30,7 +30,7 @@
                 android:layout_height="54dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/design_default_color_primary"
-                android:text="Select Z Participants"
+                android:text="Select 1 Participants"
                 android:textColor="@color/white" />
 
             <com.google.android.material.button.MaterialButton
@@ -77,28 +77,28 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/notify_not_selected_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/transparent"
-                android:icon="@drawable/ic_chat_bubble_outline"
-                android:text="Notify Not Selected"
-                android:textColor="@color/design_default_color_primary"
-                app:cornerRadius="20dp"
-                app:strokeColor="@color/design_default_color_primary"
-                app:strokeWidth="1dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/notify_selected_button"
+                android:id="@+id/notify_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/design_default_color_primary"
                 android:icon="@drawable/ic_chat_bubble_outline"
-                android:text="Notify Selected"
+                android:text="Notify All"
                 android:textColor="@color/white"
                 app:cornerRadius="20dp"
                 app:strokeColor="@color/design_default_color_primary"
                 app:strokeWidth="1dp" />
+
+            <Button
+                android:id="@+id/remove_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:layout_marginStart="8dp"
+                android:text="Remove"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/participant_list" />
         </LinearLayout>
 
     </LinearLayout>

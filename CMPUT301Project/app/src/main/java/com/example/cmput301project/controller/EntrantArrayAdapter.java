@@ -28,10 +28,16 @@ import java.util.ArrayList;
 public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
 
     private Context context;
+    private boolean isCheckboxVisible = false;
 
     public EntrantArrayAdapter(@NonNull Context context, @NonNull ArrayList<Entrant> entrants) {
         super(context, 0, entrants);
         this.context = context;
+    }
+
+    public void setCheckboxVisibility(boolean isVisible) {
+        this.isCheckboxVisible = isVisible;
+        notifyDataSetChanged();  // Refresh the view
     }
 
     @NonNull
@@ -65,6 +71,13 @@ public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
                         .error(R.drawable.error_image)              // error image
                         .into(profile);
                 Log.e("Error", "Profile picture URL is null");
+            }
+            if (isCheckboxVisible) {
+                select.setVisibility(View.VISIBLE);
+                select.setEnabled(true);
+            } else {
+                select.setVisibility(View.INVISIBLE); // Make invisible but still occupy space
+                select.setEnabled(false);
             }
         }
         return view;
