@@ -70,7 +70,8 @@ public class MyApplication extends Application {
             if (snapshot != null && snapshot.exists()) {
                 Entrant entrant = snapshot.toObject(Entrant.class);
                 retrieveEntrantWishlist(entrant);
-                setEntrantLiveData(entrant); // Update LiveData with the new organizer
+                Log.d("wishlist track", "1");
+//                setEntrantLiveData(entrant);
             }
         });
     }
@@ -145,12 +146,6 @@ public class MyApplication extends Application {
 
                                 }
 
-//                                // Set the events list in the organizer object
-//                                organizer.setEvents(eventsList);
-//
-//                                // Update LiveData with the new organizer object that includes updated events
-//                                organizerLiveData.setValue(organizer);
-
                                 Log.d("Firestore", "Organizer and events successfully updated and loaded.");
                             }
                         });
@@ -162,31 +157,61 @@ public class MyApplication extends Application {
         });
     }
 
+//    private void retrieveEntrantWishlist(Entrant entrant) {
+//        CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
+//        ArrayList<String> wishlist = new ArrayList<>();
+//
+//        waitlistRef.get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (DocumentSnapshot document : task.getResult()) {
+//                                // Assuming each document has a field "item" that is a String
+//                                String item = document.getString("eventId");
+//                                if (item != null) {
+//                                    wishlist.add(item);
+//                                }
+//                            }
+//                            // Now `wishlist` contains all items
+//                            Log.d("Wishlist app", "Wishlist items: " + wishlist);
+//                            entrant.setWaitlistEventIds(wishlist);
+//                        } else {
+//                            Log.e("Firestore Error", "Error getting documents: ", task.getException());
+//                        }
+//                    }
+//                });
+//    }
+
     private void retrieveEntrantWishlist(Entrant entrant) {
-        CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
         ArrayList<String> wishlist = new ArrayList<>();
 
-        waitlistRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                // Assuming each document has a field "item" that is a String
-                                String item = document.getString("eventId");
-                                if (item != null) {
-                                    wishlist.add(item);
-                                }
-                            }
-                            // Now `wishlist` contains all items
-                            Log.d("Wishlist app", "Wishlist items: " + wishlist);
-                            entrant.setWaitlistEventIds(wishlist);
-                        } else {
-                            Log.e("Firestore Error", "Error getting documents: ", task.getException());
-                        }
+        waitlistRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to wishlist updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                wishlist.clear(); // Clear previous data
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    String item = document.getString("eventId");
+                    if (item != null) {
+                        wishlist.add(item);
                     }
-                });
+                }
+                // Now `wishlist` contains the updated list of items
+                Log.d("Wishlist app", "Wishlist items: " + wishlist);
+                entrant.setWaitlistEventIds(wishlist);
+                setEntrantLiveData(entrant);
+            }
+        });
     }
+
+
     public void getUserRoles(OnRolesLoadedListener listener) {
         if (!userRoles.isEmpty()) {
             // If roles are already loaded, return them immediately
@@ -282,5 +307,6 @@ public class MyApplication extends Application {
     public void setEntrantLiveData(Entrant entrant) {
         this.entrantLiveData.setValue(entrant);
         this.entrant = entrant;
+        Log.d("wishlist track", "2");
     }
 }

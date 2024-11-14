@@ -417,6 +417,7 @@ public class EntrantProfileFragment extends Fragment {
             requireActivity().getSupportFragmentManager().popBackStack();
         }
     }
+
     private void saveChanges() {
         // Implement the logic to save the changes
         entrant.setName(t_name.getText().toString());

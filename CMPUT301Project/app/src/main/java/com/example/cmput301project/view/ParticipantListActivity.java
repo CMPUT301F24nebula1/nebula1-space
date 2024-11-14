@@ -1,12 +1,19 @@
 package com.example.cmput301project.view;
 
-import static androidx.test.InstrumentationRegistry.getContext;
-
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
-import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.service.PoolingService;
@@ -23,9 +29,10 @@ import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.slider.Slider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Source;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +61,8 @@ public class ParticipantListActivity extends AppCompatActivity {
     private Slider slider;
     private MaterialButton selectButton;
     private MaterialButton geoButton;
+    private Button cancelButton;
+    private MaterialButton notifyButton;
 
     private boolean isDataLoaded = false;
 
@@ -83,6 +92,8 @@ public class ParticipantListActivity extends AppCompatActivity {
         slider = findViewById(R.id.slider);
         selectButton = findViewById(R.id.select_button);
         geoButton = findViewById(R.id.select_button3);
+        cancelButton = findViewById(R.id.remove_button);
+        notifyButton = findViewById(R.id.notify_button);
 
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,8 +116,28 @@ public class ParticipantListActivity extends AppCompatActivity {
                     slider.setValueTo(entrants.size());
                     slider.setVisibility(View.VISIBLE);
                 }
+
+                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
+                    updateEntrantsList(new ArrayList<>(entrants_waitlist));
+                    setToggleButtonsAndSlider(entrants_waitlist.size());
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
+                    updateEntrantsList(new ArrayList<>(entrants_selected));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(true);
+                    cancelButton.setVisibility(View.VISIBLE);
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
+                    updateEntrantsList(new ArrayList<>(entrants_canceled));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(false);
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
+                    updateEntrantsList(new ArrayList<>(entrants_final));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(false);
+                }
             }
         });
+
+
 
         selectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,17 +197,149 @@ public class ParticipantListActivity extends AppCompatActivity {
                         }
                     });
                 }
+
+//                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
+//                    setToggleButtonsAndSlider(entrants_waitlist.size());
+//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
+//                    setButtonInvisible();
+//                    cancelButton.setVisibility(View.VISIBLE);
+//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
+//                    setButtonInvisible();
+//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
+//                    setButtonInvisible();
+//                }
+
+                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
+                    updateEntrantsList(new ArrayList<>(entrants_waitlist));
+                    setToggleButtonsAndSlider(entrants_waitlist.size());
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
+                    updateEntrantsList(new ArrayList<>(entrants_selected));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(true);
+                    cancelButton.setVisibility(View.VISIBLE);
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
+                    updateEntrantsList(new ArrayList<>(entrants_canceled));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(false);
+                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
+                    updateEntrantsList(new ArrayList<>(entrants_final));
+                    setButtonInvisible();
+                    entrantAdapter.setCheckboxVisibility(false);
+                }
             }
         });
 
-        retrieveEntrantsWithRealtimeUpdates(event, "WAITING", new RetrieveEntrantsCallback() {
+        notifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRetrieveEntrantsCompleted(List<Entrant> entrants) {
-                Log.d("waitlist", "data retrieved and listened.");
+            public void onClick(View view) {
+                String message = "";
+                Log.d("notify", entrants_store.toString());
+
+                if (!isDataLoaded) {
+                    Toast.makeText(ParticipantListActivity.this, "Loading, please try later", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
+                    message = "You won the lottery for event: " + event.getName();
+                }
+
+                showSimpleEditTextDialog(message, new InputDialogCallback() {
+                    @Override
+                    public void onInputConfirmed(String notification) {
+
+                        for (Entrant entrant : entrants_store) {
+                            Map<String, Object> notificationData = new HashMap<>();
+                            notificationData.put("isRead", "false"); // or "true" if the notification is read
+                            notificationData.put("notification", notification);
+                            notificationData.put("eventId", event.getId());
+                            notificationData.put("timestamp", FieldValue.serverTimestamp());
+
+                            db.collection("entrants")
+                                    .document(entrant.getId()) // Set the document ID to entrant.getId()
+                                    .collection("notifications")
+                                    .add(notificationData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Successfully written to Firestore
+                                        Log.d("Firestore", "Notification successfully written for entrant ID: " + entrant.getId());
+                                        Toast.makeText(getApplicationContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle any errors
+                                        Log.e("FirestoreError", "Error writing notification", e);
+                                    });
+                        }
+                    }
+                });
+
+
+
             }
         });
 
     }
+
+    public interface InputDialogCallback {
+        void onInputConfirmed(String notification);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void showSimpleEditTextDialog(String defaultText, InputDialogCallback callback) {
+        final EditText editTextInput = new EditText(this);
+        editTextInput.setText(defaultText);
+
+        if (!defaultText.isEmpty()) {
+            editTextInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear, 0);
+        }
+
+        editTextInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    editTextInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear, 0);
+                } else {
+                    editTextInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        editTextInput.setOnTouchListener((v, event) -> {
+            Drawable rightDrawable = editTextInput.getCompoundDrawables()[2];
+            if (rightDrawable != null && event.getRawX() >= (editTextInput.getRight() - rightDrawable.getBounds().width())) {
+                editTextInput.setText(""); // Clear text
+                v.performClick();
+                return true;
+            }
+            return false;
+        });
+
+        editTextInput.setOnClickListener(v -> {
+        });
+
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Notification message")
+                .setView(editTextInput)
+                .setPositiveButton("Confirm", (dialogInterface, which) -> {
+                    String inputText = editTextInput.getText().toString().trim();
+                    if (!inputText.isEmpty()) {
+                        // Pass the inputText to the callback
+                        callback.onInputConfirmed(inputText);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please enter some text", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        dialog.show();
+    }
+
 
     public interface RetrieveEntrantsCallback {
         void onRetrieveEntrantsCompleted(List<Entrant> entrants);
@@ -192,8 +355,6 @@ public class ParticipantListActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             entrants_waitlist.clear(); // Clear the list to avoid duplicates
-
-
                             entrants_selected.clear();
                             entrants_canceled.clear();
                             entrants_final.clear();
@@ -273,10 +434,14 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                     setToggleButtonsAndSlider(entrants_waitlist.size());
                                                 } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
                                                     updateEntrantsList(new ArrayList<>(entrants_selected));
+                                                    setButtonInvisible();
+                                                    cancelButton.setVisibility(View.VISIBLE);
                                                 } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
                                                     updateEntrantsList(new ArrayList<>(entrants_canceled));
+                                                    setButtonInvisible();
                                                 } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
                                                     updateEntrantsList(new ArrayList<>(entrants_final));
+                                                    setButtonInvisible();
                                                 }
                                                 Log.d("wishlist debug0", status + entrants_store.toString());
 
@@ -326,23 +491,6 @@ public class ParticipantListActivity extends AppCompatActivity {
         }
     }
 
-    public void setButtonState(Boolean enabled) {
-
-        slider.setEnabled(enabled);
-        selectButton.setEnabled(enabled);
-        geoButton.setEnabled(enabled);
-        if (enabled) {
-            slider.setAlpha(1f);
-            selectButton.setAlpha(1f);
-            geoButton.setAlpha(1f);
-        } else {
-            slider.setAlpha(0.1f);
-            selectButton.setAlpha(0.1f);
-            geoButton.setAlpha(0.1f);
-        }
-
-    }
-
     private void setToggleButtonsAndSlider(int waitingListLength) {
         boolean enabled = waitingListLength > 0;
         float alpha = 1;
@@ -361,11 +509,22 @@ public class ParticipantListActivity extends AppCompatActivity {
         else if (waitingListLength == 0) {
             slider.setVisibility(View.GONE);
         }
+        entrantAdapter.setCheckboxVisibility(false);
+
+        selectButton.setVisibility(View.VISIBLE);
+        geoButton.setVisibility(View.VISIBLE);
 
         selectButton.setAlpha(alpha);
         selectButton.setClickable(enabled);
         geoButton.setAlpha(alpha);
         geoButton.setClickable(enabled);
+    }
+
+    private void setButtonInvisible() {
+        selectButton.setVisibility(View.GONE);
+        geoButton.setVisibility(View.GONE);
+        slider.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
     }
 
     // navigate back to previous activity

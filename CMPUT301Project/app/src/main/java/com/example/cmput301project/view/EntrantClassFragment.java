@@ -65,6 +65,7 @@ public class EntrantClassFragment extends Fragment {
             entrant = entrant1;
             wishlistEventIds = entrant.getWaitlistEventIds();
             Log.d("entrant wishlist", String.valueOf(wishlistEventIds.size()));
+            Log.d("entrant wishlist", wishlistEventIds.toString());
 
             retrieveEvents(entrant, new EventsCallback() {
                 @Override
@@ -84,7 +85,6 @@ public class EntrantClassFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action = EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
-//                EventListFragmentDirections.ActionEntrantClassToEntrantEventView action = EventListFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
                 NavHostFragment.findNavController(EntrantClassFragment.this).navigate(action);
             }
         });
