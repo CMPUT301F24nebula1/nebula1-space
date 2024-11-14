@@ -250,7 +250,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                         for (Entrant entrant : entrants_store) {
                             Map<String, Object> notificationData = new HashMap<>();
                             notificationData.put("isRead", "false"); // or "true" if the notification is read
-                            notificationData.put("notification", notification);
+                            notificationData.put("message", notification);
                             notificationData.put("eventId", event.getId());
                             notificationData.put("timestamp", FieldValue.serverTimestamp());
 

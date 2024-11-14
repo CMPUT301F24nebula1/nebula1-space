@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
+import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -157,32 +158,6 @@ public class MyApplication extends Application {
         });
     }
 
-//    private void retrieveEntrantWishlist(Entrant entrant) {
-//        CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
-//        ArrayList<String> wishlist = new ArrayList<>();
-//
-//        waitlistRef.get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (DocumentSnapshot document : task.getResult()) {
-//                                // Assuming each document has a field "item" that is a String
-//                                String item = document.getString("eventId");
-//                                if (item != null) {
-//                                    wishlist.add(item);
-//                                }
-//                            }
-//                            // Now `wishlist` contains all items
-//                            Log.d("Wishlist app", "Wishlist items: " + wishlist);
-//                            entrant.setWaitlistEventIds(wishlist);
-//                        } else {
-//                            Log.e("Firestore Error", "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-//    }
-
     private void retrieveEntrantWishlist(Entrant entrant) {
         CollectionReference waitlistRef = db.collection("entrants")
                 .document(entrant.getId())
@@ -206,7 +181,54 @@ public class MyApplication extends Application {
                 // Now `wishlist` contains the updated list of items
                 Log.d("Wishlist app", "Wishlist items: " + wishlist);
                 entrant.setWaitlistEventIds(wishlist);
-                setEntrantLiveData(entrant);
+                retrieveEntrantNotification(entrant, new NotificationCallback() {
+                    @Override
+                    public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
+                        setEntrantLiveData(entrant);
+                        Log.d("retrieve entrant", "succeed");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e("retrieve entrant", e.toString());
+                    }
+                });
+            }
+        });
+    }
+
+    public interface NotificationCallback {
+        void onNotificationsRetrieved(ArrayList<Notification> notifications);
+        void onError(Exception e);
+    }
+
+    private void retrieveEntrantNotification(Entrant entrant, NotificationCallback callback) {
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+        ArrayList<Notification> notifications = new ArrayList<>();
+
+        notificationRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to notification updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                notifications.clear();
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Notification item = document.toObject(Notification.class);
+                    if (item != null) {
+                        notifications.add(item);
+                    }
+                }
+                Log.d("Notifications", "Notifications: " + notifications);
+                entrant.setNotifications(notifications);
+//                setEntrantLiveData(entrant);
+
+                if (callback != null) {
+                    callback.onNotificationsRetrieved(notifications);
+                }
             }
         });
     }

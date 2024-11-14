@@ -16,14 +16,15 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationArrayAdapter extends ArrayAdapter<Notification> {
-    public NotificationArrayAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Notification> objects) {
-        super(context, resource, objects);
+    public NotificationArrayAdapter(@NonNull Context context, @NonNull ArrayList<Notification> notifications) {
+        super(context, 0, notifications);
     }
 
     @NonNull

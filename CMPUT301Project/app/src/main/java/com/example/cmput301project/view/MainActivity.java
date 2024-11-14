@@ -16,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.UserController;
+import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.User;
@@ -239,12 +240,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.notification_menu, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (entrantSnapshot.exists()) {
                                     Entrant entrant = entrantSnapshot.toObject(Entrant.class);
                                     retrieveEntrantWishlist(entrant);
-                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+//                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                                 else {
                                     Entrant entrant = new Entrant(userId);
@@ -403,11 +403,54 @@ public class MainActivity extends AppCompatActivity {
                             // Now `wishlist` contains all items
                             Log.d("Wishlist main", "Wishlist items: " + wishlist);
                             entrant.setWaitlistEventIds(wishlist);
+                            retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
+                                @Override
+                                public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
+                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                    Log.d("retrieve entrant", "succeed");
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Log.e("retrieve entrant", e.toString());
+                                }
+                            });
                         } else {
                             Log.e("Firestore Error", "Error getting documents: ", task.getException());
                         }
                     }
                 });
+    }
+
+    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+        ArrayList<Notification> notifications = new ArrayList<>();
+
+        notificationRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to notification updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                notifications.clear();
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Notification item = document.toObject(Notification.class);
+                    if (item != null) {
+                        notifications.add(item);
+                    }
+                }
+                Log.d("Notifications", "Notifications: " + notifications);
+                entrant.setNotifications(notifications);
+//                setEntrantLiveData(entrant);
+
+                if (callback != null) {
+                    callback.onNotificationsRetrieved(notifications);
+                }
+            }
+        });
     }
 
     public void addUser(User user) {

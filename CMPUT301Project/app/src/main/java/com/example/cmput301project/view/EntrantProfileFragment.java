@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -28,13 +29,21 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -46,14 +55,18 @@ import com.bumptech.glide.Glide;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
+import com.example.cmput301project.controller.NotificationArrayAdapter;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Notification;
 import com.google.android.material.card.MaterialCardView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment for entrant profile
@@ -73,6 +86,10 @@ public class EntrantProfileFragment extends Fragment {
     private Uri imageUri;
     private boolean isEditMode = false;
     private boolean isImageEnlarged = false;
+
+    ArrayList<Notification> notifications;
+    ListView notificationList;
+    NotificationArrayAdapter notificationAdapter;
 
     @Nullable
     @Override
@@ -193,6 +210,7 @@ public class EntrantProfileFragment extends Fragment {
                 // No action needed here
             }
         });
+
         app.setEntrantLiveData(entrant);
     }
 
@@ -427,4 +445,107 @@ public class EntrantProfileFragment extends Fragment {
         ec.saveEntrantToDatabase(entrant, imageUri);
         app.setEntrantLiveData(entrant); // Save data to the application variable
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);  // Ensure the fragment has access to the options menu
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem customButton = menu.findItem(R.id.btn_notification);
+        if (customButton != null) {
+            customButton.setVisible(true);  // Show it in this fragment
+            customButton.setEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.btn_notification) {
+            // Handle the custom button click here
+            showNotificationsPopup();
+//            Toast.makeText(getContext(), "Custom button clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showNotificationsPopup() {
+        // Inflate the popup layout
+        View popupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notifications, null);
+
+        // Initialize the PopupWindow
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, 1000); // Fixed height of 400 pixels
+//        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+
+        // Set up the ListView with notifications
+        notificationList = popupView.findViewById(R.id.notification_list_view);
+        notifications = entrant.getNotifications();
+        notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
+        notificationList.setAdapter(notificationAdapter);
+
+        // Show the PopupWindow at the right end under the toolbar
+        View toolbar = getActivity().findViewById(R.id.toolbar);
+
+        int xOffset = toolbar.getWidth() - popupWindow.getWidth();
+        popupWindow.showAsDropDown(toolbar, xOffset, 0);
+
+        notificationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Notification notification = notifications.get(i);
+                notification.setRead(true);
+//                String eventId = notification.getEventId();
+                popupWindow.dismiss();
+                showNotificationDetailPopup(notifications.get(i));
+            }
+        });
+    }
+
+    private void showNotificationDetailPopup(Notification notification) {
+        View detailPopupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notification_detail, null);
+
+        // Initialize the PopupWindow for the detail view
+        PopupWindow detailPopupWindow = new PopupWindow(detailPopupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        detailPopupWindow.setFocusable(true);
+        detailPopupWindow.setBackgroundDrawable(new ColorDrawable());
+
+        // Display message
+        TextView messageTextView = detailPopupView.findViewById(R.id.notification_message);
+        messageTextView.setText(notification.getMessage());
+
+        // Set up Yes and No buttons
+        Button yesButton = detailPopupView.findViewById(R.id.yes_button);
+        Button noButton = detailPopupView.findViewById(R.id.no_button);
+
+        yesButton.setOnClickListener(v -> {
+            // Handle "Yes" action here
+            Toast.makeText(getContext(), "Accepted the offer!", Toast.LENGTH_SHORT).show();
+            detailPopupWindow.dismiss();
+        });
+
+        noButton.setOnClickListener(v -> {
+            // Handle "No" action here
+            Toast.makeText(getContext(), "Declined the offer.", Toast.LENGTH_SHORT).show();
+            detailPopupWindow.dismiss();
+        });
+
+        ImageButton backButton = detailPopupView.findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            detailPopupWindow.dismiss();
+            showNotificationsPopup(); // Show the notification list again
+        });
+
+        View toolbar = getActivity().findViewById(R.id.toolbar);
+
+        int xOffset = toolbar.getWidth() - detailPopupView.getWidth();
+        detailPopupWindow.showAsDropDown(toolbar, xOffset, 0);
+    }
+
+
 }
