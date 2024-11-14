@@ -72,11 +72,11 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("entrant event myapplication", entrant1.getWaitlistEventIds().toString());
                 if (entrant.getWaitlistEventIds().contains(e.getId())) {
                     setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
-                    Log.d("wishlist1", "1");
+//                    Log.d("wishlist1", "1");
                 }
                 else {
                     setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
-                    Log.d("wishlist1", "2");
+//                    Log.d("wishlist1", "2");
                 }
             }
         });
