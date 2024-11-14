@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public class Entrant extends User {
     protected transient ArrayList<String> waitlistEventIds;
+    protected  transient ArrayList<Notification> notifications;
     protected String name;
     protected String email;
     protected String phone;
@@ -145,6 +146,14 @@ public class Entrant extends User {
      */
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(ArrayList<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.example.cmput301project.model;
 
+import com.google.firebase.Timestamp;
+
 public class Notification {
     private String eventId;
     private boolean isRead;
     private String message;
-    private long timestamp;
+    private Timestamp timestamp;
+    private String status;
+    private String title;
 
     public String getEventId() {
         return eventId;
@@ -30,11 +34,27 @@ public class Notification {
         this.message = message;
     }
 
-    public long getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
