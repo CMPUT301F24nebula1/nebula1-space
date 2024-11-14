@@ -7,6 +7,8 @@ public class Notification {
     private boolean isRead;
     private String message;
     private Timestamp timestamp;
+    private String status;
+    private String title;
 
     public String getEventId() {
         return eventId;
@@ -38,5 +40,21 @@ public class Notification {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

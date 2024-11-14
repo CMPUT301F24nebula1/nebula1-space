@@ -52,6 +52,7 @@ public class ParticipantListActivity extends AppCompatActivity {
     private ArrayList<Entrant> entrants_selected; // entrants with status "SELECTED"
     private ArrayList<Entrant> entrants_canceled; // entrants with status "CANCELED"
     private ArrayList<Entrant> entrants_final; // entrants with status "FINAL"
+    private String status;
 
     private Map<String, ArrayList<Entrant>> entrantCache = new HashMap<>();
 
@@ -116,28 +117,9 @@ public class ParticipantListActivity extends AppCompatActivity {
                     slider.setValueTo(entrants.size());
                     slider.setVisibility(View.VISIBLE);
                 }
-
-                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
-                    updateEntrantsList(new ArrayList<>(entrants_waitlist));
-                    setToggleButtonsAndSlider(entrants_waitlist.size());
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
-                    updateEntrantsList(new ArrayList<>(entrants_selected));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(true);
-                    cancelButton.setVisibility(View.VISIBLE);
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
-                    updateEntrantsList(new ArrayList<>(entrants_canceled));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(false);
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
-                    updateEntrantsList(new ArrayList<>(entrants_final));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(false);
-                }
+                setButtonState();
             }
         });
-
-
 
         selectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,34 +180,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                     });
                 }
 
-//                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
-//                    setToggleButtonsAndSlider(entrants_waitlist.size());
-//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
-//                    setButtonInvisible();
-//                    cancelButton.setVisibility(View.VISIBLE);
-//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
-//                    setButtonInvisible();
-//                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
-//                    setButtonInvisible();
-//                }
-
-                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
-                    updateEntrantsList(new ArrayList<>(entrants_waitlist));
-                    setToggleButtonsAndSlider(entrants_waitlist.size());
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
-                    updateEntrantsList(new ArrayList<>(entrants_selected));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(true);
-                    cancelButton.setVisibility(View.VISIBLE);
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
-                    updateEntrantsList(new ArrayList<>(entrants_canceled));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(false);
-                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
-                    updateEntrantsList(new ArrayList<>(entrants_final));
-                    setButtonInvisible();
-                    entrantAdapter.setCheckboxVisibility(false);
-                }
+                setButtonState();
             }
         });
 
@@ -253,6 +208,8 @@ public class ParticipantListActivity extends AppCompatActivity {
                             notificationData.put("message", notification);
                             notificationData.put("eventId", event.getId());
                             notificationData.put("timestamp", FieldValue.serverTimestamp());
+                            notificationData.put("status", status);
+                            notificationData.put("title", event.getName());
 
                             db.collection("entrants")
                                     .document(entrant.getId()) // Set the document ID to entrant.getId()
@@ -429,20 +386,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                 entrantCache.put("CANCELED", new ArrayList<>(entrants_canceled));
                                                 entrantCache.put("FINAL", new ArrayList<>(entrants_final));
 
-                                                if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
-                                                    updateEntrantsList(new ArrayList<>(entrants_waitlist));
-                                                    setToggleButtonsAndSlider(entrants_waitlist.size());
-                                                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
-                                                    updateEntrantsList(new ArrayList<>(entrants_selected));
-                                                    setButtonInvisible();
-                                                    cancelButton.setVisibility(View.VISIBLE);
-                                                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
-                                                    updateEntrantsList(new ArrayList<>(entrants_canceled));
-                                                    setButtonInvisible();
-                                                } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
-                                                    updateEntrantsList(new ArrayList<>(entrants_final));
-                                                    setButtonInvisible();
-                                                }
+                                                setButtonState();
                                                 Log.d("wishlist debug0", status + entrants_store.toString());
 
                                                 if (entrantAdapter == null) {
@@ -475,6 +419,30 @@ public class ParticipantListActivity extends AppCompatActivity {
         } else {
             setToggleButtonsAndSlider(0);
             Log.d("FirebaseQuery", "No wishlist IDs to query.");
+        }
+    }
+
+    private void setButtonState() {
+        if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
+            updateEntrantsList(new ArrayList<>(entrants_waitlist));
+            setToggleButtonsAndSlider(entrants_waitlist.size());
+            status = "WAITING";
+        } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
+            updateEntrantsList(new ArrayList<>(entrants_selected));
+            setButtonInvisible();
+            entrantAdapter.setCheckboxVisibility(true);
+            cancelButton.setVisibility(View.VISIBLE);
+            status = "SELECTED";
+        } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
+            updateEntrantsList(new ArrayList<>(entrants_canceled));
+            setButtonInvisible();
+            entrantAdapter.setCheckboxVisibility(false);
+            status = "CANCELED";
+        } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
+            updateEntrantsList(new ArrayList<>(entrants_final));
+            setButtonInvisible();
+            entrantAdapter.setCheckboxVisibility(false);
+            status = "FINAL";
         }
     }
 

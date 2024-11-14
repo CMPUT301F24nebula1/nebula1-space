@@ -38,9 +38,11 @@ public class NotificationArrayAdapter extends ArrayAdapter<Notification> {
             view = convertView;
         }
         Notification n = getItem(position);
+        TextView title = view.findViewById(R.id.notification_title);
         TextView message = view.findViewById(R.id.notification_message);
         if (n != null) {
             message.setText(n.getMessage());
+            title.setText(n.getTitle());
         }
 
         return view;

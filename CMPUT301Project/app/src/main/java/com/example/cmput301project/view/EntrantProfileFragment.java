@@ -60,6 +60,10 @@ import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Notification;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -523,15 +527,31 @@ public class EntrantProfileFragment extends Fragment {
         Button yesButton = detailPopupView.findViewById(R.id.yes_button);
         Button noButton = detailPopupView.findViewById(R.id.no_button);
 
+        retrieveEntrantStatus(entrant, notification.getEventId(), new StatusCallback() {
+            @Override
+            public void onStatusRetrieved(String status) {
+                if (status.equals("SELECTED")) {
+                    yesButton.setVisibility(View.VISIBLE);
+                    noButton.setVisibility(View.VISIBLE);
+                } else {
+                    yesButton.setVisibility(View.GONE);
+                    noButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {}
+        });
+
         yesButton.setOnClickListener(v -> {
-            // Handle "Yes" action here
-            Toast.makeText(getContext(), "Accepted the offer!", Toast.LENGTH_SHORT).show();
+            updateStatus(entrant, "FINAL", notification.getEventId());
+            Toast.makeText(getContext(), "Accepted the invitation!", Toast.LENGTH_SHORT).show();
             detailPopupWindow.dismiss();
         });
 
         noButton.setOnClickListener(v -> {
-            // Handle "No" action here
-            Toast.makeText(getContext(), "Declined the offer.", Toast.LENGTH_SHORT).show();
+            updateStatus(entrant, "CANCELED", notification.getEventId());
+            Toast.makeText(getContext(), "Declined the invitation", Toast.LENGTH_SHORT).show();
             detailPopupWindow.dismiss();
         });
 
@@ -545,6 +565,78 @@ public class EntrantProfileFragment extends Fragment {
 
         int xOffset = toolbar.getWidth() - detailPopupView.getWidth();
         detailPopupWindow.showAsDropDown(toolbar, xOffset, 0);
+    }
+
+    public interface StatusCallback {
+        void onStatusRetrieved(String status);
+        void onFailure(Exception e);
+    }
+
+    public void retrieveEntrantStatus(Entrant entrant, String eventId, StatusCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
+
+        waitlistRef.whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            String status = document.getString("status");
+
+                            // Check if status is not null and log it
+                            if (status != null) {
+                                Log.d("Firestore", "Status: " + status);
+                                callback.onStatusRetrieved(status);
+                            } else {
+                                Log.d("Firestore", "Status field is null");
+                                callback.onFailure(new NullPointerException("Status field is null"));
+                            }
+                        }
+                    } else {
+                        Log.d("Firestore", "No document found with the specified eventId");
+                        callback.onFailure(new Exception("No document found with the specified eventId"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error finding document", e);
+                });
+    }
+
+    public void updateStatus(Entrant entrant, String status, String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
+
+        Log.d("notification eventId", eventId);
+        waitlistRef.whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            DocumentReference docRef = document.getReference();
+                            // Update the status field
+                            docRef.update("status", status)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Status field updated successfully");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error updating status field", e);
+                                    });
+                        }
+                    } else {
+                        Log.d("Firestore", "No document found with the specified eventId");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error finding document", e);
+                });
     }
 
 
