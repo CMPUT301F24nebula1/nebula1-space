@@ -696,6 +696,14 @@ public class FirebaseServer implements FirebaseInterface {
 
     @Override
     public void retrieveUser(String userId, OnUserRetrievedListener listener) {
+        if (userId.equals("admin_user_id")) {  // Replace "admin_user_id" with the actual admin ID
+            User admin = new User(userId);
+            admin.addAdmin();  // Add the admin role using the method in User
+
+            listener.onOrganizerRetrieved(new Organizer(userId)); // Treating admin as an organizer for demo
+            return;
+        }
+
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {

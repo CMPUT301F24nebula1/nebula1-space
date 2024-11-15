@@ -37,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Fragment for organizers to add an event
@@ -45,7 +46,7 @@ import java.util.Locale;
  */
 
 public class AddEventFragment extends Fragment {
-    private OrganizerEventViewBinding binding;
+    public OrganizerEventViewBinding binding;
     private OrganizerEventController organizerEventController;
     private Uri imageUri;  // Store image URI after selecting it
     private FirebaseFirestore db;
@@ -93,8 +94,8 @@ public class AddEventFragment extends Fragment {
                     Toast.makeText(getContext(), "Event name must include alphabetical characters.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!isValidPositiveInteger(binding.lotteryCapacity.getEditText().getText().toString())) {
-                    Toast.makeText(getContext(), "Capacity must be greater than 0.", Toast.LENGTH_SHORT).show();
+                if (!isValidPositiveInteger(Objects.requireNonNull(binding.lotteryCapacity.getEditText()).getText().toString())) {
+                    Toast.makeText(getContext(), "Capacity must be greater or equal to 0.\n0 means unlimited.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Event event = new Event();
@@ -102,7 +103,16 @@ public class AddEventFragment extends Fragment {
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
                 event.setDescription(description);
-                event.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
+                String inputCapacity = binding.lotteryCapacity.getEditText().getText().toString().trim();
+                int lotteryCapacity;
+                try {
+                    lotteryCapacity = Integer.parseInt(inputCapacity);
+                } catch (NumberFormatException e) {
+                    lotteryCapacity = 0;  // Or any default value or error handling logic
+                    // Optionally, you can show an error message to the user
+                    binding.lotteryCapacity.setError("Please enter a valid number");
+                }
+                event.setLimit(lotteryCapacity);
 
                 organizerEventController.addEvent(event, imageUri, aVoid -> {
                     Log.d("nav", "navigate to event detail");
@@ -188,7 +198,7 @@ public class AddEventFragment extends Fragment {
     private boolean isValidPositiveInteger(String input) {
         try {
             int value = Integer.parseInt(input);
-            return value > 0;
+            return value >= 0;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -201,7 +211,7 @@ public class AddEventFragment extends Fragment {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+    public ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {

@@ -86,3 +86,13 @@ lint/tmp/
 
 # google-services.json
 app/google-services.json
+
+# Firebase files
+.firebase/
+firebase-debug
+firestore.rules
+firestore.indexes
+storage.rules
+firebase.json
+storage.rules
+ui-debug

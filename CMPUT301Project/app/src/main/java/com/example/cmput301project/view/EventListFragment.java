@@ -80,6 +80,7 @@ public class EventListFragment extends Fragment {
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.d("wishlist event argument", events.get(i).getWaitlistEntrantIds().toString());
                     EventListFragmentDirections.ActionEventListToOrganizerEventDetail action = EventListFragmentDirections.actionEventListToOrganizerEventDetail(events.get(i));
                     NavHostFragment.findNavController(EventListFragment.this).navigate(action);
                 }

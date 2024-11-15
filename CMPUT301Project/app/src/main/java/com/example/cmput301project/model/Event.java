@@ -28,6 +28,7 @@ public class Event extends Observable implements Serializable {
     public Event() {
         this.waitlistEntrantIds = new ArrayList<String>();
         this.id = UUID.randomUUID().toString();
+        this.limit = 0;
     }
 
     /**
@@ -38,6 +39,7 @@ public class Event extends Observable implements Serializable {
         this.waitlistEntrantIds = new ArrayList<String>();
         this.name = name;
         this.id = UUID.randomUUID().toString();
+        this.limit = 0;
     }
 
     /**
@@ -172,18 +174,38 @@ public class Event extends Observable implements Serializable {
         this.qrCode = qrCode;
     }
 
+    /**
+     * Gets the start date of the event.
+     *
+     * @return the start date as a string
+     */
     public String getStartDate() {
         return startDate;
     }
 
+    /**
+     * Sets the start date of the event.
+     *
+     * @param startDate the start date string to be set
+     */
     public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
+    /**
+     * Gets the end date of the event.
+     *
+     * @return the end date as a string
+     */
     public String getEndDate() {
         return endDate;
     }
 
+    /**
+     * Sets the end date of the event.
+     *
+     * @param endDate the end date string to be set
+     */
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }

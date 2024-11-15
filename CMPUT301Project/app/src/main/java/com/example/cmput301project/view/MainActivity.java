@@ -16,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.controller.UserController;
+import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.User;
@@ -26,6 +27,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,12 +42,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 /**
  * MainActivity
  * @author Xinjia Fan
+ * @author Zaid Islam
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -62,12 +68,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        id = getDeviceId(this);
 
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        id = getDeviceId(this);
+
+        id = "8e488662a2c3a895";
+
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
@@ -79,14 +88,35 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        setSupportActionBar(binding.toolbar);
-        setSupportActionBar(findViewById(R.id.toolbar));
+        setSupportActionBar(binding.toolbar);
+//        setSupportActionBar(findViewById(R.id.toolbar));
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");
         String eventId = intent.getStringExtra("eventId");
 
         Log.d("MainActivity", "navigateTo: " + navigateTo + ", eventId: " + eventId);
+
+        Button adminModeButton = findViewById(R.id.btn_admin);
+        adminModeButton.setOnClickListener(view -> {
+            checkIfUserIsAdmin(isAdmin -> {
+                if (isAdmin) {
+                    // If the user is an admin, navigate to the admin activity
+                    Intent adminIntent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                    startActivity(adminIntent);
+                } else {
+                    // Show access denied message
+                    Toast.makeText(MainActivity.this, "Access Denied: Admins Only", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        checkIfUserIsAdmin(isAdmin -> {
+            if (!isAdmin) {
+                // Show access denied message
+                binding.btnAdmin.setVisibility(View.GONE);
+            }
+        });
 
         toggleGroup = findViewById(R.id.toggleGroup);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -212,8 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.notification_menu, menu);
         return true;
     }
 
@@ -233,6 +262,17 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Set the Entrant button as selected in the toggle group
+        if (toggleGroup.getVisibility() == View.VISIBLE && toggleGroup.getCheckedButtonId() != R.id.btn_entrant) {
+            toggleGroup.check(R.id.btn_entrant); // Set Entrant as the default selection
+        }
+    }
+
+
     private String getDeviceId(Context context) {
         // Retrieve ANDROID_ID as the device ID
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -251,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (entrantSnapshot.exists()) {
                                     Entrant entrant = entrantSnapshot.toObject(Entrant.class);
                                     retrieveEntrantWishlist(entrant);
-                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+//                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                                 else {
                                     Entrant entrant = new Entrant(userId);
@@ -363,11 +403,54 @@ public class MainActivity extends AppCompatActivity {
                             // Now `wishlist` contains all items
                             Log.d("Wishlist main", "Wishlist items: " + wishlist);
                             entrant.setWaitlistEventIds(wishlist);
+                            retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
+                                @Override
+                                public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
+                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                    Log.d("retrieve entrant", "succeed");
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Log.e("retrieve entrant", e.toString());
+                                }
+                            });
                         } else {
                             Log.e("Firestore Error", "Error getting documents: ", task.getException());
                         }
                     }
                 });
+    }
+
+    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+        ArrayList<Notification> notifications = new ArrayList<>();
+
+        notificationRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to notification updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                notifications.clear();
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Notification item = document.toObject(Notification.class);
+                    if (item != null) {
+                        notifications.add(item);
+                    }
+                }
+                Log.d("Notifications", "Notifications: " + notifications);
+                entrant.setNotifications(notifications);
+//                setEntrantLiveData(entrant);
+
+                if (callback != null) {
+                    callback.onNotificationsRetrieved(notifications);
+                }
+            }
+        });
     }
 
     public void addUser(User user) {
@@ -390,6 +473,25 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(f -> {
                     Log.w("Firestore", "Error adding user", f);
                 });
+    }
+
+    private void checkIfUserIsAdmin(OnAdminCheckListener listener) {
+        ((MyApplication) getApplication()).getUserRoles(new MyApplication.OnRolesLoadedListener() {
+            @Override
+            public void onRolesLoaded(ArrayList<String> roles) {
+                boolean isAdmin = roles != null && roles.contains("admin");
+                listener.onAdminCheckCompleted(isAdmin);
+            }
+        });
+    }
+
+    public interface OnAdminCheckListener {
+        void onAdminCheckCompleted(boolean isAdmin);
+    }
+
+    // for ui test
+    public void setId(String id) {
+        this.id = id;
     }
 
 }
