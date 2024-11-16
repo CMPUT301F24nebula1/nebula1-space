@@ -464,6 +464,28 @@ public class EntrantProfileFragment extends Fragment {
             customButton.setVisible(true);  // Show it in this fragment
             customButton.setEnabled(true);
         }
+        // Set the custom action view
+        View actionView = customButton.getActionView();
+        if (actionView == null) {
+            actionView = LayoutInflater.from(requireContext()).inflate(R.layout.menu_notification_badge, null);
+            customButton.setActionView(actionView);
+        }
+
+        // Manage badge visibility
+        View badge = actionView.findViewById(R.id.notification_badge);
+        app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+            if (entrant1.hasUnreadNotifications(entrant1.getNotifications())) {
+                badge.setVisibility(View.VISIBLE);
+            } else {
+                badge.setVisibility(View.GONE);
+            }
+        });
+
+        // Handle click on the notification icon
+        actionView.setOnClickListener(v -> {
+            // Trigger the menu item click
+            onOptionsItemSelected(customButton);
+        });
     }
 
     @Override
@@ -489,9 +511,20 @@ public class EntrantProfileFragment extends Fragment {
 
         // Set up the ListView with notifications
         notificationList = popupView.findViewById(R.id.notification_list_view);
-        notifications = entrant.getNotifications();
-        notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
-        notificationList.setAdapter(notificationAdapter);
+//        notifications = entrant.getNotifications();
+        retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
+            @Override
+            public void onNotificationsRetrieved(ArrayList<Notification> notifications1) {
+                notifications = notifications1;
+                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
+                if (notificationAdapter == null) {
+                    notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
+                }
+                notificationList.setAdapter(notificationAdapter);
+            }
+            @Override
+            public void onError(Exception e) {}
+        });
 
         // Show the PopupWindow at the right end under the toolbar
         View toolbar = getActivity().findViewById(R.id.toolbar);
@@ -504,9 +537,20 @@ public class EntrantProfileFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Notification notification = notifications.get(i);
                 notification.setRead(true);
+                notificationAdapter.notifyDataSetChanged();
 //                String eventId = notification.getEventId();
-                popupWindow.dismiss();
-                showNotificationDetailPopup(notifications.get(i));
+                updateNotificationStatus(notification.getId(), new FirestoreUpdateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        popupWindow.dismiss();
+                        showNotificationDetailPopup(notifications.get(i));
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
     }
@@ -540,7 +584,9 @@ public class EntrantProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Exception e) {}
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         yesButton.setOnClickListener(v -> {
@@ -565,6 +611,41 @@ public class EntrantProfileFragment extends Fragment {
 
         int xOffset = toolbar.getWidth() - detailPopupView.getWidth();
         detailPopupWindow.showAsDropDown(toolbar, xOffset, 0);
+    }
+
+    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+        ArrayList<Notification> notifications = new ArrayList<>();
+
+        notificationRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to notification updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                notifications.clear();
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Notification item = document.toObject(Notification.class);
+                    if (item != null) {
+                        item.setId(document.getId());
+
+                        notifications.add(item);
+                        Log.d("notification status", item.getId() + String.valueOf(item.isRead()));
+                    }
+                }
+                Log.d("Notifications", "Notifications: " + notifications);
+                entrant.setNotifications(notifications);
+//                setEntrantLiveData(entrant);
+
+                if (callback != null) {
+                    callback.onNotificationsRetrieved(notifications);
+                }
+            }
+        });
     }
 
     public interface StatusCallback {
@@ -602,6 +683,35 @@ public class EntrantProfileFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error finding document", e);
                 });
+    }
+
+    public interface FirestoreUpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public void updateNotificationStatus(String id, FirestoreUpdateCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference notificationDocRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications")
+                .document(id); // Replace "DOCUMENT_ID" with the specific document ID
+
+        // Update the isRead field
+        notificationDocRef.update("isRead", true)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore Update", "isRead field successfully updated!");
+                    if (callback != null) {
+                        callback.onSuccess(); // Notify success
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore Update", "Error updating isRead field", e);
+                    if (callback != null) {
+                        callback.onFailure(e); // Notify failure
+                    }
+                });
+
     }
 
     public void updateStatus(Entrant entrant, String status, String eventId) {

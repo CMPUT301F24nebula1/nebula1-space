@@ -422,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+    public void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
         CollectionReference notificationRef = db.collection("entrants")
                 .document(entrant.getId())
                 .collection("notifications");
@@ -439,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Notification item = document.toObject(Notification.class);
                     if (item != null) {
+                        item.setId(document.getId());
                         notifications.add(item);
                     }
                 }
