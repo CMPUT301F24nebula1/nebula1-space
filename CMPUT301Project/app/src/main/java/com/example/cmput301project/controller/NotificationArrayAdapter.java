@@ -40,9 +40,23 @@ public class NotificationArrayAdapter extends ArrayAdapter<Notification> {
         Notification n = getItem(position);
         TextView title = view.findViewById(R.id.notification_title);
         TextView message = view.findViewById(R.id.notification_message);
+        View badge = view.findViewById(R.id.notification_badge);
+
         if (n != null) {
             message.setText(n.getMessage());
             title.setText(n.getTitle());
+        }
+
+        // Show or hide the badge based on isRead value
+
+        if (!n.isRead()) {
+//            Log.d("notification", "isRead = false");
+            badge.setVisibility(View.VISIBLE);
+            notifyDataSetChanged();
+        } else {
+//            Log.d("notification", "isRead = true");
+            badge.setVisibility(View.GONE);
+            notifyDataSetChanged();
         }
 
         return view;

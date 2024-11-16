@@ -219,6 +219,7 @@ public class MyApplication extends Application {
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Notification item = document.toObject(Notification.class);
                     if (item != null) {
+                        item.setId(document.getId());
                         notifications.add(item);
                     }
                 }
