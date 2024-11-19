@@ -86,13 +86,17 @@ public class EntrantEventViewFragment extends Fragment {
 
         try {
             if (!e.getPosterUrl().isEmpty()) {
+                binding.eventPosterImageview.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
                         .error(R.drawable.error_image)              // error image
                         .into(binding.eventPosterImageview);
+            } else {
+                binding.eventPosterImageview.setVisibility(View.GONE);
             }
         } catch (NullPointerException exception) {
+            binding.eventPosterImageview.setVisibility(View.GONE);
             Log.e("Error", "Poster URL is null", exception);
         }
 

@@ -214,7 +214,7 @@ public class MyApplication extends Application {
                 return;
             }
 
-            if (snapshots != null) {
+            if (snapshots != null && !snapshots.isEmpty()) {
                 notifications.clear();
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Notification item = document.toObject(Notification.class);

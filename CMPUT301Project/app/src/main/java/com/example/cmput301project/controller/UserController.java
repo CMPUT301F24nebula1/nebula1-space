@@ -32,7 +32,7 @@ public class UserController {
                             .addOnFailureListener(e -> Log.w("Firestore", "Error updating user role", e));
 
                     addOrganizer(new Organizer(userId));
-                    addAdmin(new Admin(userId));
+//                    addAdmin(new Admin(userId));
 
 
                     DocumentReference entrantRef = db.collection("entrants").document(userId);
@@ -82,7 +82,7 @@ public class UserController {
     public static void addAdmin(Admin admin) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Add the main admin document
-        db.collection("admin").document(admin.getId())
+        db.collection("admins").document(admin.getId())
                 .set(admin)
                 .addOnSuccessListener(aVoid -> {Log.d("Firestore", "Admin successfully added!");})
                 .addOnFailureListener(e -> Log.w("Firestore", "Error adding admin", e));
