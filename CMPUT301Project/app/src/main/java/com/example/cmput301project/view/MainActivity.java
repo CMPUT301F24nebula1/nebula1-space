@@ -69,10 +69,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        id = getDeviceId(this);
+        id = getDeviceId(this);
 
-//        id = "6";
-        id = "demoPrepare1";
+//        id = "demoPrepare1";
 //        id = "8e488662a2c3a895";
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()

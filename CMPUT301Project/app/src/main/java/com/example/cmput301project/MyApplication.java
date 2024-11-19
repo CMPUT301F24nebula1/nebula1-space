@@ -50,7 +50,7 @@ public class MyApplication extends Application {
         // Initialize Firestore and set the emulator only if it's not already initialized, only for testing
         if (db == null) {
             db = FirebaseFirestore.getInstance();
-//            db.useEmulator("10.0.2.2", 8080);
+            db.useEmulator("10.0.2.2", 8080);
 //
 //            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
 //                    .setPersistenceEnabled(false)
