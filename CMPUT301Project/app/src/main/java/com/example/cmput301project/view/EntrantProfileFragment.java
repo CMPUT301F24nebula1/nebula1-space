@@ -90,6 +90,7 @@ public class EntrantProfileFragment extends Fragment {
     private Uri imageUri;
     private boolean isEditMode = false;
     private boolean isImageEnlarged = false;
+    private boolean removeProfile;
 
     ArrayList<Notification> notifications;
     ListView notificationList;
@@ -109,8 +110,10 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
+//        entrant = app.getEntrant();
+//        ec = new EntrantController(app.getEntrant());
+        entrant = app.getEntrantLiveData().getValue();
+        ec = new EntrantController(entrant);
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
@@ -215,7 +218,7 @@ public class EntrantProfileFragment extends Fragment {
             }
         });
 
-        app.setEntrantLiveData(entrant);
+//        app.setEntrantLiveData(entrant);
     }
 
     private void showImageOptionsDialog() {
@@ -232,6 +235,7 @@ public class EntrantProfileFragment extends Fragment {
                         break;
                     case 1:
                         removeProfilePicture();
+                        removeProfile = true;
                         break;
                 }
             }
@@ -293,6 +297,7 @@ public class EntrantProfileFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         imageView.setImageBitmap(bitmap);
+                        removeProfile = false;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -341,7 +346,7 @@ public class EntrantProfileFragment extends Fragment {
     private void removeProfilePicture() {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
-        entrant.setProfilePictureUrl(null); // Remove URL from entrant
+//        entrant.setProfilePictureUrl(null); // Remove URL from entrant
         //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
@@ -446,8 +451,24 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
 
-        ec.saveEntrantToDatabase(entrant, imageUri);
-        app.setEntrantLiveData(entrant); // Save data to the application variable
+        if (removeProfile) {
+            entrant.setProfilePictureUrl(null);
+        }
+        Log.d("profile debug", "0");
+        ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
+            @Override
+            public void onSaveSuccess() {
+                Log.d("profile debug", "1");
+//                if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+//                    imageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
+//                    Log.d("profile debug", "2");
+//                }
+                app.setEntrantLiveData(entrant); // Save data to the application variable
+            }
+            @Override
+            public void onSaveFailure(Exception e) {}
+        });
+
     }
 
     @Override
@@ -497,6 +518,12 @@ public class EntrantProfileFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        this.entrant = app.getEntrantLiveData().getValue();
+        super.onDestroy();
     }
 
     private void showNotificationsPopup() {

@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
 
 //        id = getDeviceId(this);
 
-        id = "8e488662a2c3a895";
+//        id = "6";
+        id = "demoPrepare1";
+//        id = "8e488662a2c3a895";
 
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setPersistenceEnabled(true)
-//                .build();
-//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
@@ -182,12 +184,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {
-        Log.d("wishlist before nav1", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference organizersRef = db.collection("organizers");
-        Log.d("wishlist before nav2", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
         organizersRef.get().addOnCompleteListener(task -> {
-            Log.d("wishlist before nav3", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
             if (task.isSuccessful() && task.getResult() != null) {
 
                 for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
