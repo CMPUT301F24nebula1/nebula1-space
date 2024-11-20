@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.view.EditProfileActivity;
@@ -37,6 +39,18 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         Entrant entrant = entrantList.get(position);
         holder.nameTextView.setText(entrant.getName());
         holder.emailTextView.setText(entrant.getEmail());
+        holder.initialsTextView.setText(entrant.getInitials());
+
+
+        if (entrant.getProfilePictureUrl() != null && ! entrant.getProfilePictureUrl().isEmpty()){
+            // Load profile image with Glide
+            Glide.with(context)
+                    .load(entrant.getProfilePictureUrl()) // Ensure `getImageUrl()` provides the image URL or URI
+                     // Set a default image
+                    .error(R.drawable.error_image) // Image to show if there's an error loading
+                    .into(holder.profilePictureImageView);
+        }
+
     }
 
 
@@ -49,12 +63,12 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
     public static class ProfileViewHolder extends RecyclerView.ViewHolder {
         TextView initialsTextView;
         TextView nameTextView;
-        TextView emailTextView; // Ensure this is added
+        TextView emailTextView;
         ImageView profilePictureImageView;
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
-            initialsTextView = itemView.findViewById(R.id.initials);
+            initialsTextView = itemView.findViewById(R.id.initialsTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             emailTextView = itemView.findViewById(R.id.emailTextView); // Ensure this is defined
             profilePictureImageView = itemView.findViewById(R.id.profilePicture);

@@ -59,6 +59,9 @@
             android:exported="false"/>
         <activity android:name=".view.AdminAllProfilesActivity"
             android:exported="false"/>
+        <activity android:name=".view.EventDetailsActivity"
+            android:exported="false"/>
+
 
 
 

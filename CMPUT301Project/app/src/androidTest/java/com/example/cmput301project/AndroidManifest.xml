@@ -5,5 +5,7 @@
         <!-- Add any test-specific configurations here -->
         android:name="com.example.cmput301project.TestMyApplication"
         <uses-library android:name="android.test.runner" android:required="false" />
+        
+
     </application>
 </manifest>

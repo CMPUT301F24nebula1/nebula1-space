@@ -18,11 +18,11 @@
             android:layout_width="40dp"
             android:layout_height="40dp">
             <TextView
-                android:id="@+id/initials"
+                android:id="@+id/initialsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="AB" /> <!-- Placeholder for initials -->
+                android:text="AB" />
         </FrameLayout>
 
         <LinearLayout
@@ -54,6 +54,6 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background" />
+             />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

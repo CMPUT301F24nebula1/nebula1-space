@@ -16,7 +16,7 @@ android:background="@drawable/homepage">
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:navigationIcon="?attr/homeAsUpIndicator"
+
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:title="Event"
     app:titleTextAppearance="@style/TextAppearance.AppCompat.Large" />
@@ -28,23 +28,36 @@ android:background="@drawable/homepage">
     android:layout_height="wrap_content"
     android:text="Event"
     android:textStyle="bold"
-    android:textSize="18sp"
+    android:textSize="20sp"
     app:layout_constraintTop_toBottomOf="@id/toolbar"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_marginTop="16dp" />
+    <!-- Event Start Date -->
+    <TextView
+        android:id="@+id/eventStartDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Start Date"
+        android:textSize="14sp"
+        android:textColor="#808080"
+        app:layout_constraintTop_toBottomOf="@id/eventNameTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
 
-<TextView
-    android:id="@+id/eventDateTextView"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:text="Date"
-    android:textSize="14sp"
-    android:textColor="#808080"
-    app:layout_constraintTop_toBottomOf="@id/eventNameTextView"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="4dp" />
+    <!-- Event End Date -->
+    <TextView
+        android:id="@+id/eventEndDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="End Date"
+        android:textSize="14sp"
+        android:textColor="#808080"
+        app:layout_constraintTop_toBottomOf="@id/eventStartDateTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
 
 <!-- Event poster -->
 <ImageView
@@ -53,36 +66,12 @@ android:background="@drawable/homepage">
     android:layout_height="180dp"
     android:layout_marginTop="16dp"
     android:contentDescription="Event Poster"
-    app:layout_constraintTop_toBottomOf="@id/eventDateTextView"
+    app:layout_constraintTop_toBottomOf="@id/eventEndDateTextView"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     />
 
-<!-- Instructor Name -->
-<TextView
-    android:id="@+id/instructorTextView"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:text="Instructor"
-    android:textStyle="bold"
-    android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/eventImageView"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="16dp" />
 
-<!-- Subtitle -->
-<TextView
-    android:id="@+id/subtitleTextView"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:text="Subtitle"
-    android:textSize="14sp"
-    android:textColor="#808080"
-    app:layout_constraintTop_toBottomOf="@id/instructorTextView"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="4dp" />
 
 <!-- Event Description -->
 <TextView
@@ -91,8 +80,8 @@ android:background="@drawable/homepage">
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-    android:textSize="14sp"
-    app:layout_constraintTop_toBottomOf="@id/subtitleTextView"
+    android:textSize="16sp"
+    app:layout_constraintTop_toBottomOf="@id/eventImageView"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent" />
 
