@@ -17,6 +17,7 @@ public class Entrant extends User {
     protected String phone;
     private String profilePictureUrl;
     private String status;
+    private String initials;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -58,6 +59,26 @@ public class Entrant extends User {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the name of the entrant.
+     * @return The initials of the entrant.
+     */
+    public String getInitials() {
+        if (name == null || name.isEmpty()) {
+            return "";
+        }
+        // Split the name by spaces
+        String[] nameParts = name.split(" ");
+        StringBuilder initials = new StringBuilder();
+        // Loop through the name parts and get the first letter of each
+        for (String part : nameParts) {
+            if (!part.isEmpty()) {
+                initials.append(part.charAt(0)); // Append the first letter
+            }
+        }
+        return initials.toString().toUpperCase(); // Return the initials in uppercase
     }
 
     /**

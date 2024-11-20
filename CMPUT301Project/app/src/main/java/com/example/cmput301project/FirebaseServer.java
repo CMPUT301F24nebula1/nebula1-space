@@ -569,6 +569,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.cmput301project.model.Admin;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
@@ -700,6 +701,7 @@ public class FirebaseServer implements FirebaseInterface {
             User admin = new User(userId);
             admin.addAdmin();  // Add the admin role using the method in User
 
+            //retrieveAdminData(userID, listener);
             listener.onOrganizerRetrieved(new Organizer(userId)); // Treating admin as an organizer for demo
             return;
         }
@@ -767,6 +769,7 @@ public class FirebaseServer implements FirebaseInterface {
             }
         }).addOnFailureListener(listener::onError);
     }
+
 
     @Override
     public void addUser(User user) {

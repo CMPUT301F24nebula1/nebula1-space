@@ -50,6 +50,7 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
         loadAllEntrantsFromFirebase();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 filterProfiles(query);

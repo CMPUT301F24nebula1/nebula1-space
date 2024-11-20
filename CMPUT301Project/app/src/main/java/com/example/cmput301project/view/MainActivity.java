@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        id = getDeviceId(this);
 
-        id = "8e488662a2c3a895";
+        id = "170a9c2b646f3214";
 
 //        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
 //                .setPersistenceEnabled(true)
