@@ -21,7 +21,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/event_name_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -31,6 +32,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Event Name"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/event_name"
                     app:layout_constraintTop_toTopOf="@+id/event_name" />
 
@@ -42,9 +44,11 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="Event Name"
+                    android:textColorHint="#CACACA"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -56,7 +60,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,6 +71,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Description"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/event_description"
                     app:layout_constraintTop_toTopOf="@+id/event_description"/>
 
@@ -88,6 +94,7 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="Description"
+                    android:textColorHint="#CACACA"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -102,7 +109,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -112,6 +120,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Lottery starts date"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/lottery_starts_date"
                     app:layout_constraintTop_toTopOf="@+id/lottery_starts_date" />
 
@@ -124,6 +133,7 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="Lottery starts date"
+                    android:textColorHint="#CACACA"
                     app:endIconDrawable="@drawable/ic_calendar"
                     app:endIconMode="custom"
                     app:endIconTint="#F64C4C"
@@ -145,7 +155,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -155,6 +166,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Lottery ends date"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/lottery_ends_date"
                     app:layout_constraintTop_toTopOf="@+id/lottery_ends_date">
 
@@ -168,6 +180,7 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="Lottery ends date"
+                    android:textColorHint="#CACACA"
                     app:endIconDrawable="@drawable/ic_calendar"
                     app:endIconMode="custom"
                     app:endIconTint="#F64C4C"
@@ -189,7 +202,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -199,6 +213,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Lottery capacity"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/lottery_capacity"
                     app:layout_constraintTop_toTopOf="@+id/lottery_capacity" />
 
@@ -210,6 +225,7 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="Lottery capacity"
+                    android:textColorHint="#CACACA"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -231,7 +247,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
-                android:text="Must be greater than zero."
+                android:text="Must be 0 (i.e., unlimited) or greater than 0."
                 android:visibility="gone"
                 android:textSize="12sp" />
 
@@ -242,7 +258,8 @@
                 android:layout_height="wrap_content"
                 android:visibility="visible"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -252,6 +269,7 @@
                     android:background="#DDCCFF"
                     android:elevation="4dp"
                     android:text="Event Poster"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/poster_group"
                     app:layout_constraintTop_toTopOf="@+id/poster_group" />
 
@@ -261,6 +279,7 @@
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:hint="Event Poster"
+                    android:textColorHint="#CACACA"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -307,7 +326,8 @@
                 android:id="@+id/qr_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:theme="@style/Theme.MaterialComponents">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -328,6 +348,7 @@
                     android:layout_marginTop="24dp"
                     android:background="@android:color/transparent"
                     android:hint="QR Code"
+                    android:textColorHint="#CACACA"
                     app:endIconDrawable="@drawable/ic_qr_code1"
                     app:endIconMode="custom"
                     app:endIconTint="@color/black"
@@ -399,6 +420,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:visibility="visible"
+        android:theme="@style/Theme.MaterialComponents"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -442,6 +464,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:visibility="visible"
+        android:theme="@style/Theme.MaterialComponents"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"

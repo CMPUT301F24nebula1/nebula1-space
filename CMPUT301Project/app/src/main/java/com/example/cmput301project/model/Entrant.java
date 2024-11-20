@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public class Entrant extends User {
     protected transient ArrayList<String> waitlistEventIds;
+    protected  transient ArrayList<Notification> notifications;
     protected String name;
     protected String email;
     protected String phone;
@@ -146,6 +147,24 @@ public class Entrant extends User {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(ArrayList<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
+        for (Notification notification : notifications) {
+            if (!notification.isRead()) {
+                return true; // There is at least one unread notification
+            }
+        }
+        return false; // All notifications are read
+    }
+
 
     @Override
     public boolean equals(Object obj) {

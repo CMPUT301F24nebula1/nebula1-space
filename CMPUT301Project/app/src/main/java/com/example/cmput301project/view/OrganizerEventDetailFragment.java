@@ -132,7 +132,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         t2.getEditText().setText(e.getName());
         startDate.getEditText().setText(e.getStartDate());
         endDate.getEditText().setText(e.getEndDate());
-        limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "");
+        limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "No limit.");
 
         String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
@@ -156,6 +156,9 @@ public class OrganizerEventDetailFragment extends Fragment {
                 if (isEditMode) {
                     setButtonsEnabled();
                     isEditMode = false;
+                    if (binding.lotteryCapacity.getEditText().getText().toString().equals("No limit.")) {
+                        binding.lotteryCapacity.getEditText().setText("0");
+                    }
                     binding.text.setText("Save");
                     binding.icon.setImageResource(R.drawable.ic_save);
                 } else {
@@ -168,7 +171,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                             return;
                         }
                         if (!isValidPositiveInteger(binding.lotteryCapacity.getEditText().getText().toString())) {
-                            Toast.makeText(getContext(), "Capacity must be greater than 0.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Capacity must be greater or equal to 0.\n0 means unlimited.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -278,7 +281,7 @@ public class OrganizerEventDetailFragment extends Fragment {
     private boolean isValidPositiveInteger(String input) {
         try {
             int value = Integer.parseInt(input);
-            return value > 0;
+            return value >= 0;
         } catch (NumberFormatException e) {
             return false;
         }

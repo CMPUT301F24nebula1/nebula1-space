@@ -2,15 +2,22 @@ package com.example.cmput301project.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
@@ -40,6 +47,8 @@ public class ScannerActivity extends Activity {
 
     private DecoratedBarcodeView barcodeScannerView;
 
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
+
     Event e;
 
     private FirebaseFirestore db;
@@ -48,6 +57,8 @@ public class ScannerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
+
+        requestCameraPermission();
 
         db = FirebaseFirestore.getInstance();
 
@@ -101,6 +112,20 @@ public class ScannerActivity extends Activity {
             } catch (IOException e) {
                 Log.e("CustomScannerActivity", "Error decoding image", e);
             }
+        }
+    }
+
+    private void requestCameraPermission() {
+        // Check if camera permission is already granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Permission is already granted, open the camera
+            return;
+        } else {
+            // Request the camera permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
         }
     }
 

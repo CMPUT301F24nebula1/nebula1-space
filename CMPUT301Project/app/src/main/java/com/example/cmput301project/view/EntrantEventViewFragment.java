@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -40,6 +41,8 @@ public class EntrantEventViewFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
         e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
+        Log.d("waitlist entrants", e.getName() + ' ' + String.valueOf(e.getWaitlistEntrantIds().size()));
+        Log.d("waitlist limit", e.getName() + String.valueOf(e.getLimit()));
         app = (MyApplication) requireActivity().getApplication();
 
         return binding.getRoot();
@@ -69,11 +72,11 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("entrant event myapplication", entrant1.getWaitlistEventIds().toString());
                 if (entrant.getWaitlistEventIds().contains(e.getId())) {
                     setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
-                    Log.d("wishlist1", "1");
+//                    Log.d("wishlist1", "1");
                 }
                 else {
                     setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
-                    Log.d("wishlist1", "2");
+//                    Log.d("wishlist1", "2");
                 }
             }
         });
@@ -83,13 +86,17 @@ public class EntrantEventViewFragment extends Fragment {
 
         try {
             if (!e.getPosterUrl().isEmpty()) {
+                binding.eventPosterImageview.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
                         .error(R.drawable.error_image)              // error image
                         .into(binding.eventPosterImageview);
+            } else {
+                binding.eventPosterImageview.setVisibility(View.GONE);
             }
         } catch (NullPointerException exception) {
+            binding.eventPosterImageview.setVisibility(View.GONE);
             Log.e("Error", "Poster URL is null", exception);
         }
 
@@ -124,16 +131,26 @@ public class EntrantEventViewFragment extends Fragment {
             public void onClick(View view) {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
                 if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
-                    Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
-                    app.getEntrant().join_event(e);
-                    e.add_entrant(app.getEntrant());
 
-                    ec.joinEventWaitingList(e);
+                    if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                        builder.setTitle("Information")
+                                .setMessage("This event is full.")
+                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                .setCancelable(false)  // prevents dialog from closing on back press
+                                .show();
+                    } else {
+                        Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
+                        app.getEntrant().join_event(e);
+                        e.add_entrant(app.getEntrant());
 
-                    ec.addToEventWaitingList(e);
-                    setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
-                    Log.d("join event", "You join the waiting list.");
-                    Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
+                        ec.joinEventWaitingList(e);
+
+                        ec.addToEventWaitingList(e);
+                        setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
+                        Log.d("join event", "You join the waiting list.");
+                        Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
                     Log.d("join event", "you are already in the waitlist");

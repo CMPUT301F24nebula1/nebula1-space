@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -27,13 +29,21 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -45,14 +55,22 @@ import com.bumptech.glide.Glide;
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
+import com.example.cmput301project.controller.NotificationArrayAdapter;
 import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.model.Notification;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment for entrant profile
@@ -72,6 +90,11 @@ public class EntrantProfileFragment extends Fragment {
     private Uri imageUri;
     private boolean isEditMode = false;
     private boolean isImageEnlarged = false;
+    private boolean removeProfile;
+
+    ArrayList<Notification> notifications;
+    ListView notificationList;
+    NotificationArrayAdapter notificationAdapter;
 
     @Nullable
     @Override
@@ -87,8 +110,10 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entrant = app.getEntrant();
-        ec = new EntrantController(app.getEntrant());
+//        entrant = app.getEntrant();
+//        ec = new EntrantController(app.getEntrant());
+        entrant = app.getEntrantLiveData().getValue();
+        ec = new EntrantController(entrant);
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
@@ -192,7 +217,8 @@ public class EntrantProfileFragment extends Fragment {
                 // No action needed here
             }
         });
-        app.setEntrantLiveData(entrant);
+
+//        app.setEntrantLiveData(entrant);
     }
 
     private void showImageOptionsDialog() {
@@ -209,6 +235,7 @@ public class EntrantProfileFragment extends Fragment {
                         break;
                     case 1:
                         removeProfilePicture();
+                        removeProfile = true;
                         break;
                 }
             }
@@ -270,6 +297,7 @@ public class EntrantProfileFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         imageView.setImageBitmap(bitmap);
+                        removeProfile = false;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -318,7 +346,7 @@ public class EntrantProfileFragment extends Fragment {
     private void removeProfilePicture() {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
-        entrant.setProfilePictureUrl(null); // Remove URL from entrant
+//        entrant.setProfilePictureUrl(null); // Remove URL from entrant
         //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
@@ -368,26 +396,6 @@ public class EntrantProfileFragment extends Fragment {
         return Uri.parse(path);
     }
 
-//    private boolean checkIfAlreadyhavePermission() {
-//
-//        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//        if((checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED)) {
-//
-//            //show dialog to ask permission
-//            ActivityCompat.requestPermissions(this.getActivity(),
-//                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                    1);
-//            return true;
-//        }
-//        else {
-//            return false;
-//        }
-//    }
-
-
-
     private void setEditMode(boolean enabled) {
         isEditMode = enabled;
         t_name.setEnabled(enabled);
@@ -399,12 +407,18 @@ public class EntrantProfileFragment extends Fragment {
             binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
             binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
             binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.s79747esw1cr4));
+            t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
+            t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
+            t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
             binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.grey_border));
             binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.grey_border));
             binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.grey_border));
+            t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -430,13 +444,337 @@ public class EntrantProfileFragment extends Fragment {
             requireActivity().getSupportFragmentManager().popBackStack();
         }
     }
+
     private void saveChanges() {
         // Implement the logic to save the changes
         entrant.setName(t_name.getText().toString());
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
 
-        ec.saveEntrantToDatabase(entrant, imageUri);
-        app.setEntrantLiveData(entrant); // Save data to the application variable
+        if (removeProfile) {
+            entrant.setProfilePictureUrl(null);
+        }
+        Log.d("profile debug", "0");
+        ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
+            @Override
+            public void onSaveSuccess() {
+                Log.d("profile debug", "1");
+//                if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
+//                    imageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
+//                    Log.d("profile debug", "2");
+//                }
+                app.setEntrantLiveData(entrant); // Save data to the application variable
+            }
+            @Override
+            public void onSaveFailure(Exception e) {}
+        });
+
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);  // Ensure the fragment has access to the options menu
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem customButton = menu.findItem(R.id.btn_notification);
+        if (customButton != null) {
+            customButton.setVisible(true);  // Show it in this fragment
+            customButton.setEnabled(true);
+        }
+        // Set the custom action view
+        View actionView = customButton.getActionView();
+        if (actionView == null) {
+            actionView = LayoutInflater.from(requireContext()).inflate(R.layout.menu_notification_badge, null);
+            customButton.setActionView(actionView);
+        }
+
+        // Manage badge visibility
+        View badge = actionView.findViewById(R.id.notification_badge);
+        app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+            if (entrant1.hasUnreadNotifications(entrant1.getNotifications())) {
+                badge.setVisibility(View.VISIBLE);
+            } else {
+                badge.setVisibility(View.GONE);
+            }
+        });
+
+        // Handle click on the notification icon
+        actionView.setOnClickListener(v -> {
+            // Trigger the menu item click
+            onOptionsItemSelected(customButton);
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.btn_notification) {
+            // Handle the custom button click here
+            showNotificationsPopup();
+//            Toast.makeText(getContext(), "Custom button clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        this.entrant = app.getEntrantLiveData().getValue();
+        super.onDestroy();
+    }
+
+    private void showNotificationsPopup() {
+        // Inflate the popup layout
+        View popupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notifications, null);
+
+        // Initialize the PopupWindow
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, 1000); // Fixed height of 400 pixels
+//        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+
+        // Set up the ListView with notifications
+        notificationList = popupView.findViewById(R.id.notification_list_view);
+//        notifications = entrant.getNotifications();
+        retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
+            @Override
+            public void onNotificationsRetrieved(ArrayList<Notification> notifications1) {
+                notifications = notifications1;
+                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
+                if (notificationAdapter == null) {
+                    notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
+                }
+                notificationList.setAdapter(notificationAdapter);
+            }
+            @Override
+            public void onError(Exception e) {}
+        });
+
+        // Show the PopupWindow at the right end under the toolbar
+        View toolbar = getActivity().findViewById(R.id.toolbar);
+
+        int xOffset = toolbar.getWidth() - popupWindow.getWidth();
+        popupWindow.showAsDropDown(toolbar, xOffset, 0);
+
+        notificationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Notification notification = notifications.get(i);
+                notification.setRead(true);
+                notificationAdapter.notifyDataSetChanged();
+//                String eventId = notification.getEventId();
+                updateNotificationStatus(notification.getId(), new FirestoreUpdateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        popupWindow.dismiss();
+                        showNotificationDetailPopup(notifications.get(i));
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void showNotificationDetailPopup(Notification notification) {
+        View detailPopupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notification_detail, null);
+
+        // Initialize the PopupWindow for the detail view
+        PopupWindow detailPopupWindow = new PopupWindow(detailPopupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        detailPopupWindow.setFocusable(true);
+        detailPopupWindow.setBackgroundDrawable(new ColorDrawable());
+
+        // Display message
+        TextView messageTextView = detailPopupView.findViewById(R.id.notification_message);
+        messageTextView.setText(notification.getMessage());
+
+        // Set up Yes and No buttons
+        Button yesButton = detailPopupView.findViewById(R.id.yes_button);
+        Button noButton = detailPopupView.findViewById(R.id.no_button);
+
+        retrieveEntrantStatus(entrant, notification.getEventId(), new StatusCallback() {
+            @Override
+            public void onStatusRetrieved(String status) {
+                if (status.equals("SELECTED")) {
+                    yesButton.setVisibility(View.VISIBLE);
+                    noButton.setVisibility(View.VISIBLE);
+                } else {
+                    yesButton.setVisibility(View.GONE);
+                    noButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        yesButton.setOnClickListener(v -> {
+            updateStatus(entrant, "FINAL", notification.getEventId());
+            Toast.makeText(getContext(), "Accepted the invitation!", Toast.LENGTH_SHORT).show();
+            detailPopupWindow.dismiss();
+        });
+
+        noButton.setOnClickListener(v -> {
+            updateStatus(entrant, "CANCELED", notification.getEventId());
+            Toast.makeText(getContext(), "Declined the invitation", Toast.LENGTH_SHORT).show();
+            detailPopupWindow.dismiss();
+        });
+
+        ImageButton backButton = detailPopupView.findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            detailPopupWindow.dismiss();
+            showNotificationsPopup(); // Show the notification list again
+        });
+
+        View toolbar = getActivity().findViewById(R.id.toolbar);
+
+        int xOffset = toolbar.getWidth() - detailPopupView.getWidth();
+        detailPopupWindow.showAsDropDown(toolbar, xOffset, 0);
+    }
+
+    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+        ArrayList<Notification> notifications = new ArrayList<>();
+
+        notificationRef.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore Error", "Error listening to notification updates", error);
+                return;
+            }
+
+            if (snapshots != null) {
+                notifications.clear();
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Notification item = document.toObject(Notification.class);
+                    if (item != null) {
+                        item.setId(document.getId());
+
+                        notifications.add(item);
+                        Log.d("notification status", item.getId() + String.valueOf(item.isRead()));
+                    }
+                }
+                Log.d("Notifications", "Notifications: " + notifications);
+                entrant.setNotifications(notifications);
+//                setEntrantLiveData(entrant);
+
+                if (callback != null) {
+                    callback.onNotificationsRetrieved(notifications);
+                }
+            }
+        });
+    }
+
+    public interface StatusCallback {
+        void onStatusRetrieved(String status);
+        void onFailure(Exception e);
+    }
+
+    public void retrieveEntrantStatus(Entrant entrant, String eventId, StatusCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
+
+        waitlistRef.whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            String status = document.getString("status");
+
+                            // Check if status is not null and log it
+                            if (status != null) {
+                                Log.d("Firestore", "Status: " + status);
+                                callback.onStatusRetrieved(status);
+                            } else {
+                                Log.d("Firestore", "Status field is null");
+                                callback.onFailure(new NullPointerException("Status field is null"));
+                            }
+                        }
+                    } else {
+                        Log.d("Firestore", "No document found with the specified eventId");
+                        callback.onFailure(new Exception("No document found with the specified eventId"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error finding document", e);
+                });
+    }
+
+    public interface FirestoreUpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public void updateNotificationStatus(String id, FirestoreUpdateCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference notificationDocRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications")
+                .document(id); // Replace "DOCUMENT_ID" with the specific document ID
+
+        // Update the isRead field
+        notificationDocRef.update("isRead", true)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore Update", "isRead field successfully updated!");
+                    if (callback != null) {
+                        callback.onSuccess(); // Notify success
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore Update", "Error updating isRead field", e);
+                    if (callback != null) {
+                        callback.onFailure(e); // Notify failure
+                    }
+                });
+
+    }
+
+    public void updateStatus(Entrant entrant, String status, String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notificationRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("notifications");
+
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
+
+        Log.d("notification eventId", eventId);
+        waitlistRef.whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            DocumentReference docRef = document.getReference();
+                            // Update the status field
+                            docRef.update("status", status)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Status field updated successfully");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error updating status field", e);
+                                    });
+                        }
+                    } else {
+                        Log.d("Firestore", "No document found with the specified eventId");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error finding document", e);
+                });
+    }
+
+
 }
