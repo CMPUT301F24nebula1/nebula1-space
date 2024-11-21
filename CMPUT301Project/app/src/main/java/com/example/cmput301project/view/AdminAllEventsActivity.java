@@ -1,5 +1,6 @@
 package com.example.cmput301project.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -26,12 +27,12 @@ public class AdminAllEventsActivity extends AppCompatActivity {
     private List<Event> eventList;
     private SearchView searchView;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.admin_events); // Ensure this is the correct layout
+        setContentView(R.layout.admin_events);
 
-        // Initialize Firebase Firestore
         db = FirebaseFirestore.getInstance();
 
         setSupportActionBar(findViewById(R.id.toolbar_events));
@@ -41,21 +42,42 @@ public class AdminAllEventsActivity extends AppCompatActivity {
 
         // Initialize views
         recyclerView = findViewById(R.id.recyclerView);
-        searchView = findViewById(R.id.searchView); // Ensure this is the correct SearchView
+        searchView = findViewById(R.id.searchView);
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventList = new ArrayList<>();
-        eventAdapter = new EventRecyclerViewAdapter(this, eventList);
+        // Initialize adapter with the delete event callback
+        eventAdapter = new EventRecyclerViewAdapter(this, eventList, event -> {
+            Intent intent = new Intent(AdminAllEventsActivity.this, EventDetailsActivity.class);
+            intent.putExtra("event", event);
+            startActivity(intent);
+        }, event -> {
+            // Remove event from list
+            deleteEvent(event);
+        });
         recyclerView.setAdapter(eventAdapter);
 
         // Load all events from Firestore
         loadAllEventsFromFirebase();
+        // Search functionality
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterEvents(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterEvents(newText);
+                return true;
+            }
+        });
     }
 
-
     private void loadAllEventsFromFirebase() {
-        db.collectionGroup("events") // Retrieve all 'events' subcollections
+        db.collectionGroup("events") // Retrieve all 'events'
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -70,6 +92,22 @@ public class AdminAllEventsActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void deleteEvent(Event event) {
+        db.collection("events")
+                .document(event.getId()) // Assuming getId() returns the event's document ID
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    // Remove from local list after successful Firebase delete
+                    eventList.remove(event);
+                    eventAdapter.updateList(eventList);
+                    Toast.makeText(AdminAllEventsActivity.this, "Event removed successfully.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AdminAllEventsActivity.this, "Error deleting event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
 
     private void filterEvents(String query) {
         List<Event> filteredList = new ArrayList<>();
