@@ -543,7 +543,7 @@ public class EntrantProfileFragment extends Fragment {
             @Override
             public void onNotificationsRetrieved(ArrayList<Notification> notifications1) {
                 notifications = notifications1;
-                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
+//                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
                 if (notificationAdapter == null) {
                     notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
                 }
