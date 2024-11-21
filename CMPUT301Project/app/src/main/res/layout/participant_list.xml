@@ -199,12 +199,13 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_select"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:text='Home'
+            android:title='Entrant Lists'
             android:background="#FDE0F3"
-            app:titleCentered="true"/>
+            app:titleCentered="true"
+            app:menu="@menu/select_all_menu"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

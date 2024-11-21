@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -97,7 +98,7 @@ public class ParticipantListActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.remove_button);
         notifyButton = findViewById(R.id.notify_button);
 
-        setSupportActionBar(findViewById(R.id.toolbar));
+        setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Entrant Lists");
@@ -447,9 +448,12 @@ public class ParticipantListActivity extends AppCompatActivity {
     }
 
     private void setButtonState() {
+        if (entrantAdapter != null)
+            entrantAdapter.setAllCheckboxesSelected(false);
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
+            cancelButton.setVisibility(View.GONE);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
             updateEntrantsList(new ArrayList<>(entrants_selected));
@@ -532,5 +536,12 @@ public class ParticipantListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.select_all_menu, menu);
+        return true;
+    }
+
 
 }

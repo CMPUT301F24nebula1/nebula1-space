@@ -314,6 +314,7 @@ public class OrganizerFacilityProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
+            editImageButton.setVisibility(View.VISIBLE);
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
@@ -323,6 +324,7 @@ public class OrganizerFacilityProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -372,7 +374,7 @@ public class OrganizerFacilityProfileFragment extends Fragment {
                 Log.e("upload profile image", "failure uploading profile image");
             });
         }
-        else {
+        else if (organizer.getProfilePictureUrl() == null){
             imageView.setImageDrawable(createInitialsDrawable(organizer.getName()));
             db.collection("organizers")
                     .document(organizer.getId())

@@ -23,7 +23,8 @@
             android:layout_height="match_parent"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/main_layout">
             <LinearLayout
                 android:id="@+id/rutt3gihonmg"
                 android:layout_width="match_parent"
@@ -33,14 +34,15 @@
                 android:clipToPadding="false"
                 android:orientation="vertical">
 
-<!--                <Button-->
-<!--                    android:id="@+id/btnEditSave"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:backgroundTint="#D09F63FA"-->
-<!--                    android:layout_gravity="center_horizontal"-->
-<!--                    android:text="Edit" />-->
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:indeterminate="true" />
+
 
                 <ImageView
                     android:id="@+id/profile_imageview"
@@ -64,7 +66,7 @@
                     android:backgroundTint="@color/btn_background_color"
                     android:textColor="#FFFEFE"
                     android:textSize="14sp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:enabled="true"/>
 
                 <RelativeLayout
@@ -310,273 +312,3 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--<LinearLayout-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    android:background="#FFFFFF"-->
-<!--    android:clipChildren="false"-->
-<!--    android:clipToPadding="false"-->
-<!--    android:orientation="vertical"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent">-->
-
-<!--    <ScrollView-->
-<!--        android:clipChildren="false"-->
-<!--        android:clipToPadding="false"-->
-<!--        android:id="@+id/ruqpar61tyf"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        android:focusableInTouchMode="true"-->
-<!--        >-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:clipChildren="false"-->
-<!--            android:clipToPadding="false"-->
-<!--            android:orientation="vertical">-->
-<!--            <LinearLayout-->
-<!--                android:id="@+id/rutt3gihonmg"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:paddingVertical="18dp"-->
-<!--                android:clipChildren="false"-->
-<!--                android:clipToPadding="false"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnEditSave"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:backgroundTint="#D09F63FA"-->
-<!--                    android:layout_gravity="center_horizontal"-->
-<!--                    android:text="Edit" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/profile_imageview"-->
-<!--                    android:layout_width="150dp"-->
-<!--                    android:layout_height="150dp"-->
-<!--                    android:layout_marginTop="16dp"-->
-<!--                    android:contentDescription="Event image"-->
-<!--                    android:scaleType="centerCrop"-->
-<!--                    android:src="@drawable/cr100beaddff"-->
-<!--                    android:layout_gravity="center_horizontal"-->
-<!--                    android:adjustViewBounds="true"/>-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/edit_profile_picture_button"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginBottom="57dp"-->
-<!--                    android:layout_gravity="center_horizontal"-->
-<!--                    android:text="Edit Profile Picture"-->
-<!--                    android:backgroundTint="@color/btn_background_color"-->
-<!--                    android:textColor="#FFFEFE"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:visibility="visible"-->
-<!--                    android:enabled="true"/>-->
-
-<!--                <RelativeLayout-->
-<!--                    android:id="@+id/rrkmakex3pu"-->
-<!--                    android:layout_width="210dp"-->
-<!--                    android:layout_height="56dp"-->
-<!--                    android:layout_marginBottom="30dp"-->
-<!--                    android:layout_marginHorizontal="93dp"-->
-<!--                    android:clipChildren="false"-->
-<!--                    android:clipToPadding="false"-->
-<!--                    >-->
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/name_layout"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-<!--                        <LinearLayout-->
-<!--                            android:id="@+id/rfiks2zoyc1"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/s79747esw1cr4"-->
-<!--                            android:paddingVertical="21dp"-->
-<!--                            android:paddingHorizontal="17dp"-->
-<!--                            android:clipChildren="false"-->
-<!--                            android:clipToPadding="false"-->
-<!--                            android:orientation="vertical">-->
-
-<!--                            <EditText-->
-<!--                                android:id="@+id/entrant_profile_name"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="38dp"-->
-<!--                                android:focusedByDefault="true"-->
-<!--                                android:text=""-->
-<!--                                android:textColor="#1D1B20"-->
-<!--                                android:textSize="16sp" />-->
-<!--                        </LinearLayout>-->
-<!--                    </LinearLayout>-->
-<!--                    <LinearLayout-->
-<!--                        xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--                        xmlns:tools="http://schemas.android.com/tools"-->
-<!--                        xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--                        android:id="@+id/rm45oasehmhs"-->
-<!--                        android:layout_marginTop="-8dp"-->
-<!--                        android:layout_marginStart="12dp"-->
-<!--                        android:layout_width="42dp"-->
-<!--                        android:layout_height="16dp"-->
-<!--                        android:background="#FEF7FF"-->
-<!--                        android:paddingHorizontal="4dp"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-<!--                        <TextView-->
-<!--                            android:id="@+id/rcw9myh5nelk"-->
-<!--                            android:textColor="#49454F"-->
-<!--                            android:textSize="12sp"-->
-<!--                            android:layout_marginTop="3dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:text="Name"-->
-<!--                            />-->
-<!--                    </LinearLayout>-->
-<!--                </RelativeLayout>-->
-<!--                <RelativeLayout-->
-<!--                    android:id="@+id/rnowx9sw4wvm"-->
-<!--                    android:layout_width="210dp"-->
-<!--                    android:layout_height="56dp"-->
-<!--                    android:layout_marginBottom="30dp"-->
-<!--                    android:layout_marginHorizontal="93dp"-->
-<!--                    android:clipChildren="false"-->
-<!--                    android:clipToPadding="false"-->
-<!--                    >-->
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-<!--                        <LinearLayout-->
-<!--                            android:id="@+id/ruyuoa2jj66p"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/s79747esw1cr4"-->
-<!--                            android:paddingVertical="21dp"-->
-<!--                            android:paddingHorizontal="17dp"-->
-<!--                            android:clipChildren="false"-->
-<!--                            android:clipToPadding="false"-->
-<!--                            android:orientation="vertical">-->
-
-<!--                            <EditText-->
-<!--                                android:id="@+id/entrant_profile_email"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="38dp"-->
-<!--                                android:text="Your Email"-->
-<!--                                android:textColor="#1D1B20"-->
-<!--                                android:textSize="16sp"-->
-<!--                                android:inputType="textEmailAddress"/>-->
-<!--                        </LinearLayout>-->
-<!--                    </LinearLayout>-->
-<!--                    <LinearLayout-->
-<!--                        xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--                        xmlns:tools="http://schemas.android.com/tools"-->
-<!--                        xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--                        android:id="@+id/r3n4wz4r0n7v"-->
-<!--                        android:layout_marginTop="-8dp"-->
-<!--                        android:layout_marginStart="12dp"-->
-<!--                        android:layout_width="40dp"-->
-<!--                        android:layout_height="16dp"-->
-<!--                        android:background="#FEF7FF"-->
-<!--                        android:paddingHorizontal="4dp"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-<!--                        <TextView-->
-<!--                            android:id="@+id/regd4zn3a4u"-->
-<!--                            android:textColor="#49454F"-->
-<!--                            android:textSize="12sp"-->
-<!--                            android:layout_marginTop="3dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:text="Email"-->
-<!--                            />-->
-<!--                    </LinearLayout>-->
-<!--                </RelativeLayout>-->
-<!--                <RelativeLayout-->
-<!--                    android:id="@+id/r3tf9rq0cfbc"-->
-<!--                    android:layout_width="210dp"-->
-<!--                    android:layout_height="56dp"-->
-<!--                    android:layout_marginBottom="7dp"-->
-<!--                    android:layout_marginHorizontal="93dp"-->
-<!--                    android:clipChildren="false"-->
-<!--                    android:clipToPadding="false"-->
-<!--                    >-->
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-
-<!--                        <LinearLayout-->
-<!--                            android:id="@+id/rntsn8cfg1cd"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/s79747esw1cr4"-->
-<!--                            android:clipChildren="false"-->
-<!--                            android:clipToPadding="false"-->
-<!--                            android:orientation="vertical"-->
-<!--                            android:paddingHorizontal="17dp"-->
-<!--                            android:paddingVertical="21dp">-->
-
-<!--                            <EditText-->
-<!--                                android:id="@+id/entrant_profile_phone"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="38dp"-->
-<!--                                android:text=""-->
-<!--                                android:textColor="#1D1B20"-->
-<!--                                android:textSize="16sp" />-->
-<!--                        </LinearLayout>-->
-<!--                    </LinearLayout>-->
-<!--                    <LinearLayout-->
-<!--                        xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--                        xmlns:tools="http://schemas.android.com/tools"-->
-<!--                        xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--                        android:id="@+id/rdshjxysmywh"-->
-<!--                        android:layout_marginTop="-8dp"-->
-<!--                        android:layout_marginStart="12dp"-->
-<!--                        android:layout_width="93dp"-->
-<!--                        android:layout_height="16dp"-->
-<!--                        android:background="#FEF7FF"-->
-<!--                        android:paddingHorizontal="4dp"-->
-<!--                        android:clipChildren="false"-->
-<!--                        android:clipToPadding="false"-->
-<!--                        android:orientation="vertical">-->
-<!--                        <TextView-->
-<!--                            android:id="@+id/r3ytavstnlhi"-->
-<!--                            android:textColor="#49454F"-->
-<!--                            android:textSize="12sp"-->
-<!--                            android:layout_marginTop="3dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:text="Phone Number"-->
-<!--                            />-->
-<!--                    </LinearLayout>-->
-<!--                </RelativeLayout>-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/rvwjms822p7"-->
-<!--                    android:textColor="#49454F"-->
-<!--                    android:textSize="12sp"-->
-<!--                    android:layout_marginBottom="241dp"-->
-<!--                    android:layout_marginStart="109dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:text="Optional"-->
-<!--                    />-->
-<!--                -->
-
-<!--            </LinearLayout>-->
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
-<!--</LinearLayout>-->

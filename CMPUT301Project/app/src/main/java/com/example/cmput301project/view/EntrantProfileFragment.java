@@ -410,6 +410,7 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
+            editImageButton.setVisibility(View.VISIBLE);
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
@@ -419,6 +420,7 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -458,11 +460,8 @@ public class EntrantProfileFragment extends Fragment {
         ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
             @Override
             public void onSaveSuccess() {
-                Log.d("profile debug", "1");
-//                if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
-//                    imageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
-//                    Log.d("profile debug", "2");
-//                }
+//                Log.d("profile debug", "1");
+
                 app.setEntrantLiveData(entrant); // Save data to the application variable
             }
             @Override

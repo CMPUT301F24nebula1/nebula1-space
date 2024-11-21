@@ -94,17 +94,12 @@ public class OrganizerEventDetailFragment extends Fragment {
         TextInputLayout limit = binding.lotteryCapacity;
         TextInputEditText qr = binding.qrCodeEdittext;
 
+        binding.eventDescription.getEditText().setMinLines(1);
         qr.setEnabled(true);
         qrImageview.setVisibility(View.VISIBLE);
         binding.saveEventButton.setVisibility(View.VISIBLE);
         binding.listButton.setVisibility(View.VISIBLE);
         setButtonDisabled();
-
-//        app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
-        // Use the organizer data here
-//            if (organizer != null) {
-//                // Use the organizer data (e.g., set organizer-related data in the UI)
-//                Log.d("Organizer", "Organizer Name: " + organizer.getName());
 
         Glide.with(getContext())
                 .load(e.getQrCode())
@@ -161,6 +156,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                     }
                     binding.text.setText("Save");
                     binding.icon.setImageResource(R.drawable.ic_save);
+                    binding.eventDescription.getEditText().setMinLines(3);
                 } else {
 
                     if (!t2.getEditText().getText().toString().isEmpty() &&
@@ -174,6 +170,8 @@ public class OrganizerEventDetailFragment extends Fragment {
                             Toast.makeText(getContext(), "Capacity must be greater or equal to 0.\n0 means unlimited.", Toast.LENGTH_SHORT).show();
                             return;
                         }
+
+                        binding.eventDescription.getEditText().setMinLines(1);
 
                         e.setName(t2.getEditText().getText().toString());
                         e.setStartDate(startDate.getEditText().getText().toString());
@@ -231,18 +229,6 @@ public class OrganizerEventDetailFragment extends Fragment {
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
 
-//        EditText positiveIntegerEditText = binding.lotteryCapacityText;
-//
-//        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-//        // Validate when input focus changes
-//        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
-//            if (!hasFocus) {
-//                String input = positiveIntegerEditText.getText().toString();
-//                if (!isValidPositiveInteger(input)) {
-//                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
-//                }
-//            }
-//        });
     }
 
     public void setButtonsEnabled() {
