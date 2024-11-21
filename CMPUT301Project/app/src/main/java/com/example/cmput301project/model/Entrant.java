@@ -177,7 +177,7 @@ public class Entrant extends User {
         this.notifications = notifications;
     }
 
-    public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
+    static public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
         for (Notification notification : notifications) {
             if (!notification.isRead()) {
                 return true; // There is at least one unread notification

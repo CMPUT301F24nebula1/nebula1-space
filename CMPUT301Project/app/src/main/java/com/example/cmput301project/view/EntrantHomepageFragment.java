@@ -39,7 +39,7 @@ public class EntrantHomepageFragment extends Fragment {
         binding = EntrantHomepageBinding.inflate(inflater, container, false);
         app = (MyApplication) requireActivity().getApplication();
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant -> {
-            if (entrant.hasUnreadNotifications(entrant.getNotifications())) {
+            if (Entrant.hasUnreadNotifications(entrant.getNotifications())) {
                 binding.notificationBadge.setVisibility(View.VISIBLE);
             } else {
                 binding.notificationBadge.setVisibility(View.GONE);
