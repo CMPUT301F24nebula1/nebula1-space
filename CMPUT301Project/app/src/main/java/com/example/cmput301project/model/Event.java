@@ -22,6 +22,8 @@ public class Event extends Observable implements Serializable {
     private String endDate;
     private final String id;
     private boolean requiresGeolocation;
+    private String organizerId;
+
 
     /**
      * Default constructor initializing an empty waitlist and a unique ID for the event.
@@ -55,6 +57,14 @@ public class Event extends Observable implements Serializable {
 
     public void setWaitlistEntrantIds(ArrayList<String> waitlistEntrantIds) {
         this.waitlistEntrantIds = waitlistEntrantIds;
+    }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
     }
 
     /**
@@ -144,6 +154,7 @@ public class Event extends Observable implements Serializable {
     public String getId() {
         return id;
     }
+
 
     /**
      * Gets the hashed QR code of the event.
