@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
+import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.service.PoolingService;
@@ -233,6 +234,29 @@ public class ParticipantListActivity extends AppCompatActivity {
             }
         });
 
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Loop through each entrant in the list and set status to "cancelled"
+                for (Entrant entrant : entrantAdapter.getSelectedEntrants()) {
+                    String entrantId = entrant.getId();
+                    db.collection("entrants")
+                            .document(entrantId)
+                            .collection("entrantWaitList")
+                            .document(event.getId())
+                            .update("status", "CANCELED")
+                            .addOnSuccessListener(aVoid -> {
+                                // Handle successful update
+                                Log.d("Firestore", "Status updated to SELECTED for entrant ID: " + entrantId);
+                                entrantAdapter.setAllCheckboxesSelected(false);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle failure in update
+                                Log.e("Firestore", "Error updating status for entrant ID: " + entrantId, e);
+                            });
+                }
+            }
+        });
     }
 
     public interface InputDialogCallback {
@@ -468,13 +492,16 @@ public class ParticipantListActivity extends AppCompatActivity {
         slider.setAlpha(alpha);
         slider.setEnabled(enabled);
         if (waitingListLength > 1) {
+            slider.setValue(1f);
             slider.setValueTo(waitingListLength);
             slider.setVisibility(View.VISIBLE);
         }
         else if (waitingListLength == 1) {
+            slider.setValue(1f);
             slider.setVisibility(View.GONE);
         }
         else if (waitingListLength == 0) {
+            slider.setValue(1f);
             slider.setVisibility(View.GONE);
         }
         if (entrantAdapter != null)
