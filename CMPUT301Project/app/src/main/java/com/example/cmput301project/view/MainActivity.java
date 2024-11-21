@@ -1,12 +1,20 @@
 package com.example.cmput301project.view;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
@@ -74,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
 //        id = "8";
 //        id = "8e488662a2c3a895";
 
-
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
                 .build();
@@ -83,9 +90,23 @@ public class MainActivity extends AppCompatActivity {
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
         db = ((MyApplication) this.getApplication()).getDb();
-        retrieveUser(id);
-        ((MyApplication) this.getApplication()).listenToOrganizerFirebaseUpdates(id);
-        ((MyApplication) this.getApplication()).listenToEntrantFirebaseUpdates(id);
+
+        requestNotificationPermission(new PermissionCallback() {
+            @Override
+            public void onPermissionGranted() {
+                retrieveUser(id);
+                ((MyApplication) getApplication()).listenToOrganizerFirebaseUpdates(id);
+                ((MyApplication) getApplication()).listenToEntrantFirebaseUpdates(id);
+            }
+
+            @Override
+            public void onPermissionDenied() {
+                retrieveUser(id);
+                ((MyApplication) getApplication()).listenToOrganizerFirebaseUpdates(id);
+                ((MyApplication) getApplication()).listenToEntrantFirebaseUpdates(id);
+            }
+        });
+
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -173,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
         }
+        createNotificationChannel(this);
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -403,10 +425,15 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("Wishlist main", "Wishlist items: " + wishlist);
                             entrant.setWaitlistEventIds(wishlist);
                             retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
+
                                 @Override
                                 public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                     Log.d("retrieve entrant", "succeed");
+
+                                    for (Notification notification: notifications) {
+                                        showNotification("New Notifications", notification.getMessage());
+                                    }
                                 }
 
                                 @Override
@@ -453,6 +480,72 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public interface PermissionCallback {
+        void onPermissionGranted();
+        void onPermissionDenied();
+    }
+
+    private void requestNotificationPermission(PermissionCallback callback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+
+                this.permissionCallback = callback;
+            } else {
+                callback.onPermissionGranted();
+            }
+        } else {
+            callback.onPermissionGranted();
+        }
+    }
+
+    private PermissionCallback permissionCallback;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1 && permissionCallback != null) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permissionCallback.onPermissionGranted();
+            } else {
+                permissionCallback.onPermissionDenied();
+            }
+        }
+    }
+
+
+    public void showNotification(String title, String message) {
+        String channelId = "default_channel_id";
+
+        // Create a notification channel (Required for Android 8.0+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Default Channel",
+                    NotificationManager.IMPORTANCE_HIGH // Set importance to HIGH for heads-up notifications
+            );
+            channel.setDescription("This is the default notification channel");
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's small icon
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set priority to HIGH
+                .setDefaults(NotificationCompat.DEFAULT_ALL) // Enable sound and vibration
+                .setAutoCancel(true); // Dismiss notification on click
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Show the notification
+        notificationManager.notify(1, builder.build());
+    }
+
     public void addUser(User user) {
         db.collection("users").document(user.getId())
                 .set(user)
@@ -487,6 +580,21 @@ public class MainActivity extends AppCompatActivity {
 
     public interface OnAdminCheckListener {
         void onAdminCheckCompleted(boolean isAdmin);
+    }
+
+    public void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "default_channel_id";
+            CharSequence channelName = "Default Channel";
+            String channelDescription = "Channel for app notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            channel.setDescription(channelDescription);
+
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     // for ui test

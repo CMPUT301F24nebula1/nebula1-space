@@ -495,7 +495,7 @@ public class EntrantProfileFragment extends Fragment {
         // Manage badge visibility
         View badge = actionView.findViewById(R.id.notification_badge);
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            if (entrant1.hasUnreadNotifications(entrant1.getNotifications())) {
+            if (Entrant.hasUnreadNotifications(entrant1.getNotifications())) {
                 badge.setVisibility(View.VISIBLE);
             } else {
                 badge.setVisibility(View.GONE);
@@ -583,6 +583,11 @@ public class EntrantProfileFragment extends Fragment {
     }
 
     private void showNotificationDetailPopup(Notification notification) {
+        Context context = getContext();
+        if (context == null) {
+            Log.e("PopupError", "Context is null, cannot inflate the popup layout");
+            return;
+        }
         View detailPopupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notification_detail, null);
 
         // Initialize the PopupWindow for the detail view
