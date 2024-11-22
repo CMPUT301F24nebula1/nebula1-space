@@ -215,8 +215,9 @@ public class ParticipantListActivity extends AppCompatActivity {
                 showSimpleEditTextDialog(message, new InputDialogCallback() {
                     @Override
                     public void onInputConfirmed(String notification) {
+                        ArrayList<Entrant> selectedEntrants = entrantAdapter.getSelectedEntrants();
 
-                        for (Entrant entrant : entrants_store) {
+                        for (Entrant entrant : selectedEntrants) {
                             Map<String, Object> notificationData = new HashMap<>();
                             notificationData.put("isRead", false); // or "true" if the notification is read
                             notificationData.put("message", notification);
@@ -474,10 +475,12 @@ public class ParticipantListActivity extends AppCompatActivity {
     private void setButtonState() {
         if (entrantAdapter != null)
             entrantAdapter.setAllCheckboxesSelected(false);
+
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
             cancelButton.setVisibility(View.GONE);
+            entrantAdapter.setCheckboxVisibility(true);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
             updateEntrantsList(new ArrayList<>(entrants_selected));
@@ -505,8 +508,10 @@ public class ParticipantListActivity extends AppCompatActivity {
         Log.d("waitlist debug entrants_store", entrants_store.toString());
         if (entrantAdapter == null) {
             entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
+            entrantAdapter.setCheckboxVisibility(true);
             participantList.setAdapter(entrantAdapter);
         } else {
+            entrantAdapter.setCheckboxVisibility(true);
             entrantAdapter.notifyDataSetChanged();
         }
     }
@@ -574,10 +579,14 @@ public class ParticipantListActivity extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.menu_select_all) {
             if (entrantAdapter != null) {
-                if (entrantAdapter.areAllCheckboxesSelected())
+                if (entrantAdapter.areAllCheckboxesSelected()) {
                     entrantAdapter.setAllCheckboxesSelected(false);
-                else
+                    item.setTitle("SELECT\nALL");
+                }
+                else {
                     entrantAdapter.setAllCheckboxesSelected(true);
+                    item.setTitle("DESELECT\nALL");
+                }
             }
             return true;
         }
