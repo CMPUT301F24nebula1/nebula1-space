@@ -46,7 +46,17 @@ public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
         for (int i = 0; i < getCount(); i++) {
             checkboxStates.put(i, isSelected); // Update all checkbox states
         }
-        notifyDataSetChanged(); // Refresh the list to show updated states
+        Log.d("EntrantAdapter", "setAllCheckboxesSelected: " + isSelected);
+        notifyDataSetChanged();
+    }
+    // If any checkbox is not selected
+    public boolean areAllCheckboxesSelected() {
+        for (int i = 0; i < getCount(); i++) {
+            if (!checkboxStates.get(i, false)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @NonNull

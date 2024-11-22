@@ -283,51 +283,6 @@ public class MyApplication extends Application {
         void onRolesLoaded(ArrayList<String> roles);
     }
 
-//    public void showNotification(String title, String message) {
-//        String channelId = "default_channel_id";
-//
-//        // Create a notification channel (Required for Android 8.0+)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            NotificationChannel channel = new NotificationChannel(
-//                    channelId,
-//                    "Default Channel",
-//                    NotificationManager.IMPORTANCE_HIGH // Set importance to HIGH for heads-up notifications
-//            );
-//            channel.setDescription("This is the default notification channel");
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-//                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's small icon
-//                .setContentTitle(title)
-//                .setContentText(message)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set priority to HIGH
-//                .setDefaults(NotificationCompat.DEFAULT_ALL) // Enable sound and vibration
-//                .setAutoCancel(true); // Dismiss notification on click
-//
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        // Show the notification
-//        notificationManager.notify(1, builder.build());
-//    }
-
-
-//    // Helper method to display a notification
-//    private void showNotification(String title, String message) {
-//        String channelId = "default_channel_id";
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-//                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's small icon
-//                .setContentTitle(title)
-//                .setContentText(message)
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                .setAutoCancel(true);
-//
-//        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-//        notificationManager.notify(1, builder.build());
-//    }
-
     public Organizer getOrganizer() {
         if (organizer == null) {
             organizer = new Organizer(userId);
