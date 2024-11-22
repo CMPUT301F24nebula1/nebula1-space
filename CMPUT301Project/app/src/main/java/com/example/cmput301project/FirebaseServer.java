@@ -1092,6 +1092,91 @@ public class FirebaseServer implements FirebaseInterface {
             Log.w("FirebaseServer", "Error updating waitlistEventIds in Firebase", e);
         });
     }
+    public void fetchAllEvents(OnSuccessListener<List<Event>> onSuccess, OnFailureListener onFailure) {
+        List<Event> events = new ArrayList<>();
+        db.collection("organizers")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot organizerDoc : querySnapshot.getDocuments()) {
+                        String organizerId = organizerDoc.getId();
+                        db.collection("organizers").document(organizerId).collection("events")
+                                .get()
+                                .addOnSuccessListener(eventsSnapshot -> {
+                                    for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
+                                        Event event = eventDoc.toObject(Event.class);
+                                        if (event != null) {
+                                            event.setOrganizerId(organizerId);
+                                            events.add(event);
+                                        }
+                                    }
+                                    onSuccess.onSuccess(events);
+                                })
+                                .addOnFailureListener(onFailure);
+                    }
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void deleteEvent(String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        // Retrieve all organizers to locate the event
+        db.collection("organizers")
+                .get()
+                .addOnSuccessListener(organizersSnapshot -> {
+                    boolean[] eventFound = {false}; // Track if the event is found
+
+                    for (DocumentSnapshot organizerDoc : organizersSnapshot.getDocuments()) {
+                        String organizerId = organizerDoc.getId();
+
+                        // Check the events subcollection for the matching eventId
+                        db.collection("organizers")
+                                .document(organizerId)
+                                .collection("events")
+                                .document(eventId)
+                                .get()
+                                .addOnSuccessListener(eventSnapshot -> {
+                                    if (eventSnapshot.exists()) {
+                                        eventFound[0] = true;
+
+                                        // Delete the event document
+                                        eventSnapshot.getReference().delete()
+                                                .addOnSuccessListener(aVoid -> {
+
+                                                    Log.d("FirebaseServer", "Event deleted successfully: " + eventId);
+                                                    onSuccess.onSuccess(aVoid);
+                                                })
+                                                .addOnFailureListener(onFailure);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("FirebaseServer", "Failed to retrieve event: " + eventId, e);
+                                    onFailure.onFailure(e);
+                                });
+                    }
+
+                    // If the event is not found after iterating through all organizers
+                    if (!eventFound[0]) {
+                        onFailure.onFailure(new Exception("Event not found: " + eventId));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseServer", "Failed to retrieve organizers", e);
+                    onFailure.onFailure(e);
+                });
+    }
+
+    public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection("organizers")
+                .document(organizerId)
+                .collection("events")
+                .document(eventId)
+                .update("hashedQRCode", null) // Remove the hashed QR code
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+
+
+
 
     @Override
     public LiveData<Entrant> getEntrantLiveData() {
