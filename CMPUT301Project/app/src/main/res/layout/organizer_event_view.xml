@@ -247,7 +247,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
-                android:text="Must be 0 (i.e., unlimited) or greater than 0."
+                android:text="Must be greater than zero."
                 android:visibility="gone"
                 android:textSize="12sp" />
 

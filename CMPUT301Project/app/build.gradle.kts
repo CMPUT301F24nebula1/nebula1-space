@@ -61,7 +61,6 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.runner)
-    implementation(libs.filament.android)
 
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 

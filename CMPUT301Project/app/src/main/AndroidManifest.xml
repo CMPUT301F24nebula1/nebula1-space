@@ -61,9 +61,8 @@
             android:exported="false"/>
         <activity android:name=".view.EventDetailsActivity"
             android:exported="false"/>
-
-
-
+        <activity android:name=".view.AdminManageImagesActivity"
+            android:exported="false"/>
 
     </application>
 

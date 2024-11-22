@@ -26,12 +26,7 @@ public class EntrantController {
         this.entrant = e;
     }
 
-    public interface SaveCallback {
-        void onSaveSuccess();
-        void onSaveFailure(Exception e);
-    }
-
-    public void saveEntrantToDatabase(Entrant entrant, Uri u, SaveCallback callback) {
+    public void saveEntrantToDatabase(Entrant entrant, Uri u) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> entrantData = new HashMap<>();
         entrantData.put("name", entrant.getName());
@@ -51,15 +46,9 @@ public class EntrantController {
                             .update(entrantData)
                             .addOnSuccessListener(aVoid -> {
                                 Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
-                                if (callback != null) {
-                                    callback.onSaveSuccess();
-                                }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
-                                if (callback != null) {
-                                    callback.onSaveFailure(e);
-                                }
                             });
                 }
             }, e -> {
@@ -73,11 +62,9 @@ public class EntrantController {
                     .update(entrantData)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
-                        callback.onSaveSuccess();
                     })
                     .addOnFailureListener(e -> {
                         Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
-                        callback.onSaveFailure(e);
                     });
         }
         Log.d("save entrant profile", entrant.toString());

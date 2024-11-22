@@ -204,7 +204,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                         for (Entrant entrant : entrants_store) {
                             Map<String, Object> notificationData = new HashMap<>();
-                            notificationData.put("isRead", false); // or "true" if the notification is read
+                            notificationData.put("isRead", "false"); // or "true" if the notification is read
                             notificationData.put("message", notification);
                             notificationData.put("eventId", event.getId());
                             notificationData.put("timestamp", FieldValue.serverTimestamp());
@@ -477,8 +477,7 @@ public class ParticipantListActivity extends AppCompatActivity {
         else if (waitingListLength == 0) {
             slider.setVisibility(View.GONE);
         }
-        if (entrantAdapter != null)
-            entrantAdapter.setCheckboxVisibility(false);
+        entrantAdapter.setCheckboxVisibility(false);
 
         selectButton.setVisibility(View.VISIBLE);
         geoButton.setVisibility(View.VISIBLE);
