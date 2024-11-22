@@ -1,10 +1,15 @@
 package com.example.cmput301project;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -186,6 +191,15 @@ public class MyApplication extends Application {
                     public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
                         setEntrantLiveData(entrant);
                         Log.d("retrieve entrant", "succeed");
+
+//                        // Check for unread notifications
+//                        if (Entrant.hasUnreadNotifications(notifications)) {
+//                            // Show notification using Application context
+//                            showNotification("New Notifications", "You have unread notifications.");
+//                        }
+//                        for (Notification notification: notifications) {
+//                            showNotification("New Notifications", notification.getMessage());
+//                        }
                     }
 
                     @Override
@@ -214,11 +228,12 @@ public class MyApplication extends Application {
                 return;
             }
 
-            if (snapshots != null) {
+            if (snapshots != null && !snapshots.isEmpty()) {
                 notifications.clear();
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Notification item = document.toObject(Notification.class);
                     if (item != null) {
+                        item.setId(document.getId());
                         notifications.add(item);
                     }
                 }

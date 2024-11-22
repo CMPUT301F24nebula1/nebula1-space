@@ -19,6 +19,7 @@ public class Entrant extends User implements Serializable {
     private String profilePictureUrl;
     private String status;
     private String initials;
+    private Boolean receiveNotification;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -177,6 +178,16 @@ public class Entrant extends User implements Serializable {
     public void setNotifications(ArrayList<Notification> notifications) {
         this.notifications = notifications;
     }
+
+    static public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
+        for (Notification notification : notifications) {
+            if (!notification.isRead()) {
+                return true; // There is at least one unread notification
+            }
+        }
+        return false; // All notifications are read
+    }
+
 
     @Override
     public boolean equals(Object obj) {

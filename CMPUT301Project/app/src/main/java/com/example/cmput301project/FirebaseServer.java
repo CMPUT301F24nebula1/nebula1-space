@@ -757,9 +757,6 @@ public class FirebaseServer implements FirebaseInterface {
                 });
     }
 
-
-
-
     @Override
     public void listenToEntrantUpdates(String userId) {
         DocumentReference docRef = db.collection("entrants").document(userId);
@@ -1350,7 +1347,5 @@ public class FirebaseServer implements FirebaseInterface {
     public void setDb(FirebaseFirestore db) {
         this.db = db;
     }
-
-
 }
 
