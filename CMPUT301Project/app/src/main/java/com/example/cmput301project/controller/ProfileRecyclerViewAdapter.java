@@ -45,9 +45,9 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         if (entrant.getProfilePictureUrl() != null && ! entrant.getProfilePictureUrl().isEmpty()){
             // Load profile image with Glide
             Glide.with(context)
-                    .load(entrant.getProfilePictureUrl()) 
+                    .load(entrant.getProfilePictureUrl()) // Ensure `getImageUrl()` provides the image URL or URI
                      // Set a default image
-                    .error(R.drawable.error_image) 
+                    .error(R.drawable.error_image) // Image to show if there's an error loading
                     .into(holder.profilePictureImageView);
         }
 

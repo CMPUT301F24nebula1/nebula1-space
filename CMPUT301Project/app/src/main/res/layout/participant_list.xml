@@ -181,11 +181,10 @@
     <ListView
         android:id="@+id/participant_list"
         android:layout_width="352dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="356dp"
+        android:layout_marginBottom="48dp"
         android:layout_marginTop="6dp"
         app:layout_constraintTop_toBottomOf="@+id/listToggleGroup"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_section"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -199,13 +198,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar_select"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title='Entrant Lists'
+            android:text='Home'
             android:background="#FDE0F3"
-            app:titleCentered="true"
-            app:menu="@menu/select_all_menu"/>
+            app:titleCentered="true"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
