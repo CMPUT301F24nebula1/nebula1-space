@@ -86,13 +86,17 @@ public class EntrantEventViewFragment extends Fragment {
 
         try {
             if (!e.getPosterUrl().isEmpty()) {
+                binding.eventPosterImageview.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
                         .error(R.drawable.error_image)              // error image
                         .into(binding.eventPosterImageview);
+            } else {
+                binding.eventPosterImageview.setVisibility(View.GONE);
             }
         } catch (NullPointerException exception) {
+            binding.eventPosterImageview.setVisibility(View.GONE);
             Log.e("Error", "Poster URL is null", exception);
         }
 
@@ -122,6 +126,7 @@ public class EntrantEventViewFragment extends Fragment {
             binding.registrationCloseDate.setVisibility(View.INVISIBLE);
         }
 
+        //helper function added at button of fragment called proceedToJoinEvent
         binding.joinClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,18 +140,23 @@ public class EntrantEventViewFragment extends Fragment {
                                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                                 .setCancelable(false)  // prevents dialog from closing on back press
                                 .show();
+                    } else if (e.requiresGeolocation()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                        builder.setTitle("Geolocation Required");
+                        builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");
+
+                        //"Proceed" Button
+                        builder.setPositiveButton("Proceed", (dialog, which) -> proceedToJoinEvent());
+
+                        //"Cancel" Button
+                        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+                        builder.create().show();
                     } else {
-                        Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
-                        app.getEntrant().join_event(e);
-                        e.add_entrant(app.getEntrant());
-
-                        ec.joinEventWaitingList(e);
-
-                        ec.addToEventWaitingList(e);
-                        setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
-                        Log.d("join event", "You join the waiting list.");
-                        Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
+                        //direct to join event
+                        proceedToJoinEvent();
                     }
+
                 }
                 else {
                     Log.d("join event", "you are already in the waitlist");
@@ -188,5 +198,15 @@ public class EntrantEventViewFragment extends Fragment {
         unselectedButton.setAlpha(0.5f);
         unselectedButton.setTextColor(Color.parseColor("#65558F"));
 
+    }
+
+    private void proceedToJoinEvent() {
+        Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
+        app.getEntrant().join_event(e);       // Add entrant to the event's waitlist
+        e.add_entrant(app.getEntrant());      // Update the event's entrant list
+        ec.joinEventWaitingList(e);           // Sync changes with the database
+        ec.addToEventWaitingList(e);          // Update local storage
+        setButtonSelected(binding.leaveClassButton, binding.joinClassButton); // Update UI
+        Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
     }
 }

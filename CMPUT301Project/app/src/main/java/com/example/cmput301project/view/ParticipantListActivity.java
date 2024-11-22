@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
+import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.service.PoolingService;
@@ -96,7 +98,7 @@ public class ParticipantListActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.remove_button);
         notifyButton = findViewById(R.id.notify_button);
 
-        setSupportActionBar(findViewById(R.id.toolbar));
+        setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Entrant Lists");
@@ -204,7 +206,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                         for (Entrant entrant : entrants_store) {
                             Map<String, Object> notificationData = new HashMap<>();
-                            notificationData.put("isRead", "false"); // or "true" if the notification is read
+                            notificationData.put("isRead", false); // or "true" if the notification is read
                             notificationData.put("message", notification);
                             notificationData.put("eventId", event.getId());
                             notificationData.put("timestamp", FieldValue.serverTimestamp());
@@ -233,6 +235,29 @@ public class ParticipantListActivity extends AppCompatActivity {
             }
         });
 
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Loop through each entrant in the list and set status to "cancelled"
+                for (Entrant entrant : entrantAdapter.getSelectedEntrants()) {
+                    String entrantId = entrant.getId();
+                    db.collection("entrants")
+                            .document(entrantId)
+                            .collection("entrantWaitList")
+                            .document(event.getId())
+                            .update("status", "CANCELED")
+                            .addOnSuccessListener(aVoid -> {
+                                // Handle successful update
+                                Log.d("Firestore", "Status updated to SELECTED for entrant ID: " + entrantId);
+                                entrantAdapter.setAllCheckboxesSelected(false);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle failure in update
+                                Log.e("Firestore", "Error updating status for entrant ID: " + entrantId, e);
+                            });
+                }
+            }
+        });
     }
 
     public interface InputDialogCallback {
@@ -423,9 +448,12 @@ public class ParticipantListActivity extends AppCompatActivity {
     }
 
     private void setButtonState() {
+        if (entrantAdapter != null)
+            entrantAdapter.setAllCheckboxesSelected(false);
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
+            cancelButton.setVisibility(View.GONE);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
             updateEntrantsList(new ArrayList<>(entrants_selected));
@@ -468,16 +496,20 @@ public class ParticipantListActivity extends AppCompatActivity {
         slider.setAlpha(alpha);
         slider.setEnabled(enabled);
         if (waitingListLength > 1) {
+            slider.setValue(1f);
             slider.setValueTo(waitingListLength);
             slider.setVisibility(View.VISIBLE);
         }
         else if (waitingListLength == 1) {
+            slider.setValue(1f);
             slider.setVisibility(View.GONE);
         }
         else if (waitingListLength == 0) {
+            slider.setValue(1f);
             slider.setVisibility(View.GONE);
         }
-        entrantAdapter.setCheckboxVisibility(false);
+        if (entrantAdapter != null)
+            entrantAdapter.setCheckboxVisibility(false);
 
         selectButton.setVisibility(View.VISIBLE);
         geoButton.setVisibility(View.VISIBLE);
@@ -504,5 +536,12 @@ public class ParticipantListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.select_all_menu, menu);
+        return true;
+    }
+
 
 }

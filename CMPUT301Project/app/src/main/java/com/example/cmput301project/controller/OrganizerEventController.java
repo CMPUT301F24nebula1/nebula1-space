@@ -75,40 +75,6 @@ public class OrganizerEventController {
             updateEventInFirebase(organizer.getId(), event, successListener, failureListener);
         }
     }
-    public void deleteEvent(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-
-        if (event == null || event.getOrganizerId() == null || event.getId() == null) {
-            Log.e("DeleteEvent", "Invalid event data: Organizer ID or Event ID is null.");
-            if (failureListener != null) {
-                failureListener.onFailure(new Exception("Invalid event data. Missing organizerId or eventId."));
-            }
-            return;
-        }
-        // Log the constructed Firestore path
-        String path = "organizers/" + event.getOrganizerId() + "/events/" + event.getId();
-        Log.d("DeleteEvent", "Attempting to delete document at path: " + path);
-
-        db.collection("organizers")
-                .document(event.getOrganizerId())
-                .collection("events")
-                .document(event.getId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("OrganizerEventController", "Event deleted successfully: " + event.getId());
-                    Log.d("DeleteEvent", "Event deleted successfully at path: " + path);
-                    if (successListener != null) {
-                        successListener.onSuccess(aVoid);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("OrganizerEventController", "Error deleting event: " + event.getId(), e);
-                    Log.e("DeleteEvent", "Failed to delete event at path: " + path, e);
-                    if (failureListener != null) {
-                        failureListener.onFailure(e);
-                    }
-                });
-    }
-
 
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();

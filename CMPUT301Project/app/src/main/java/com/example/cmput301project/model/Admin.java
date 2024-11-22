@@ -1,10 +1,6 @@
 package com.example.cmput301project.model;
 
-import android.media.Image;
-
 import java.util.ArrayList;
-import java.util.List;
-import com.example.cmput301project.controller.UserController;
 
 /**
  * Represents an Admin user.
@@ -18,8 +14,6 @@ public class Admin extends User {
             roles.add("admin");
         }
     }
-
-
 
     // Additional methods specific to Admin functionality can go here
 }
