@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -457,15 +458,18 @@ public class EntrantProfileFragment extends Fragment {
             entrant.setProfilePictureUrl(null);
         }
         Log.d("profile debug", "0");
+        lockUI();
         ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
             @Override
             public void onSaveSuccess() {
 //                Log.d("profile debug", "1");
-
+                unlockUI();
                 app.setEntrantLiveData(entrant); // Save data to the application variable
             }
             @Override
-            public void onSaveFailure(Exception e) {}
+            public void onSaveFailure(Exception e) {
+                unlockUI();
+            }
         });
 
     }
@@ -780,5 +784,16 @@ public class EntrantProfileFragment extends Fragment {
                 });
     }
 
+    private void lockUI() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
 
 }

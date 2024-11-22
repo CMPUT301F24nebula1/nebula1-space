@@ -50,10 +50,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * MainActivity
@@ -299,7 +301,20 @@ public class MainActivity extends AppCompatActivity {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    private void lockUI() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
     private void retrieveUser(String userId) {
+        lockUI();
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -315,16 +330,20 @@ public class MainActivity extends AppCompatActivity {
 //                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                                 else {
+                                    unlockUI();
                                     Entrant entrant = new Entrant(userId);
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
-                            })
-                            .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
 
+                            })
+                            .addOnFailureListener(e -> {
+                                unlockUI();
+                                Log.w("Firestore", "Error retrieving entrant data", e);
+                            });
                 }
                 if (roles != null && roles.contains("organizer")) {
                     // set up organizer part for this user
-
+                    lockUI();
                     db.collection("organizers").document(userId).get()
                             .addOnSuccessListener(organizerSnapshot -> {
                                 if (organizerSnapshot.exists()) {
@@ -336,75 +355,96 @@ public class MainActivity extends AppCompatActivity {
                                         eventsRef.get()
                                                 .addOnSuccessListener(eventsSnapshot -> {
                                                     ArrayList<Event> eventsList = new ArrayList<>();
+                                                    AtomicInteger pendingTasks = new AtomicInteger(eventsSnapshot.size());
+
+                                                    if (eventsSnapshot.isEmpty()) {
+                                                        // No events found, directly set the organizer
+                                                        organizer.setEvents(eventsList);
+                                                        ((MyApplication) getApplication()).setOrganizer(organizer);
+                                                        ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+                                                        unlockUI();
+                                                        return;
+                                                    }
+
                                                     for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
                                                         Event event = eventDoc.toObject(Event.class);
 
-                                                        eventsRef.document(event.getId()).get().addOnCompleteListener(eventTask -> {
-                                                            if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
-//                                                                Event event = eventTask.getResult().toObject(Event.class);
+                                                        fetchEventDetails(event, eventsRef, new FirebaseCallback<Event>() {
+                                                            @Override
+                                                            public void onSuccess(Event updatedEvent) {
+                                                                eventsList.add(updatedEvent); // Add the updated event to the list
+                                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                                    // All tasks are complete
+                                                                    organizer.setEvents(eventsList);
+                                                                    ((MyApplication) getApplication()).setOrganizer(organizer);
+                                                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+                                                                    unlockUI();
+                                                                    Log.d("Firestore", "Organizer and events successfully loaded.");
+                                                                }
+                                                            }
 
-                                                                ArrayList<String> wishlishIds = new ArrayList<>();
-
-                                                                eventsRef.document(event.getId()).collection("userId").get()
-                                                                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                                                                            for (DocumentSnapshot document : queryDocumentSnapshots) {
-                                                                                // field "userId" that stores a string
-                                                                                String entrantId = document.getString("userId");
-                                                                                if (entrantId != null) {
-                                                                                    wishlishIds.add(entrantId);
-                                                                                }
-                                                                            }
-                                                                            event.setWaitlistEntrantIds(wishlishIds);
-                                                                            if (event != null) {
-                                                                                Log.d("Firestore", "Found event with ID: " + event.getId() + " in organizer: " + organizer.getId());
-                                                                                eventsList.add(event);
-                                                                            }
-                                                                        })
-                                                                        .addOnFailureListener(e -> {
-                                                                            // Handle any errors here
-                                                                            Log.e("FirestoreError", "Error retrieving user IDs", e);
-                                                                        });
-
-                                                            } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
-                                                                Log.d("Firestore", "No matching event found with ID: " + event.getId() + " in organizer: " + organizer.getId());
-                                                            } else {
-                                                                Log.w("Firestore", "Error getting event", eventTask.getException());
+                                                            @Override
+                                                            public void onFailure(Exception e) {
+                                                                Log.e("FirestoreError", "Error retrieving event details", e);
+                                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                                    unlockUI();
+                                                                }
                                                             }
                                                         });
                                                     }
-
-                                                    // Set the events list in the organizer object
-                                                    organizer.setEvents(eventsList);
-
-                                                    // Update the global instance and LiveData
-                                                    ((MyApplication) getApplication()).setOrganizer(organizer);
-                                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
-
-                                                    Log.d("Firestore", "Organizer and events successfully loaded.");
                                                 })
                                                 .addOnFailureListener(e -> {
+                                                    unlockUI();
                                                     Log.w("Firestore", "Error retrieving events data", e);
                                                 });
                                     }
                                 } else {
+                                    unlockUI();
                                     Log.w("Firestore", "Organizer document does not exist.");
                                 }
                             })
                             .addOnFailureListener(e -> {
+                                unlockUI();
                                 Log.w("Firestore", "Error retrieving organizer data", e);
                             });
-
                 }
-
             } else {
+                unlockUI();
                 User u = new User(userId);
                 addUser(u);
                 addEntrant(new Entrant(userId));
             }
         }).addOnFailureListener(e -> {
+            unlockUI();
             Log.e("Firebase", "Error retrieving user", e);
         });
     }
+
+    public interface FirebaseCallback<T> {
+        void onSuccess(T result); // Called when the task is successful
+        void onFailure(Exception e); // Called when the task fails
+    }
+
+    private void fetchEventDetails(Event event, CollectionReference eventsRef, FirebaseCallback<Event> callback) {
+        eventsRef.document(event.getId()).collection("userId").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<String> wishlistIds = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String entrantId = document.getString("userId");
+                        if (entrantId != null) {
+                            wishlistIds.add(entrantId);
+                        }
+                    }
+                    // Set waitlist entrant IDs
+                    event.setWaitlistEntrantIds(wishlistIds);
+                    callback.onSuccess(event);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e);
+                });
+    }
+
+
 
     private void retrieveEntrantWishlist(Entrant entrant) {
         CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
@@ -429,6 +469,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                                    unlockUI();
                                     Log.d("retrieve entrant", "succeed");
 
                                     for (Notification notification: notifications) {

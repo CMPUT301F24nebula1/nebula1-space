@@ -14,9 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,7 @@ import com.example.cmput301project.R;
 import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -61,6 +65,8 @@ public class OrganizerEventDetailFragment extends Fragment {
 
     private Calendar startDate, endDate;
     Boolean isEditMode = true;
+    private ProgressBar progressBar;
+    private ScrollView mainLayout;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -84,6 +90,9 @@ public class OrganizerEventDetailFragment extends Fragment {
 
         startDate = Calendar.getInstance();
         endDate = Calendar.getInstance();
+
+        progressBar = binding.progressBar;
+        mainLayout = binding.mainLayout;
 
         posterImageview = binding.eventImageview;
         ImageView qrImageview = binding.eventQrcodeImageview;
@@ -178,10 +187,12 @@ public class OrganizerEventDetailFragment extends Fragment {
                         e.setEndDate(endDate.getEditText().getText().toString());
                         e.setDescription(t1.getEditText().getText().toString());
                         e.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
-
+                        lockUI();
                         ec.editEvent(e, imageUri, aVoid -> {
+                            unlockUI();
                             Log.d("Firebase", "Event edited successfully");
                         }, f -> {
+                            unlockUI();
                             Log.d("Firebase", "Fails.");
                         });
 
@@ -257,6 +268,20 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding.lotteryStartsDate.setEndIconVisible(false);
         binding.posterGroup.setEndIconVisible(false);
         binding.capacityNote.setVisibility(View.GONE);
+    }
+
+    // Disable the back button
+    private void disableBackButton() {
+        MaterialToolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(null); // Disable the back button
+    }
+
+    // Enable the back button
+    private void enableBackButton() {
+        MaterialToolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> {
+            requireActivity().onBackPressed();
+        });
     }
 
     public boolean containsAlphabeticCharacter(String str) {
@@ -363,6 +388,24 @@ public class OrganizerEventDetailFragment extends Fragment {
                 }
             }
     );
+
+    private void lockUI() {
+        progressBar.setVisibility(View.VISIBLE);
+        mainLayout.setAlpha(0.5f); // Dim background for effect
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//        binding.saveEventButton.setEnabled(false); // Disable save button
+//        disableBackButton();
+//        setButtonDisabled();
+    }
+
+    private void unlockUI() {
+        progressBar.setVisibility(View.GONE);
+        mainLayout.setAlpha(1.0f); // Restore background opacity
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//        binding.saveEventButton.setEnabled(true); // Re-enable save button
+//        enableBackButton();
+//        setButtonsEnabled();
+    }
 
     @Override
     public void onDestroyView() {
