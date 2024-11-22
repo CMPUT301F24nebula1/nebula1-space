@@ -89,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
+//        setSupportActionBar(findViewById(R.id.toolbar));
+
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
         db = ((MyApplication) this.getApplication()).getDb();
@@ -108,13 +114,6 @@ public class MainActivity extends AppCompatActivity {
                 ((MyApplication) getApplication()).listenToEntrantFirebaseUpdates(id);
             }
         });
-
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
-//        setSupportActionBar(findViewById(R.id.toolbar));
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");
@@ -302,15 +301,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void lockUI() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
-        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        if (binding.progressBar != null && binding.mainLayout != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+            this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 
     private void unlockUI() {
-        binding.progressBar.setVisibility(View.GONE);
-        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
-        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        if (binding.progressBar != null && binding.mainLayout != null) {
+            binding.progressBar.setVisibility(View.GONE);
+            binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+            this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 
     private void retrieveUser(String userId) {
@@ -472,8 +475,13 @@ public class MainActivity extends AppCompatActivity {
                                     unlockUI();
                                     Log.d("retrieve entrant", "succeed");
 
+                                    int i = 0;
                                     for (Notification notification: notifications) {
-                                        showNotification("New Notifications", notification.getMessage());
+                                        if (!notification.isRead()) {
+                                            Log.d("notification", "count");
+                                            showNotification("New Notifications", notification.getMessage(), i);
+                                            i++;
+                                        }
                                     }
                                 }
 
@@ -558,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void showNotification(String title, String message) {
+    public void showNotification(String title, String message, int id) {
         String channelId = "default_channel_id";
 
         // Create a notification channel (Required for Android 8.0+)
@@ -584,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Show the notification
-        notificationManager.notify(1, builder.build());
+        notificationManager.notify(id, builder.build());
     }
 
     public void addUser(User user) {

@@ -13,12 +13,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
@@ -66,6 +69,8 @@ public class ParticipantListActivity extends AppCompatActivity {
     private MaterialButton geoButton;
     private Button cancelButton;
     private MaterialButton notifyButton;
+    private ProgressBar progressBar;
+    private ConstraintLayout mainLayout;
 
     private boolean isDataLoaded = false;
 
@@ -97,23 +102,27 @@ public class ParticipantListActivity extends AppCompatActivity {
         geoButton = findViewById(R.id.select_button3);
         cancelButton = findViewById(R.id.remove_button);
         notifyButton = findViewById(R.id.notify_button);
+        progressBar = findViewById(R.id.progressBar);
+        mainLayout = findViewById(R.id.main_layout);
 
         setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Entrant Lists");
 
+        lockUI();
         retrieveEntrantsWithRealtimeUpdates(event, "WAITING", new RetrieveEntrantsCallback() {
             @Override
             public void onRetrieveEntrantsCompleted(List<Entrant> entrants) {
                 isDataLoaded = true;
 
-                if (entrants.isEmpty()) {
+                if (entrants == null || entrants.isEmpty()) {
                     setToggleButtonsAndSlider(0);
+                    Toast.makeText(ParticipantListActivity.this, "No entrants.", Toast.LENGTH_SHORT).show();
                 } else if (entrants.size() == 1) {
 //                    setButtonState(true);
 //                    slider.setVisibility(View.GONE);
-                    selectButton.setText("Select 1 Participant");
+                    selectButton.setText("Draw 1 Participant");
                 } else {
 //                    setButtonState(true);
                     slider.setValueTo(entrants.size());
@@ -130,16 +139,19 @@ public class ParticipantListActivity extends AppCompatActivity {
                     Toast.makeText(ParticipantListActivity.this, "Loading, please try later", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(ParticipantListActivity.this, "Pooling!", Toast.LENGTH_SHORT).show();
+                    lockUI();
                     poolingService.performPooling(event.getId(), entrants_waitlist, (int) slider.getValue(), new PoolingService.PoolingCallback() {
 
                         @Override
                         public void onSuccess() {
+                            unlockUI();
                             Toast.makeText(ParticipantListActivity.this, "Pooling succeed.", Toast.LENGTH_SHORT).show();
                             entrantAdapter.notifyDataSetChanged();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
+                            unlockUI();
                             Toast.makeText(ParticipantListActivity.this, "Pooling failed.", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -151,7 +163,7 @@ public class ParticipantListActivity extends AppCompatActivity {
         // Set up the listener to update the button text based on the slider value
         slider.addOnChangeListener((slider1, value, fromUser) -> {
             // Update the button text with the current slider value, casting it to an integer
-            selectButton.setText("Select " + (int) value + " Participants");
+            selectButton.setText("Draw " + (int) value + " Participants");
         });
 
         toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
@@ -203,8 +215,9 @@ public class ParticipantListActivity extends AppCompatActivity {
                 showSimpleEditTextDialog(message, new InputDialogCallback() {
                     @Override
                     public void onInputConfirmed(String notification) {
+                        ArrayList<Entrant> selectedEntrants = entrantAdapter.getSelectedEntrants();
 
-                        for (Entrant entrant : entrants_store) {
+                        for (Entrant entrant : selectedEntrants) {
                             Map<String, Object> notificationData = new HashMap<>();
                             notificationData.put("isRead", false); // or "true" if the notification is read
                             notificationData.put("message", notification);
@@ -330,6 +343,7 @@ public class ParticipantListActivity extends AppCompatActivity {
     public void retrieveEntrantsWithRealtimeUpdates(Event event, String status, RetrieveEntrantsCallback callback) {
         Log.d("no wishlist", event.getWaitlistEntrantIds().toString());
 
+        lockUI();
         if (event.getWaitlistEntrantIds() != null && !event.getWaitlistEntrantIds().isEmpty()) {
             db.collection("entrants")
                     .whereIn(FieldPath.documentId(), event.getWaitlistEntrantIds())
@@ -354,7 +368,10 @@ public class ParticipantListActivity extends AppCompatActivity {
                                         .collection("entrantWaitList")
                                         .document(event.getId())
                                         .addSnapshotListener((subDocument, error) -> {
+                                            lockUI();
+
                                             if (error != null) {
+                                                unlockUI();
                                                 Log.e("FirebaseError", "Error listening for status changes", error);
                                                 return;
                                             }
@@ -400,7 +417,6 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                         break;
 
                                                     default:
-                                                        // Optionally, handle unexpected status values here.
                                                         Log.e("StatusError", "Unknown status: " + statusFirebase);
                                                         break;
                                                 }
@@ -423,7 +439,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                                                 completedCount[0]++;
 
-
+                                                unlockUI();
                                                 if (completedCount[0] == totalDocuments) {
                                                     if (entrantAdapter == null) {
                                                         entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
@@ -431,18 +447,27 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                     } else {
                                                         entrantAdapter.notifyDataSetChanged();
                                                     }
+                                                    unlockUI();
                                                     callback.onRetrieveEntrantsCompleted(entrants_waitlist);
                                                 }
 
                                             }
+                                            else {
+                                                unlockUI();
+                                                callback.onRetrieveEntrantsCompleted(null);
+                                            }
                                         });
                             }
                         } else {
+                            unlockUI();
+                            Toast.makeText(ParticipantListActivity.this, "Loading failed.", Toast.LENGTH_SHORT).show();
                             Log.e("FirebaseError", "Error fetching entrants: ", task.getException());
                         }
                     });
         } else {
+            unlockUI();
             setToggleButtonsAndSlider(0);
+            callback.onRetrieveEntrantsCompleted(null);
             Log.d("FirebaseQuery", "No wishlist IDs to query.");
         }
     }
@@ -450,10 +475,12 @@ public class ParticipantListActivity extends AppCompatActivity {
     private void setButtonState() {
         if (entrantAdapter != null)
             entrantAdapter.setAllCheckboxesSelected(false);
+
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
             cancelButton.setVisibility(View.GONE);
+            entrantAdapter.setCheckboxVisibility(true);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
             updateEntrantsList(new ArrayList<>(entrants_selected));
@@ -464,12 +491,12 @@ public class ParticipantListActivity extends AppCompatActivity {
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
             updateEntrantsList(new ArrayList<>(entrants_canceled));
             setButtonInvisible();
-            entrantAdapter.setCheckboxVisibility(false);
+            entrantAdapter.setCheckboxVisibility(true);
             status = "CANCELED";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
             updateEntrantsList(new ArrayList<>(entrants_final));
             setButtonInvisible();
-            entrantAdapter.setCheckboxVisibility(false);
+            entrantAdapter.setCheckboxVisibility(true);
             status = "FINAL";
         }
     }
@@ -481,8 +508,10 @@ public class ParticipantListActivity extends AppCompatActivity {
         Log.d("waitlist debug entrants_store", entrants_store.toString());
         if (entrantAdapter == null) {
             entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
+            entrantAdapter.setCheckboxVisibility(true);
             participantList.setAdapter(entrantAdapter);
         } else {
+            entrantAdapter.setCheckboxVisibility(true);
             entrantAdapter.notifyDataSetChanged();
         }
     }
@@ -518,6 +547,8 @@ public class ParticipantListActivity extends AppCompatActivity {
         selectButton.setClickable(enabled);
         geoButton.setAlpha(alpha);
         geoButton.setClickable(enabled);
+        notifyButton.setAlpha(alpha);
+        notifyButton.setClickable(enabled);
     }
 
     private void setButtonInvisible() {
@@ -527,11 +558,36 @@ public class ParticipantListActivity extends AppCompatActivity {
         cancelButton.setVisibility(View.GONE);
     }
 
+    private void lockUI() {
+        progressBar.setVisibility(View.VISIBLE);
+        mainLayout.setAlpha(0.5f); // Dim background for effect
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        progressBar.setVisibility(View.GONE);
+        mainLayout.setAlpha(1.0f); // Restore background opacity
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
     // navigate back to previous activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_select_all) {
+            if (entrantAdapter != null) {
+                if (entrantAdapter.areAllCheckboxesSelected()) {
+                    entrantAdapter.setAllCheckboxesSelected(false);
+                    item.setTitle("SELECT\nALL");
+                }
+                else {
+                    entrantAdapter.setAllCheckboxesSelected(true);
+                    item.setTitle("DESELECT\nALL");
+                }
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

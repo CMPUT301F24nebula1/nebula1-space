@@ -18,6 +18,7 @@ public class Entrant extends User {
     private String profilePictureUrl;
     private String status;
     private String initials;
+    private Boolean receiveNotification;
 
     /**
      * Default constructor initializing an empty waitlist.
