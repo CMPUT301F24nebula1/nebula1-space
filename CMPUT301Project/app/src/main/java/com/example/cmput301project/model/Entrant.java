@@ -1,5 +1,6 @@
 package com.example.cmput301project.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * @author Xinjia Fan
  */
 
-public class Entrant extends User {
+public class Entrant extends User implements Serializable {
     protected transient ArrayList<String> waitlistEventIds;
     protected  transient ArrayList<Notification> notifications;
     protected String name;
@@ -18,7 +19,7 @@ public class Entrant extends User {
     private String profilePictureUrl;
     private String status;
     private String initials;
-    private Boolean receiveNotification;
+    private Boolean receiveNotification = true;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -169,6 +170,10 @@ public class Entrant extends User {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public  boolean getReceiveNotification() { return receiveNotification; }
+
+    public  void setReceiveNotification(Boolean receiveNotification) {this.receiveNotification = receiveNotification; }
 
     public ArrayList<Notification> getNotifications() {
         return notifications;

@@ -76,6 +76,8 @@ public class OrganizerEventController {
         }
     }
 
+
+
     private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");

@@ -5,10 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.cmput301project.R;
+import com.example.cmput301project.controller.AdminQRController;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -23,40 +22,36 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Button manageQrButton = findViewById(R.id.manageQrButton);
 
         setSupportActionBar(findViewById(R.id.toolbar));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Home");
-        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Home");
 
-        // Navigate to Profiles Management
         manageProfilesButton.setOnClickListener(view -> {
             Log.d("AdminDashboardActivity", "Manage Profiles button clicked");
             Intent intent = new Intent(AdminDashboardActivity.this, AdminAllProfilesActivity.class);
             startActivity(intent);
         });
 
-        // Navigate to Events Management
+
         manageEventsButton.setOnClickListener(view -> {
             Log.d("AdminDashboardActivity", "Manage Events button clicked");
             Intent intent = new Intent(AdminDashboardActivity.this, AdminAllEventsActivity.class);
             startActivity(intent);
+            Log.d("AdminDashboardActivity", "Intent to AdminAllEventsActivity started");
         });
 
-        // Navigate to Images Management
-        manageImagesButton.setOnClickListener(view -> {
-            Log.d("AdminDashboardActivity", "Manage Images button clicked");
-            Intent intent = new Intent(AdminDashboardActivity.this, AdminManageImagesActivity.class);
+        manageImagesButton.setOnClickListener(v -> {
+            // TODO: Navigate to images management
+        });
+
+        manageQrButton.setOnClickListener(v -> {
+            Log.d("AdminDashboardActivity", "Manage QR Codes button clicked");
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminQRController.class); // Navigates to QR code management
             startActivity(intent);
         });
 
-        // Navigate to QR Code Management (Placeholder for future functionality)
-        manageQrButton.setOnClickListener(view -> {
-            Log.d("AdminDashboardActivity", "Manage QR Code button clicked");
-            // TODO: Implement QR Code Management
-        });
     }
-
-    // Handle the back button in the toolbar
+    // navigate back to previous activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
