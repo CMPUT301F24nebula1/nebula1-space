@@ -3,13 +3,16 @@ package com.example.cmput301project.model;
 import java.util.ArrayList;
 import java.util.Objects;
 
+//added trying to get maps to stop crashing
+import java.io.Serializable;
+
 /**
  * Represents an Entrant, extending the User class.
  * An Entrant can join or leave events and has personal information such as name, email, phone, and profile picture URL.
  * @author Xinjia Fan
  */
 
-public class Entrant extends User {
+public class Entrant extends User implements Serializable {
     protected transient ArrayList<String> waitlistEventIds;
     protected  transient ArrayList<Notification> notifications;
     protected String name;

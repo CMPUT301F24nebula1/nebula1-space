@@ -239,8 +239,8 @@ public class ParticipantListActivity extends AppCompatActivity {
                 return;
             }
 
-            Intent mapIntent = new Intent(ParticipantListActivity.this, MapActivity.class); // Use a unique name
-            mapIntent.putExtra("entrants", entrants_waitlist); // Pass entrant data
+            Intent mapIntent = new Intent(ParticipantListActivity.this, MapActivity.class);
+            mapIntent.putExtra("entrants", entrants_waitlist); // Passing entrant data
             startActivity(mapIntent);
         });
 

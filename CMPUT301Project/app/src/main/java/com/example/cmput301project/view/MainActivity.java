@@ -153,14 +153,21 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Navigation", "Navigating to Organizer Homepage");
                     // Navigate to OrganizerFragment
                     UserController.updateUserRole(id, "organizer");
-                    if (navController.getCurrentDestination().getId() != R.id.OrganizerHomepageFragment) {
+
+                    if (navController.getCurrentDestination() != null &&
+                            navController.getCurrentDestination().getId() == R.id.EntrantHomepageFragment) {
                         navController.navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage);
+                    } else {
+                        Log.e("NavigationError", "Cannot navigate to Organizer Homepage. Current destination mismatch.");
                     }
                 } else if (checkedId == R.id.btn_entrant) {
                     Log.d("Navigation", "Navigating to Entrant Homepage");
                     // Navigate to EntrantFragment
-                    if (navController.getCurrentDestination().getId() != R.id.EntrantHomepageFragment) {
+                    if (navController.getCurrentDestination() != null &&
+                            navController.getCurrentDestination().getId() == R.id.OrganizerHomepageFragment) {
                         navController.navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage);
+                    } else {
+                        Log.e("NavigationError", "Cannot navigate to Entrant Homepage. Current destination mismatch.");
                     }
                 }
             }
