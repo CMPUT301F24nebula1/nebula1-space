@@ -20,7 +20,6 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -315,7 +314,6 @@ public class OrganizerFacilityProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
-            editImageButton.setVisibility(View.VISIBLE);
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
@@ -325,7 +323,6 @@ public class OrganizerFacilityProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
-            editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -354,7 +351,6 @@ public class OrganizerFacilityProfileFragment extends Fragment {
         organizerData.put("phone", organizer.getPhone());
         organizerData.put("profilePictureUrl", organizer.getProfilePictureUrl());
 
-        lockUI();
         if (u != null) {
             uploadImageToFirebase(u, new OnSuccessListener<String>() {
                 @Override
@@ -366,48 +362,32 @@ public class OrganizerFacilityProfileFragment extends Fragment {
                             .document(organizer.getId())
                             .update(organizerData)
                             .addOnSuccessListener(aVoid -> {
-                                unlockUI();
                                 Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
                             })
                             .addOnFailureListener(e -> {
-                                unlockUI();
                                 Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
                             });
                 }
             }, e -> {
-                unlockUI();
                 Log.e("upload profile image", "failure uploading profile image");
             });
         }
-        else if (organizer.getProfilePictureUrl() == null){
+        else {
             imageView.setImageDrawable(createInitialsDrawable(organizer.getName()));
             db.collection("organizers")
                     .document(organizer.getId())
                     .update(organizerData)
                     .addOnSuccessListener(aVoid -> {
-                        unlockUI();
                         Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
                     })
                     .addOnFailureListener(e -> {
-                        unlockUI();
                         Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
                     });
 
         }
-        else {
-            db.collection("organizers")
-                    .document(organizer.getId())
-                    .update(organizerData)
-                    .addOnSuccessListener(aVoid -> {
-                        unlockUI();
-                        Log.d("saveEntrantToDatabase", "Entrant data updated successfully in Firebase");
-                    })
-                    .addOnFailureListener(e -> {
-                        unlockUI();
-                        Log.e("saveEntrantToDatabase", "Failed to update entrant data in Firebase", e);
-                    });
-        }
         Log.d("save entrant profile", organizer.toString());
+
+
     }
 
     public void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> successListener, OnFailureListener failureListener) {
@@ -445,18 +425,6 @@ public class OrganizerFacilityProfileFragment extends Fragment {
         });
 
         builder.show();
-    }
-
-    private void lockUI() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    }
-
-    private void unlockUI() {
-        binding.progressBar.setVisibility(View.GONE);
-        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
-        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
 }

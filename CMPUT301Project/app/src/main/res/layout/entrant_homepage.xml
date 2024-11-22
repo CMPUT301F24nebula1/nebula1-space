@@ -27,27 +27,18 @@
             app:iconSize="36dp"
             app:iconTint="@android:color/black" />
 
-        <View
-            android:id="@+id/notification_badge"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+        <TextView
+            android:id="@+id/badge_text"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/badge_background"
-            android:layout_gravity="end|top"
-            android:layout_margin="2dp"
-            android:visibility="gone" />
-
-<!--        <TextView-->
-<!--            android:id="@+id/badge_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="end|bottom"-->
-<!--            android:layout_marginEnd="4dp"-->
-<!--            android:layout_marginBottom="4dp"-->
-<!--            android:background="@drawable/badge_background"-->
-<!--            android:gravity="center"-->
-<!--            android:text=" "-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:textSize="10sp" />-->
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
     </FrameLayout>
 
     <LinearLayout

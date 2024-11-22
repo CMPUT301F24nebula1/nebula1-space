@@ -27,7 +27,6 @@ public class AdminAllEventsActivity extends AppCompatActivity {
     private List<Event> eventList;
     private SearchView searchView;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,20 +45,23 @@ public class AdminAllEventsActivity extends AppCompatActivity {
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventList = new ArrayList<>();
-        // Initialize adapter with the delete event callback
+        eventList = new ArrayList<>();  // event object list
         eventAdapter = new EventRecyclerViewAdapter(this, eventList, event -> {
+            if (event.getId() == null || event.getOrganizerId() == null) {
+                Toast.makeText(this, "Event data is incomplete. Cannot open details.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Open EventDetailsActivity with the selected event
             Intent intent = new Intent(AdminAllEventsActivity.this, EventDetailsActivity.class);
             intent.putExtra("event", event);
-            startActivity(intent);
-        }, event -> {
-            // Remove event from list
-            deleteEvent(event);
+            startActivityForResult(intent, 100); // Use startActivityForResult to capture delete event result
         });
         recyclerView.setAdapter(eventAdapter);
 
-        // Load all events from Firestore
+        // Load all events
         loadAllEventsFromFirebase();
+
         // Search functionality
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -77,13 +79,18 @@ public class AdminAllEventsActivity extends AppCompatActivity {
     }
 
     private void loadAllEventsFromFirebase() {
-        db.collectionGroup("events") // Retrieve all 'events'
+        db.collectionGroup("events")
+                // Retrieve all 'events' subcollections
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         eventList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Event event = document.toObject(Event.class);
+                            if (document.getReference().getParent().getParent() != null) {
+                                String organizerId = document.getReference().getParent().getParent().getId();
+                                event.setOrganizerId(organizerId);
+                            }
                             eventList.add(event);
                         }
                         eventAdapter.notifyDataSetChanged();
@@ -93,21 +100,23 @@ public class AdminAllEventsActivity extends AppCompatActivity {
                 });
     }
 
-    private void deleteEvent(Event event) {
-        db.collection("events")
-                .document(event.getId()) // Assuming getId() returns the event's document ID
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    // Remove from local list after successful Firebase delete
-                    eventList.remove(event);
-                    eventAdapter.updateList(eventList);
-                    Toast.makeText(AdminAllEventsActivity.this, "Event removed successfully.", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AdminAllEventsActivity.this, "Error deleting event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            String deletedEventId = data.getStringExtra("deletedEventId");
+            if (deletedEventId != null) {
+                for (int i = 0; i < eventList.size(); i++) {
+                    if (eventList.get(i).getId().equals(deletedEventId)) {
+                        eventList.remove(i); // Remove the deleted event from the list
+                        eventAdapter.notifyDataSetChanged(); // Notify adapter to update RecyclerView
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     private void filterEvents(String query) {
         List<Event> filteredList = new ArrayList<>();
@@ -119,7 +128,12 @@ public class AdminAllEventsActivity extends AppCompatActivity {
         eventAdapter.updateList(filteredList);
     }
 
-    // navigate back to previous activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadAllEventsFromFirebase(); // Refresh the list when returning to this activity
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -129,3 +143,4 @@ public class AdminAllEventsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

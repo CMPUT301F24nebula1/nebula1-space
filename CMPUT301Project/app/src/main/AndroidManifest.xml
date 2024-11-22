@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MyApplication"
@@ -62,9 +61,8 @@
             android:exported="false"/>
         <activity android:name=".view.EventDetailsActivity"
             android:exported="false"/>
-
-
-
+        <activity android:name=".view.AdminManageImagesActivity"
+            android:exported="false"/>
 
     </application>
 

@@ -33,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -91,7 +90,6 @@ public class EntrantProfileFragment extends Fragment {
     private Uri imageUri;
     private boolean isEditMode = false;
     private boolean isImageEnlarged = false;
-    private boolean removeProfile;
 
     ArrayList<Notification> notifications;
     ListView notificationList;
@@ -111,10 +109,8 @@ public class EntrantProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        entrant = app.getEntrant();
-//        ec = new EntrantController(app.getEntrant());
-        entrant = app.getEntrantLiveData().getValue();
-        ec = new EntrantController(entrant);
+        entrant = app.getEntrant();
+        ec = new EntrantController(app.getEntrant());
 
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
@@ -219,7 +215,7 @@ public class EntrantProfileFragment extends Fragment {
             }
         });
 
-//        app.setEntrantLiveData(entrant);
+        app.setEntrantLiveData(entrant);
     }
 
     private void showImageOptionsDialog() {
@@ -236,7 +232,6 @@ public class EntrantProfileFragment extends Fragment {
                         break;
                     case 1:
                         removeProfilePicture();
-                        removeProfile = true;
                         break;
                 }
             }
@@ -298,7 +293,6 @@ public class EntrantProfileFragment extends Fragment {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                         imageView.setImageBitmap(bitmap);
-                        removeProfile = false;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -347,7 +341,7 @@ public class EntrantProfileFragment extends Fragment {
     private void removeProfilePicture() {
         imageUri = null; // Clear the image URI
         imageView.setImageDrawable(createInitialsDrawable(entrant.getName())); // Reset to initials
-//        entrant.setProfilePictureUrl(null); // Remove URL from entrant
+        entrant.setProfilePictureUrl(null); // Remove URL from entrant
         //ec.saveEntrantToDatabase(entrant, null); // Save the change to the database
     }
 
@@ -411,7 +405,6 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
-            editImageButton.setVisibility(View.VISIBLE);
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
@@ -421,7 +414,6 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
-            editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -454,24 +446,8 @@ public class EntrantProfileFragment extends Fragment {
         entrant.setEmail(t_email.getText().toString());
         entrant.setPhone(t_phone.getText().toString());
 
-        if (removeProfile) {
-            entrant.setProfilePictureUrl(null);
-        }
-        Log.d("profile debug", "0");
-        lockUI();
-        ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
-            @Override
-            public void onSaveSuccess() {
-//                Log.d("profile debug", "1");
-                unlockUI();
-                app.setEntrantLiveData(entrant); // Save data to the application variable
-            }
-            @Override
-            public void onSaveFailure(Exception e) {
-                unlockUI();
-            }
-        });
-
+        ec.saveEntrantToDatabase(entrant, imageUri);
+        app.setEntrantLiveData(entrant); // Save data to the application variable
     }
 
     @Override
@@ -488,28 +464,6 @@ public class EntrantProfileFragment extends Fragment {
             customButton.setVisible(true);  // Show it in this fragment
             customButton.setEnabled(true);
         }
-        // Set the custom action view
-        View actionView = customButton.getActionView();
-        if (actionView == null) {
-            actionView = LayoutInflater.from(requireContext()).inflate(R.layout.menu_notification_badge, null);
-            customButton.setActionView(actionView);
-        }
-
-        // Manage badge visibility
-        View badge = actionView.findViewById(R.id.notification_badge);
-        app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            if (Entrant.hasUnreadNotifications(entrant1.getNotifications())) {
-                badge.setVisibility(View.VISIBLE);
-            } else {
-                badge.setVisibility(View.GONE);
-            }
-        });
-
-        // Handle click on the notification icon
-        actionView.setOnClickListener(v -> {
-            // Trigger the menu item click
-            onOptionsItemSelected(customButton);
-        });
     }
 
     @Override
@@ -521,12 +475,6 @@ public class EntrantProfileFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDestroy() {
-        this.entrant = app.getEntrantLiveData().getValue();
-        super.onDestroy();
     }
 
     private void showNotificationsPopup() {
@@ -541,20 +489,9 @@ public class EntrantProfileFragment extends Fragment {
 
         // Set up the ListView with notifications
         notificationList = popupView.findViewById(R.id.notification_list_view);
-//        notifications = entrant.getNotifications();
-        retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
-            @Override
-            public void onNotificationsRetrieved(ArrayList<Notification> notifications1) {
-                notifications = notifications1;
-//                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
-                if (notificationAdapter == null) {
-                    notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
-                }
-                notificationList.setAdapter(notificationAdapter);
-            }
-            @Override
-            public void onError(Exception e) {}
-        });
+        notifications = entrant.getNotifications();
+        notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
+        notificationList.setAdapter(notificationAdapter);
 
         // Show the PopupWindow at the right end under the toolbar
         View toolbar = getActivity().findViewById(R.id.toolbar);
@@ -567,30 +504,14 @@ public class EntrantProfileFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Notification notification = notifications.get(i);
                 notification.setRead(true);
-                notificationAdapter.notifyDataSetChanged();
 //                String eventId = notification.getEventId();
-                updateNotificationStatus(notification.getId(), new FirestoreUpdateCallback() {
-                    @Override
-                    public void onSuccess() {
-                        popupWindow.dismiss();
-                        showNotificationDetailPopup(notifications.get(i));
-                    }
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                popupWindow.dismiss();
+                showNotificationDetailPopup(notifications.get(i));
             }
         });
     }
 
     private void showNotificationDetailPopup(Notification notification) {
-        Context context = getContext();
-        if (context == null) {
-            Log.e("PopupError", "Context is null, cannot inflate the popup layout");
-            return;
-        }
         View detailPopupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notification_detail, null);
 
         // Initialize the PopupWindow for the detail view
@@ -619,9 +540,7 @@ public class EntrantProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(getContext(), "Failed to retrieve data.", Toast.LENGTH_SHORT).show();
-            }
+            public void onFailure(Exception e) {}
         });
 
         yesButton.setOnClickListener(v -> {
@@ -646,41 +565,6 @@ public class EntrantProfileFragment extends Fragment {
 
         int xOffset = toolbar.getWidth() - detailPopupView.getWidth();
         detailPopupWindow.showAsDropDown(toolbar, xOffset, 0);
-    }
-
-    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference notificationRef = db.collection("entrants")
-                .document(entrant.getId())
-                .collection("notifications");
-        ArrayList<Notification> notifications = new ArrayList<>();
-
-        notificationRef.addSnapshotListener((snapshots, error) -> {
-            if (error != null) {
-                Log.e("Firestore Error", "Error listening to notification updates", error);
-                return;
-            }
-
-            if (snapshots != null) {
-                notifications.clear();
-                for (DocumentSnapshot document : snapshots.getDocuments()) {
-                    Notification item = document.toObject(Notification.class);
-                    if (item != null) {
-                        item.setId(document.getId());
-
-                        notifications.add(item);
-                        Log.d("notification status", item.getId() + String.valueOf(item.isRead()));
-                    }
-                }
-                Log.d("Notifications", "Notifications: " + notifications);
-                entrant.setNotifications(notifications);
-//                setEntrantLiveData(entrant);
-
-                if (callback != null) {
-                    callback.onNotificationsRetrieved(notifications);
-                }
-            }
-        });
     }
 
     public interface StatusCallback {
@@ -720,35 +604,6 @@ public class EntrantProfileFragment extends Fragment {
                 });
     }
 
-    public interface FirestoreUpdateCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    public void updateNotificationStatus(String id, FirestoreUpdateCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference notificationDocRef = db.collection("entrants")
-                .document(entrant.getId())
-                .collection("notifications")
-                .document(id); // Replace "DOCUMENT_ID" with the specific document ID
-
-        // Update the isRead field
-        notificationDocRef.update("isRead", true)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore Update", "isRead field successfully updated!");
-                    if (callback != null) {
-                        callback.onSuccess(); // Notify success
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore Update", "Error updating isRead field", e);
-                    if (callback != null) {
-                        callback.onFailure(e); // Notify failure
-                    }
-                });
-
-    }
-
     public void updateStatus(Entrant entrant, String status, String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference notificationRef = db.collection("entrants")
@@ -784,16 +639,5 @@ public class EntrantProfileFragment extends Fragment {
                 });
     }
 
-    private void lockUI() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    }
-
-    private void unlockUI() {
-        binding.progressBar.setVisibility(View.GONE);
-        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
-        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    }
 
 }

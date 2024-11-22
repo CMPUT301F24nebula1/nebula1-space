@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
 
     private Context context;
     private boolean isCheckboxVisible = false;
-    private SparseBooleanArray checkboxStates = new SparseBooleanArray();
 
     public EntrantArrayAdapter(@NonNull Context context, @NonNull ArrayList<Entrant> entrants) {
         super(context, 0, entrants);
@@ -40,13 +38,6 @@ public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
     public void setCheckboxVisibility(boolean isVisible) {
         this.isCheckboxVisible = isVisible;
         notifyDataSetChanged();  // Refresh the view
-    }
-
-    public void setAllCheckboxesSelected(boolean isSelected) {
-        for (int i = 0; i < getCount(); i++) {
-            checkboxStates.put(i, isSelected); // Update all checkbox states
-        }
-        notifyDataSetChanged(); // Refresh the list to show updated states
     }
 
     @NonNull
@@ -89,28 +80,7 @@ public class EntrantArrayAdapter extends ArrayAdapter<Entrant> {
                 select.setEnabled(false);
             }
         }
-
-        //checkbox
-        select.setVisibility(isCheckboxVisible ? View.VISIBLE : View.INVISIBLE);
-        select.setEnabled(isCheckboxVisible);
-        select.setChecked(checkboxStates.get(position, false));
-
-        // Handle checkbox state change
-        select.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            checkboxStates.put(position, isChecked); // Update checkbox state
-        });
         return view;
-    }
-
-    // Method to retrieve selected entrants
-    public ArrayList<Entrant> getSelectedEntrants() {
-        ArrayList<Entrant> selectedEntrants = new ArrayList<>();
-        for (int i = 0; i < getCount(); i++) {
-            if (checkboxStates.get(i, false)) {
-                selectedEntrants.add(getItem(i));
-            }
-        }
-        return selectedEntrants;
     }
 
     private String getInitials(String name) {

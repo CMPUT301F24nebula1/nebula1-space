@@ -21,9 +21,7 @@ public class Event extends Observable implements Serializable {
     private String startDate;
     private String endDate;
     private final String id;
-    private boolean requiresGeolocation;
     private String organizerId;
-
 
     /**
      * Default constructor initializing an empty waitlist and a unique ID for the event.
@@ -32,7 +30,6 @@ public class Event extends Observable implements Serializable {
         this.waitlistEntrantIds = new ArrayList<String>();
         this.id = UUID.randomUUID().toString();
         this.limit = 0;
-        this.requiresGeolocation = false;
     }
 
     /**
@@ -44,7 +41,6 @@ public class Event extends Observable implements Serializable {
         this.name = name;
         this.id = UUID.randomUUID().toString();
         this.limit = 0;
-        this.requiresGeolocation = false;
     }
 
     /**
@@ -222,22 +218,5 @@ public class Event extends Observable implements Serializable {
      */
     public void setEndDate(String endDate) {
         this.endDate = endDate;
-    }
-
-    /**
-     * Does this event need geolocation?
-     * @return true if geolocation is required for this event
-     */
-    public boolean requiresGeolocation() {
-        return requiresGeolocation;
-    }
-
-
-    /**
-     * set geolocate reqs
-     * @param requiresGeolocation true if geolocation for this event is required
-     */
-    public void setRequiresGeolocation(boolean requiresGeolocation) {
-        this.requiresGeolocation = requiresGeolocation;
     }
 }
