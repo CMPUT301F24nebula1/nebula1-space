@@ -476,6 +476,9 @@ public class MainActivity extends AppCompatActivity {
                                     Log.d("retrieve entrant", "succeed");
 
                                     int i = 0;
+                                    if (!entrant.getReceiveNotification()) {
+                                        return;
+                                    }
                                     for (Notification notification: notifications) {
                                         if (!notification.isRead()) {
                                             Log.d("notification", "count");
@@ -519,6 +522,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 Log.d("Notifications", "Notifications: " + notifications);
+                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 

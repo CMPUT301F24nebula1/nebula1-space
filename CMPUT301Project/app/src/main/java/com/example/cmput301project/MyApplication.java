@@ -192,14 +192,6 @@ public class MyApplication extends Application {
                         setEntrantLiveData(entrant);
                         Log.d("retrieve entrant", "succeed");
 
-//                        // Check for unread notifications
-//                        if (Entrant.hasUnreadNotifications(notifications)) {
-//                            // Show notification using Application context
-//                            showNotification("New Notifications", "You have unread notifications.");
-//                        }
-//                        for (Notification notification: notifications) {
-//                            showNotification("New Notifications", notification.getMessage());
-//                        }
                     }
 
                     @Override
@@ -238,6 +230,7 @@ public class MyApplication extends Application {
                     }
                 }
                 Log.d("Notifications", "Notifications: " + notifications);
+                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 
