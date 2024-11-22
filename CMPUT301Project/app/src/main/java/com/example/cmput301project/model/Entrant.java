@@ -18,6 +18,8 @@ public class Entrant extends User {
     private String profilePictureUrl;
     private String status;
     private String initials;
+    private Double latitude;
+    private Double longitude;
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -199,5 +201,23 @@ public class Entrant extends User {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), status);
+    }
+
+    /**
+     * setter for a users lat and long for geolocation
+     * @param latitude
+     * @param longitude
+     */
+    public void setLocation(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 }

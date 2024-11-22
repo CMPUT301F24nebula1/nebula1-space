@@ -233,6 +233,17 @@ public class ParticipantListActivity extends AppCompatActivity {
             }
         });
 
+        geoButton.setOnClickListener(view -> {
+            if (entrants_waitlist.isEmpty()) {
+                Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent mapIntent = new Intent(ParticipantListActivity.this, MapActivity.class); // Use a unique name
+            mapIntent.putExtra("entrants", entrants_waitlist); // Pass entrant data
+            startActivity(mapIntent);
+        });
+
     }
 
     public interface InputDialogCallback {
@@ -302,8 +313,9 @@ public class ParticipantListActivity extends AppCompatActivity {
         void onRetrieveEntrantsCompleted(List<Entrant> entrants);
     }
 
+//    also retrieves lat and long info from firebase for users in the waitlist if geolocation is turned on
     public void retrieveEntrantsWithRealtimeUpdates(Event event, String status, RetrieveEntrantsCallback callback) {
-        Log.d("no wishlist", event.getWaitlistEntrantIds().toString());
+        Log.d("no waitlist", event.getWaitlistEntrantIds().toString());
 
         if (event.getWaitlistEntrantIds() != null && !event.getWaitlistEntrantIds().isEmpty()) {
             db.collection("entrants")
@@ -324,93 +336,24 @@ public class ParticipantListActivity extends AppCompatActivity {
                                 Entrant entrant = document.toObject(Entrant.class);
                                 String entrantId = document.getId();
 
-                                db.collection("entrants")
-                                        .document(entrantId)
-                                        .collection("entrantWaitList")
-                                        .document(event.getId())
-                                        .addSnapshotListener((subDocument, error) -> {
-                                            if (error != null) {
-                                                Log.e("FirebaseError", "Error listening for status changes", error);
-                                                return;
-                                            }
+                                // retrieving location info of users from database
+                                if (event.requiresGeolocation()) {
+                                    db.collection("locations").document(entrantId).get().addOnSuccessListener(locationDoc -> {
+                                        if (locationDoc.exists()) {
+                                            Double latitude = locationDoc.getDouble("latitude");
+                                            Double longitude = locationDoc.getDouble("longitude");
+                                            entrant.setLocation(latitude, longitude);
+                                        }
+                                        processEntrantStatus(event, entrant, entrantId, status, callback, totalDocuments, completedCount);
+                                    })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("FirestoreError", "Error fetching location for entrant: " + entrantId, e);
+                                                processEntrantStatus(event, entrant, entrantId, status, callback, totalDocuments, completedCount);
+                                            });
 
-                                            if (subDocument != null && subDocument.exists()) {
-                                                String statusFirebase = subDocument.getString("status");
-
-                                                switch (statusFirebase) {
-                                                    case "WAITING":
-                                                        if (!entrants_waitlist.contains(entrant)) {
-                                                            entrants_waitlist.add(entrant);
-                                                        }
-                                                        entrants_selected.remove(entrant);
-                                                        entrants_canceled.remove(entrant);
-                                                        entrants_final.remove(entrant);
-                                                        break;
-
-                                                    case "SELECTED":
-                                                        if (!entrants_selected.contains(entrant)) {
-                                                            entrants_selected.add(entrant);
-                                                        }
-                                                        entrants_waitlist.remove(entrant);
-                                                        entrants_canceled.remove(entrant);
-                                                        entrants_final.remove(entrant);
-                                                        break;
-
-                                                    case "CANCELED":
-                                                        if (!entrants_canceled.contains(entrant)) {
-                                                            entrants_canceled.add(entrant);
-                                                        }
-                                                        entrants_waitlist.remove(entrant);
-                                                        entrants_selected.remove(entrant);
-                                                        entrants_final.remove(entrant);
-                                                        break;
-
-                                                    case "FINAL":
-                                                        if (!entrants_final.contains(entrant)) {
-                                                            entrants_final.add(entrant);
-                                                        }
-                                                        entrants_waitlist.remove(entrant);
-                                                        entrants_selected.remove(entrant);
-                                                        entrants_canceled.remove(entrant);
-                                                        break;
-
-                                                    default:
-                                                        // Optionally, handle unexpected status values here.
-                                                        Log.e("StatusError", "Unknown status: " + statusFirebase);
-                                                        break;
-                                                }
-
-
-                                                entrantCache.put("WAITING", new ArrayList<>(entrants_waitlist));
-                                                entrantCache.put("SELECTED", new ArrayList<>(entrants_selected));
-                                                entrantCache.put("CANCELED", new ArrayList<>(entrants_canceled));
-                                                entrantCache.put("FINAL", new ArrayList<>(entrants_final));
-
-                                                setButtonState();
-                                                Log.d("wishlist debug0", status + entrants_store.toString());
-
-                                                if (entrantAdapter == null) {
-                                                    entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
-                                                    participantList.setAdapter(entrantAdapter);
-                                                } else {
-                                                    entrantAdapter.notifyDataSetChanged();
-                                                }
-
-                                                completedCount[0]++;
-
-
-                                                if (completedCount[0] == totalDocuments) {
-                                                    if (entrantAdapter == null) {
-                                                        entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
-                                                        participantList.setAdapter(entrantAdapter);
-                                                    } else {
-                                                        entrantAdapter.notifyDataSetChanged();
-                                                    }
-                                                    callback.onRetrieveEntrantsCompleted(entrants_waitlist);
-                                                }
-
-                                            }
-                                        });
+                                }else {
+                                    processEntrantStatus(event, entrant, entrantId, status, callback, totalDocuments, completedCount);
+                                }
                             }
                         } else {
                             Log.e("FirebaseError", "Error fetching entrants: ", task.getException());
@@ -421,6 +364,87 @@ public class ParticipantListActivity extends AppCompatActivity {
             Log.d("FirebaseQuery", "No wishlist IDs to query.");
         }
     }
+
+
+//    helper method for retrieveEntrantWithRealtimeUpdates
+private void processEntrantStatus(Event event, Entrant entrant, String entrantId, String status, RetrieveEntrantsCallback callback, int totalDocuments, int[] completedCount) {
+    db.collection("entrants")
+            .document(entrantId)
+            .collection("entrantWaitList")
+            .document(event.getId())
+            .addSnapshotListener((subDocument, error) -> {
+                if (error != null) {
+                    Log.e("FirebaseError", "Error listening for status changes", error);
+                    return;
+                }
+
+                if (subDocument != null && subDocument.exists()) {
+                    String statusFirebase = subDocument.getString("status");
+
+                    switch (statusFirebase) {
+                        case "WAITING":
+                            if (!entrants_waitlist.contains(entrant)) {
+                                entrants_waitlist.add(entrant);
+                            }
+                            entrants_selected.remove(entrant);
+                            entrants_canceled.remove(entrant);
+                            entrants_final.remove(entrant);
+                            break;
+
+                        case "SELECTED":
+                            if (!entrants_selected.contains(entrant)) {
+                                entrants_selected.add(entrant);
+                            }
+                            entrants_waitlist.remove(entrant);
+                            entrants_canceled.remove(entrant);
+                            entrants_final.remove(entrant);
+                            break;
+
+                        case "CANCELED":
+                            if (!entrants_canceled.contains(entrant)) {
+                                entrants_canceled.add(entrant);
+                            }
+                            entrants_waitlist.remove(entrant);
+                            entrants_selected.remove(entrant);
+                            entrants_final.remove(entrant);
+                            break;
+
+                        case "FINAL":
+                            if (!entrants_final.contains(entrant)) {
+                                entrants_final.add(entrant);
+                            }
+                            entrants_waitlist.remove(entrant);
+                            entrants_selected.remove(entrant);
+                            entrants_canceled.remove(entrant);
+                            break;
+
+                        default:
+                            Log.e("StatusError", "Unknown status: " + statusFirebase);
+                            break;
+                    }
+
+                    entrantCache.put("WAITING", new ArrayList<>(entrants_waitlist));
+                    entrantCache.put("SELECTED", new ArrayList<>(entrants_selected));
+                    entrantCache.put("CANCELED", new ArrayList<>(entrants_canceled));
+                    entrantCache.put("FINAL", new ArrayList<>(entrants_final));
+
+                    setButtonState();
+                    Log.d("wishlist debug0", status + entrants_store.toString());
+
+                    if (entrantAdapter == null) {
+                        entrantAdapter = new EntrantArrayAdapter(this, entrants_store);
+                        participantList.setAdapter(entrantAdapter);
+                    } else {
+                        entrantAdapter.notifyDataSetChanged();
+                    }
+
+                    completedCount[0]++;
+                    if (completedCount[0] == totalDocuments) {
+                        callback.onRetrieveEntrantsCompleted(entrants_waitlist);
+                    }
+                }
+            });
+}
 
     private void setButtonState() {
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
