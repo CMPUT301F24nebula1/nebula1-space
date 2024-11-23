@@ -408,6 +408,7 @@ public class MainActivity extends AppCompatActivity {
                             })
                             .addOnFailureListener(e -> {
                                 unlockUI();
+                                Toast.makeText(this, "Error retrieving data.", Toast.LENGTH_SHORT).show();
                                 Log.w("Firestore", "Error retrieving organizer data", e);
                             });
                 }
@@ -419,6 +420,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> {
             unlockUI();
+            Toast.makeText(this, "Error retrieving data.", Toast.LENGTH_SHORT).show();
             Log.e("Firebase", "Error retrieving user", e);
         });
     }

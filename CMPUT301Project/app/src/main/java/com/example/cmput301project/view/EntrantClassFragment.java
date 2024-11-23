@@ -19,11 +19,15 @@ import com.example.cmput301project.databinding.EventListBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holding global variables
@@ -136,4 +140,47 @@ public class EntrantClassFragment extends Fragment {
         }
 
     }
+
+    public interface WaitlistCallback {
+        void onWaitlistUpdated(Map<String, String> waitlistMap);
+    }
+
+    private void listenToEntrantWaitlist(String entrantId, WaitlistCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrantId)
+                .collection("entrantWaitList");
+
+        Map<String, String> waitlistMap = new HashMap<>();
+
+        waitlistRef.addSnapshotListener((querySnapshot, error) -> {
+            if (error != null) {
+                Log.e("FirestoreError", "Error listening for waitlist updates", error);
+                return;
+            }
+
+            if (querySnapshot != null) {
+                waitlistMap.clear(); // Clear the map to avoid duplicate entries
+
+                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                    String eventId = document.getString("eventId");
+                    String status = document.getString("status");
+
+                    if (eventId != null && status != null) {
+                        waitlistMap.put(eventId, status); // Update the map
+                    }
+                }
+
+                // Log the updated waitlist for debugging
+                waitlistMap.forEach((key, value) -> {
+                    Log.d("Waitlist", "EventId: " + key + ", Status: " + value);
+                });
+
+                // Trigger the callback with the updated waitlist
+                callback.onWaitlistUpdated(waitlistMap);
+            }
+        });
+    }
+
 }
