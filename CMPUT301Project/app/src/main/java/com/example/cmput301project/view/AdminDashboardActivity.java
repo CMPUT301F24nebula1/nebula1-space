@@ -41,7 +41,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         manageImagesButton.setOnClickListener(v -> {
-            // TODO: Navigate to images management
+            Log.d("AdminDashboardActivity", "Manage Images button clicked");
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminManageImagesActivity.class);
+            startActivity(intent);
         });
 
         manageQrButton.setOnClickListener(v -> {
