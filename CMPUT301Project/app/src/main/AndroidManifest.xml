@@ -79,7 +79,6 @@
 
 
 
-
 <!--        for google maps api-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

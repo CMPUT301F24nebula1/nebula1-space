@@ -8,7 +8,6 @@
     android:padding="16dp"
     android:background="@drawable/homepage">
 
-    <!-- AppBarLayout with MaterialToolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
             app:titleCentered="true"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Search bar layout included from search_bar.xml -->
+
     <include layout="@layout/search_bar" />
 
     <!-- RecyclerView for displaying events -->
