@@ -188,11 +188,11 @@ public class UserStoryTests {
         onView(allOf(isDescendantOfA(withId(R.id.event_description)), isAssignableFrom(EditText.class)))
                 .perform(clearText(), typeText("Fall 24"), closeSoftKeyboard());
 
-//        onView(allOf(isDescendantOfA(withId(R.id.lottery_starts_date)), isAssignableFrom(EditText.class)))
-//                .perform(clearText(), typeText("01/09/2024"), closeSoftKeyboard());
-//
-//        onView(allOf(isDescendantOfA(withId(R.id.lottery_ends_date)), isAssignableFrom(EditText.class)))
-//                .perform(clearText(), typeText("12/12/2024"), closeSoftKeyboard());
+        onView(allOf(isDescendantOfA(withId(R.id.lottery_starts_date)), isAssignableFrom(EditText.class)))
+                .perform(clearText(), typeText("01/09/2024"), closeSoftKeyboard());
+
+        onView(allOf(isDescendantOfA(withId(R.id.lottery_ends_date)), isAssignableFrom(EditText.class)))
+                .perform(clearText(), typeText("12/12/2024"), closeSoftKeyboard());
 
         onView(allOf(isDescendantOfA(withId(R.id.lottery_capacity)), isAssignableFrom(EditText.class)))
                 .perform(clearText(), typeText("324"), closeSoftKeyboard());

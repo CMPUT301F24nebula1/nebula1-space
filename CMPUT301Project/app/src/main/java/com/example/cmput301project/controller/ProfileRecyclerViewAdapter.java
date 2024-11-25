@@ -21,17 +21,10 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
 
     private final List<Entrant> entrantList;
     private final Context context;
-    private final OnProfileClickListener listener;
 
-    public ProfileRecyclerViewAdapter(Context context, List<Entrant> entrantList, OnProfileClickListener listener) {
+    public ProfileRecyclerViewAdapter(Context context, List<Entrant> entrantList) {
         this.context = context;
         this.entrantList = entrantList;
-        this.listener = listener;
-
-    }
-    //  click listener interface
-    public interface OnProfileClickListener {
-        void onProfileClick(Entrant entrant);
     }
 
     @Override
@@ -57,13 +50,6 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                     .error(R.drawable.error_image) 
                     .into(holder.profilePictureImageView);
         }
-        // click listener
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onProfileClick(entrant);
-            }
-        });
-
 
     }
 
@@ -96,5 +82,4 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         entrantList.addAll(newList);
         notifyDataSetChanged();
     }
-
 }

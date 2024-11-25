@@ -1,6 +1,5 @@
 package com.example.cmput301project.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -45,13 +44,7 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         entrantList = new ArrayList<>();
-        // Set up the ProfileRecyclerViewAdapter with click listener
-        profileAdapter = new ProfileRecyclerViewAdapter(this, entrantList, entrant -> {
-            Intent intent = new Intent(AdminAllProfilesActivity.this, EditProfileActivity.class);
-            intent.putExtra("entrant", entrant); // Pass entire Entrant object
-            startActivity(intent);
-        });
-
+        profileAdapter = new ProfileRecyclerViewAdapter(this, entrantList);
         recyclerView.setAdapter(profileAdapter);
 
         loadAllEntrantsFromFirebase();
