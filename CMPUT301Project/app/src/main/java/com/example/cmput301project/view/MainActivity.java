@@ -1,8 +1,11 @@
 package com.example.cmput301project.view;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 
@@ -206,6 +209,20 @@ public class MainActivity extends AppCompatActivity {
             startLocationUpdates();
         }
     }
+    public void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "default_channel_id";
+            CharSequence channelName = "Default Channel";
+            String channelDescription = "Channel for app notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            channel.setDescription(channelDescription);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
 
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -470,6 +487,31 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void showNotification(String title, String message, int id) {
+        String channelId = "default_channel_id";
+        // Create a notification channel (Required for Android 8.0+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Default Channel",
+                    NotificationManager.IMPORTANCE_HIGH // Set importance to HIGH for heads-up notifications
+            );
+            channel.setDescription("This is the default notification channel");
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's small icon
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set priority to HIGH
+                .setDefaults(NotificationCompat.DEFAULT_ALL) // Enable sound and vibration
+                .setAutoCancel(true); // Dismiss notification on click
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Show the notification
+        notificationManager.notify(id, builder.build());
+    }
+
     private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
         CollectionReference notificationRef = db.collection("entrants")
                 .document(entrant.getId())
@@ -543,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
         this.id = id;
     }
 
-//    geolocation stuff
+    //    geolocation stuff
     private boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
