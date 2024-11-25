@@ -71,6 +71,7 @@ public class Entrant extends User implements Serializable {
         return name;
     }
 
+
     /**
      * Gets the name of the entrant.
      * @return The initials of the entrant.

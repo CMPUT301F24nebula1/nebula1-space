@@ -42,7 +42,6 @@
         app:layout_constraintStart_toStartOf="parent" />
     <!-- "Manage Events" Button -->
 
-    <!-- "Manage Images" Button -->
     <Button
         android:id="@+id/manageEventsButton"
         android:layout_width="185dp"
@@ -62,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@+id/manageProfilesButton"
         app:layout_constraintVertical_bias="0.0" />
 
-    <!-- "Manage QR code" Button -->
+    <!-- "Manage Images" Button -->
     <Button
         android:id="@+id/manageImagesButton"
         android:layout_width="185dp"
@@ -82,6 +81,8 @@
         app:layout_constraintTop_toBottomOf="@+id/manageEventsButton"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!-- "Manage QR code" Button -->
+
     <Button
         android:id="@+id/manageQrButton"
         android:layout_width="191dp"
@@ -99,6 +100,29 @@
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/manageImagesButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!-- "Manage facilities" Button -->
+
+    <Button
+        android:id="@+id/manageFacilitiesButton"
+        android:layout_width="191dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#73673AB7"
+        android:text="Manage Facilities"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:cornerRadius="24dp"
+        app:icon="@drawable/ic_edit"
+        app:iconSize="24dp"
+        app:iconTint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/manageQrButton"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
