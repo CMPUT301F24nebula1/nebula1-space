@@ -22,7 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EventDetailsActivity extends AppCompatActivity {
     private Event event;
-    private OrganizerEventController eventController;
     private FirebaseFirestore db;
 
     @Override
@@ -32,7 +31,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Retrieve the Event object passed from Admin Events (list of events)
-        Event event = (Event) getIntent().getSerializableExtra("event");
+        event = (Event) getIntent().getSerializableExtra("event");
 
         if (event == null) {
             Toast.makeText(this, "Event data is missing.", Toast.LENGTH_SHORT).show();
@@ -47,9 +46,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Create the OrganizerEventController
-        Organizer organizer = new Organizer(event.getOrganizerId());
-        eventController = new OrganizerEventController(organizer, db);
+
         // If event exists
         if (event != null) {
             // Initialize views
@@ -97,9 +94,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void deleteEvent() {
         FirebaseServer firebaseServer = new FirebaseServer();
         firebaseServer.deleteEvent(
+                event.getOrganizerId(),
                 event.getId(),
                 aVoid -> {
-                    Toast.makeText(this, "Event deleted successfully:)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Event deleted successfully :)", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("deletedEventId", event.getId());
                     setResult(RESULT_OK, intent);
@@ -111,6 +109,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
         );
     }
+
 
 
 

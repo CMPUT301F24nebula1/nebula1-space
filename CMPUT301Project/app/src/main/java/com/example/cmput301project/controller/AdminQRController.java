@@ -49,7 +49,7 @@ public class AdminQRController extends AppCompatActivity {
 
         deleteButton.setOnClickListener(v -> {
             if (selectedEvent != null) {
-                deleteHashedQRCode(selectedEvent);
+                deleteQRCode(selectedEvent);
             }
         });
     }
@@ -69,7 +69,7 @@ public class AdminQRController extends AppCompatActivity {
     }
 
 
-    private void deleteHashedQRCode(Event event) {
+    private void deleteQRCode(Event event) {
         if (event.getId() == null || event.getOrganizerId() == null || event.getId().isEmpty()) {
             Toast.makeText(this, "Invalid event or organizer ID.", Toast.LENGTH_SHORT).show();
             Log.e("AdminQRController", "Invalid eventId or organizerId: " + event.getId() + ", " + event.getOrganizerId());
@@ -82,18 +82,18 @@ public class AdminQRController extends AppCompatActivity {
                 aVoid -> {
                     for (Event e : events) {
                         if (e.getId().equals(event.getId())) {
-                            e.setHashedQRCode(null); // Update the list
+                            e.setQrCode(null); // Update the list
                             break;
                         }
                     }
                     adapter.notifyDataSetChanged(); // Notify adapter of changes
                     selectedEvent = null;
                     deleteButton.setEnabled(false);
-                    Toast.makeText(this, "Hashed QR Code deleted successfully.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "QR Code deleted successfully.", Toast.LENGTH_SHORT).show();
                 },
                 e -> {
-                    Toast.makeText(this, "Failed to delete hashed QR Code.", Toast.LENGTH_SHORT).show();
-                    Log.e("AdminQRController", "Error deleting hashed QR Code", e);
+                    Toast.makeText(this, "Failed to delete QR Code.", Toast.LENGTH_SHORT).show();
+                    Log.e("AdminQRController", "Error deleting QR Code", e);
                 }
         );
     }

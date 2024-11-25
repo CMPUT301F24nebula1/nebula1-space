@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
+//added trying to get maps to stop crashing
+import java.io.Serializable;
+
 /**
  * Represents an Entrant, extending the User class.
  * An Entrant can join or leave events and has personal information such as name, email, phone, and profile picture URL.
@@ -19,7 +22,12 @@ public class Entrant extends User implements Serializable {
     private String profilePictureUrl;
     private String status;
     private String initials;
+
     private Boolean receiveNotification = true;
+
+    private Double latitude;
+    private Double longitude;
+
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -205,5 +213,23 @@ public class Entrant extends User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), status);
+    }
+
+    /**
+     * setter for a users lat and long for geolocation
+     * @param latitude
+     * @param longitude
+     */
+    public void setLocation(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 }
