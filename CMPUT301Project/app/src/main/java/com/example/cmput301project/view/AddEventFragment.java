@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -115,9 +114,7 @@ public class AddEventFragment extends Fragment {
                 }
                 event.setLimit(lotteryCapacity);
 
-                lockUI();
                 organizerEventController.addEvent(event, imageUri, aVoid -> {
-                    unlockUI();
                     Log.d("nav", "navigate to event detail");
                     NavOptions navOptions = new NavOptions.Builder()
                             .setPopUpTo(R.id.AddEventFragment, true)
@@ -126,7 +123,6 @@ public class AddEventFragment extends Fragment {
                     NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
 
                 }, e -> {
-                    unlockUI();
                     Log.e("save event", "Error: " + e.getMessage());
                     Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
                 });
@@ -166,6 +162,19 @@ public class AddEventFragment extends Fragment {
             Log.d("DatePicker", "End Date Clicked");
             showDatePickerDialog(false);
         });
+
+//        EditText positiveIntegerEditText = binding.lotteryCapacityText;
+//
+//        positiveIntegerEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//        // Validate when input focus changes
+//        positiveIntegerEditText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if (!hasFocus) {
+//                String input = positiveIntegerEditText.getText().toString();
+//                if (!isValidPositiveInteger(input)) {
+//                    positiveIntegerEditText.setError("Please enter a number greater than zero.");
+//                }
+//            }
+//        });
 
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
     }
@@ -284,17 +293,5 @@ public class AddEventFragment extends Fragment {
     private String formatDate(Calendar date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
         return sdf.format(date.getTime());
-    }
-
-    private void lockUI() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    }
-
-    private void unlockUI() {
-        binding.progressBar.setVisibility(View.GONE);
-        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
-        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }

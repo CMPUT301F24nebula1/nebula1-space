@@ -61,7 +61,6 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.runner)
-    implementation(libs.espresso.intents)
     implementation(libs.filament.android)
 
     //for google maps api

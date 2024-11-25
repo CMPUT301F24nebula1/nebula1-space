@@ -23,6 +23,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     private Context context;
     private List<Event> eventList;
     private OnEventClickListener onEventClickListener;
+    private OnEventDeleteListener onEventDeleteListener;
 
 
     // Interface for click listener
@@ -30,12 +31,15 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         void onEventClick(Event event);
     }
 
+    public interface OnEventDeleteListener {
+        void onEventDelete(Event event);
+    }
 
-    public EventRecyclerViewAdapter(Context context, List<Event> eventList, OnEventClickListener listener) {
+    public EventRecyclerViewAdapter(Context context, List<Event> eventList, OnEventClickListener listener, OnEventDeleteListener deleteListener) {
         this.context = context;
         this.eventList = eventList;
         this.onEventClickListener = listener;
-
+        this.onEventDeleteListener = deleteListener;
     }
 
     @NonNull
@@ -69,6 +73,8 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
                 onEventClickListener.onEventClick(event);
             }
         });
+
+
     }
 
     public void updateList(List<Event> newList) {
@@ -89,14 +95,12 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         ImageView eventPoster;
 
 
-
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             eventName = itemView.findViewById(R.id.event_name);
             eventStartDate = itemView.findViewById(R.id.lottery_starts_date);
             eventEndDate = itemView.findViewById(R.id.lottery_ends_date);
             eventPoster = itemView.findViewById(R.id.event_poster);
-
 
         }
     }

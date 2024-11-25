@@ -1,15 +1,10 @@
 package com.example.cmput301project;
 
 import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -191,7 +186,6 @@ public class MyApplication extends Application {
                     public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
                         setEntrantLiveData(entrant);
                         Log.d("retrieve entrant", "succeed");
-
                     }
 
                     @Override
@@ -230,7 +224,6 @@ public class MyApplication extends Application {
                     }
                 }
                 Log.d("Notifications", "Notifications: " + notifications);
-                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 

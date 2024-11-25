@@ -9,7 +9,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.model.Entrant;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -56,12 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 nameInput.setText(entrant.getName());
                 emailInput.setText(entrant.getEmail());
                 phoneInput.setText(entrant.getPhone());
-                if (entrant.getProfilePictureUrl() != null && !entrant.getProfilePictureUrl().isEmpty()) {
-                    Glide.with(this)
-                            .load(entrant.getProfilePictureUrl())
-                            .error(R.drawable.error_image) // Default image in case of error
-                            .into(profileImageView);
-                }
+                // Load image into profileImageView if you have a profile picture
             } else {
                 Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
             }
