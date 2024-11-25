@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
+import com.example.cmput301project.controller.CategorizedEventAdapter;
 import com.example.cmput301project.controller.EventArrayAdapter;
 import com.example.cmput301project.databinding.EventListBinding;
 import com.example.cmput301project.model.Entrant;
@@ -25,7 +26,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,48 +59,90 @@ public class EntrantClassFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-
         binding.addEventButton.setVisibility(View.GONE);
 
         eventList = binding.eventList;
-        MyApplication app = (MyApplication) requireActivity().getApplication();
-
         events = new ArrayList<Event>();
-        eventAdapter = new EventArrayAdapter(getContext(), events);
-        eventList.setAdapter(eventAdapter);
+        MyApplication app = (MyApplication) requireActivity().getApplication();
 
         entrant = app.getEntrantLiveData().getValue();
 
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            // Use the organizer data here
             entrant = entrant1;
             wishlistEventIds = entrant.getWaitlistEventIds();
-            Log.d("entrant wishlist", String.valueOf(wishlistEventIds.size()));
-            Log.d("entrant wishlist", wishlistEventIds.toString());
 
             retrieveEvents(entrant, new EventsCallback() {
                 @Override
                 public void onEventsRetrieved(ArrayList<Event> events) {
-                    // Do something with the retrieved events, e.g., update UI
-                    for (Event event : events) {
-                        Log.d("Event", "Retrieved event: " + event.getName());
-                    }
-                    if (eventList != null && events != null) {
-                        eventAdapter.notifyDataSetChanged();
-                    }
+                    listenToEntrantWaitlist(entrant.getId(), new WaitlistCallback() {
+                        @Override
+                        public void onWaitlistUpdated(Map<String, String> waitlistMap) {
+                            // Group events by status
+                            Map<String, ArrayList<Event>> groupedEvents = groupEventsByStatus(events, waitlistMap);
+                            Map<String, ArrayList<Event>> sortedEvents = sortCategorizedEvents(groupedEvents);
+
+                            // Use the categorized adapter that reuses EventArrayAdapter
+                            CategorizedEventAdapter categorizedAdapter = new CategorizedEventAdapter(getContext(), sortedEvents);
+                            eventList.setAdapter(categorizedAdapter);
+                        }
+                    });
+
                 }
             });
         });
 
-        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action = EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView(events.get(i));
+        eventList.setOnItemClickListener((adapterView, view1, position, id) -> {
+            Object item = eventList.getAdapter().getItem(position);
+            if (item instanceof Event) {
+                EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action =
+                        EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView((Event) item);
                 NavHostFragment.findNavController(EntrantClassFragment.this).navigate(action);
             }
         });
-
     }
+
+    private Map<String, ArrayList<Event>> groupEventsByStatus(ArrayList<Event> events, Map<String, String> waitlistMap) {
+        Map<String, ArrayList<Event>> categorizedEvents = new LinkedHashMap<>();
+
+//        categorizedEvents.put("WAITING", new ArrayList<>());
+//        categorizedEvents.put("WAITING1", new ArrayList<>());
+//        categorizedEvents.put("SELECTED", new ArrayList<>());
+//        categorizedEvents.put("CANCELED", new ArrayList<>());
+//        categorizedEvents.put("FINAL", new ArrayList<>());
+
+        for (Event event : events) {
+            String status = waitlistMap.get(event.getId());
+            if (!categorizedEvents.containsKey(status)) {
+                categorizedEvents.put(status, new ArrayList<>());
+            }
+            categorizedEvents.get(status).add(event);
+        }
+
+        for (Map.Entry<String, ArrayList<Event>> entry : categorizedEvents.entrySet()) {
+            entry.getValue().sort((event1, event2) -> event1.getName().compareToIgnoreCase(event2.getName()));
+        }
+
+        return categorizedEvents;
+    }
+
+    private Map<String, ArrayList<Event>> sortCategorizedEvents(Map<String, ArrayList<Event>> categorizedEvents) {
+        // Define the desired order of the keys
+        List<String> sortedKeys = Arrays.asList("WAITING", "WAITING1", "SELECTED", "CANCELED", "FINAL");
+
+        // Create a new LinkedHashMap to maintain the sorted order
+        Map<String, ArrayList<Event>> sortedMap = new LinkedHashMap<>();
+
+        // Add the keys to the new map in the specified order
+        for (String key : sortedKeys) {
+            if (categorizedEvents.containsKey(key)) {
+                sortedMap.put(key, categorizedEvents.get(key));
+            }
+        }
+
+        return sortedMap;
+    }
+
+
 
     public interface EventsCallback {
         void onEventsRetrieved(ArrayList<Event> events);
