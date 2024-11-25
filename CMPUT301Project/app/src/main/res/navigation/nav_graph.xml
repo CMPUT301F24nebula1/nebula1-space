@@ -99,6 +99,10 @@
         <argument
             android:name="e"
             app:argType="com.example.cmput301project.model.Event" />
+
+        <action
+            android:id="@+id/action_OrganizerEventDetailFragment_to_OrganizerHomepage"
+            app:destination="@id/OrganizerHomepageFragment" />
     </fragment>
 
     <fragment

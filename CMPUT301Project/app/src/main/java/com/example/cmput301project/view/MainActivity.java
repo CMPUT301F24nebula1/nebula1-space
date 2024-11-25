@@ -5,15 +5,24 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
+
+import android.os.Bundle;
+import android.Manifest;
+
+import android.location.Location;
+import android.location.LocationListener;
+import androidx.annotation.NonNull;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -22,7 +31,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.controller.LocationHelper;
 import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
@@ -55,7 +66,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * MainActivity
@@ -74,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     // manages whether it's entrant homepage or organizer homepage
     private MaterialButtonToggleGroup toggleGroup;
 
+    //constant for location permission requests (301)
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 301;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,14 +178,21 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Navigation", "Navigating to Organizer Homepage");
                     // Navigate to OrganizerFragment
                     UserController.updateUserRole(id, "organizer");
-                    if (navController.getCurrentDestination().getId() != R.id.OrganizerHomepageFragment) {
+
+                    if (navController.getCurrentDestination() != null &&
+                            navController.getCurrentDestination().getId() == R.id.EntrantHomepageFragment) {
                         navController.navigate(R.id.action_EntrantHomepage_to_OrganizerHomepage);
+                    } else {
+                        Log.e("NavigationError", "Cannot navigate to Organizer Homepage. Current destination mismatch.");
                     }
                 } else if (checkedId == R.id.btn_entrant) {
                     Log.d("Navigation", "Navigating to Entrant Homepage");
                     // Navigate to EntrantFragment
-                    if (navController.getCurrentDestination().getId() != R.id.EntrantHomepageFragment) {
+                    if (navController.getCurrentDestination() != null &&
+                            navController.getCurrentDestination().getId() == R.id.OrganizerHomepageFragment) {
                         navController.navigate(R.id.action_OrganizerHomepage_to_EntrantHomepage);
+                    } else {
+                        Log.e("NavigationError", "Cannot navigate to Entrant Homepage. Current destination mismatch.");
                     }
                 }
             }
@@ -195,7 +220,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
         }
+
         createNotificationChannel(this);
+
+
+        //checking location permissions
+        if (checkLocationPermission()) {
+            startLocationUpdates();
+        }
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -655,4 +687,54 @@ public class MainActivity extends AppCompatActivity {
         this.id = id;
     }
 
+//    geolocation stuff
+    private boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return false; //no permissions
+        }
+        return true; //permission granted
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission granted, start location updates
+                startLocationUpdates();
+            } else {
+                // permission denied, notify user
+                Toast.makeText(this, "Location permission is required for this feature.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void startLocationUpdates() {
+        LocationHelper locationHelper = new LocationHelper(this);
+        locationHelper.requestLocationUpdates(new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                Log.d("Location", "Lat: " + latitude + ", Long: " + longitude);
+
+                // save lat and long to firestore
+                saveLocationToFirestore(latitude, longitude);
+            }
+        });
+    }
+
+    private void saveLocationToFirestore(double latitude, double longitude) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = id; // Replace with the current user ID or entrant ID
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("latitude", latitude);
+        locationData.put("longitude", longitude);
+
+        db.collection("locations").document(userId)
+                .set(locationData)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Location saved successfully"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error saving location", e));
+    }
 }
