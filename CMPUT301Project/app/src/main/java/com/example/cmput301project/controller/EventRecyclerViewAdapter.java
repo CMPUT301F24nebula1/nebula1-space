@@ -23,7 +23,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     private Context context;
     private List<Event> eventList;
     private OnEventClickListener onEventClickListener;
-    private OnEventDeleteListener onEventDeleteListener;
+
 
 
     // Interface for click listener
@@ -35,11 +35,11 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         void onEventDelete(Event event);
     }
 
-    public EventRecyclerViewAdapter(Context context, List<Event> eventList, OnEventClickListener listener, OnEventDeleteListener deleteListener) {
+    public EventRecyclerViewAdapter(Context context, List<Event> eventList, OnEventClickListener listener) {
         this.context = context;
         this.eventList = eventList;
         this.onEventClickListener = listener;
-        this.onEventDeleteListener = deleteListener;
+
     }
 
     @NonNull
