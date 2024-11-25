@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cmput301project.R;
+import com.example.cmput301project.controller.AdminQRController;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -40,12 +41,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         manageImagesButton.setOnClickListener(v -> {
-            // TODO: Navigate to images management
+            Log.d("AdminDashboardActivity", "Manage Images button clicked");
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminManageImagesActivity.class);
+            startActivity(intent);
         });
 
         manageQrButton.setOnClickListener(v -> {
-            // TODO: Navigate to QR code management
+            Log.d("AdminDashboardActivity", "Manage QR Codes button clicked");
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminQRController.class); // Navigates to QR code management
+            startActivity(intent);
         });
+
     }
     // navigate back to previous activity
     @Override

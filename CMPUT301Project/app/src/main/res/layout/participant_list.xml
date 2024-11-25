@@ -2,10 +2,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp"
     android:background="#FFFFFF">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/bottom_section"
@@ -30,7 +42,7 @@
                 android:layout_height="54dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/design_default_color_primary"
-                android:text="Select 1 Participants"
+                android:text="Draw 1 Participants"
                 android:textColor="@color/white" />
 
             <com.google.android.material.button.MaterialButton
@@ -82,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/design_default_color_primary"
                 android:icon="@drawable/ic_chat_bubble_outline"
-                android:text="Notify All"
+                android:text="Notify"
                 android:textColor="@color/white"
                 app:cornerRadius="20dp"
                 app:strokeColor="@color/design_default_color_primary"
@@ -199,12 +211,13 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_select"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:text='Home'
+            android:title='Entrant Lists'
             android:background="#FDE0F3"
-            app:titleCentered="true"/>
+            app:titleCentered="true"
+            app:menu="@menu/select_all_menu"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

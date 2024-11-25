@@ -25,6 +25,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Holding global variables
+ * @author Xinjia Fan
+ */
 public class EntrantClassFragment extends Fragment {
     private EventListBinding binding;
 

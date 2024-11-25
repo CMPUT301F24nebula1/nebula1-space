@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
@@ -47,8 +48,7 @@
                     android:textColorHint="#CACACA"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -73,18 +73,18 @@
                     android:text="Description"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="@+id/event_description"
-                    app:layout_constraintTop_toTopOf="@+id/event_description"/>
+                    app:layout_constraintTop_toTopOf="@+id/event_description" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:indeterminate="true"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/event_description"
@@ -103,6 +103,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:scrollbars="vertical"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -248,18 +252,18 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
                 android:text="Must be 0 (i.e., unlimited) or greater than 0."
-                android:visibility="gone"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
 
             <!-- Event Poster Selection -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/poster_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:theme="@style/Theme.MaterialComponents">
+                android:theme="@style/Theme.MaterialComponents"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -274,15 +278,12 @@
                     app:layout_constraintTop_toTopOf="@+id/poster_group" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/FancyTextInputLayout"
                     android:id="@+id/poster_group"
+                    style="@style/FancyTextInputLayout"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:hint="Event Poster"
                     android:textColorHint="#CACACA"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:boxBackgroundColor="@android:color/transparent"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -291,18 +292,21 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:endIconDrawable="@drawable/ic_folder"
                     app:endIconMode="custom"
-                    app:endIconTint="#FDCC44">
+                    app:endIconTint="#FDCC44"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/select_image_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:cursorVisible="false"
                         android:enabled="false"
                         android:focusable="false"
                         android:inputType="none"
                         android:paddingEnd="48dp"
-                        android:cursorVisible="false"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -326,8 +330,8 @@
                 android:id="@+id/qr_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:theme="@style/Theme.MaterialComponents">
+                android:theme="@style/Theme.MaterialComponents"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -361,11 +365,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:cursorVisible="false"
                         android:enabled="false"
                         android:focusable="false"
-                        android:textColor="@color/black"
-                        android:cursorVisible="false"
-                        android:inputType="none"/>
+                        android:inputType="none"
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageView
@@ -402,12 +406,14 @@
                     android:backgroundTint="#673AB7"
                     android:checked="false" />
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent" />
         </LinearLayout>
     </ScrollView>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/save_event_button"
         android:layout_width="120dp"
@@ -419,8 +425,8 @@
         android:focusable="true"
         android:gravity="center"
         android:padding="8dp"
-        android:visibility="visible"
         android:theme="@style/Theme.MaterialComponents"
+        android:visibility="visible"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -463,8 +469,8 @@
         android:focusable="true"
         android:gravity="center"
         android:padding="8dp"
-        android:visibility="visible"
         android:theme="@style/Theme.MaterialComponents"
+        android:visibility="visible"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"

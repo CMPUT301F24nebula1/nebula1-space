@@ -1,5 +1,6 @@
 package com.example.cmput301project.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -21,8 +22,12 @@ public class Entrant extends User implements Serializable {
     private String profilePictureUrl;
     private String status;
     private String initials;
+
+    private Boolean receiveNotification = true;
+
     private Double latitude;
     private Double longitude;
+
 
     /**
      * Default constructor initializing an empty waitlist.
@@ -174,6 +179,10 @@ public class Entrant extends User implements Serializable {
         this.status = status;
     }
 
+    public  boolean getReceiveNotification() { return receiveNotification; }
+
+    public  void setReceiveNotification(Boolean receiveNotification) {this.receiveNotification = receiveNotification; }
+
     public ArrayList<Notification> getNotifications() {
         return notifications;
     }
@@ -182,7 +191,7 @@ public class Entrant extends User implements Serializable {
         this.notifications = notifications;
     }
 
-    public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
+    static public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
         for (Notification notification : notifications) {
             if (!notification.isRead()) {
                 return true; // There is at least one unread notification

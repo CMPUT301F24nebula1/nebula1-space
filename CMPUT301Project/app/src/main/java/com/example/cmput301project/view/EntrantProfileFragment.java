@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -410,6 +411,7 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF000000")));
+            editImageButton.setVisibility(View.VISIBLE);
         } else {
             // clear focus when disabling edit mode
             t_name.clearFocus();
@@ -419,6 +421,7 @@ public class EntrantProfileFragment extends Fragment {
             t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
             t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);
         t_email.setFocusable(enabled);
@@ -455,18 +458,18 @@ public class EntrantProfileFragment extends Fragment {
             entrant.setProfilePictureUrl(null);
         }
         Log.d("profile debug", "0");
+        lockUI();
         ec.saveEntrantToDatabase(entrant, imageUri, new EntrantController.SaveCallback() {
             @Override
             public void onSaveSuccess() {
-                Log.d("profile debug", "1");
-//                if (entrant.getProfilePictureUrl() == null || entrant.getProfilePictureUrl().isEmpty()) {
-//                    imageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
-//                    Log.d("profile debug", "2");
-//                }
+//                Log.d("profile debug", "1");
+                unlockUI();
                 app.setEntrantLiveData(entrant); // Save data to the application variable
             }
             @Override
-            public void onSaveFailure(Exception e) {}
+            public void onSaveFailure(Exception e) {
+                unlockUI();
+            }
         });
 
     }
@@ -495,8 +498,11 @@ public class EntrantProfileFragment extends Fragment {
         // Manage badge visibility
         View badge = actionView.findViewById(R.id.notification_badge);
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
-            if (entrant1.hasUnreadNotifications(entrant1.getNotifications())) {
-                badge.setVisibility(View.VISIBLE);
+            if (Entrant.hasUnreadNotifications(entrant1.getNotifications())) {
+                if (entrant1.getReceiveNotification())
+                    badge.setVisibility(View.VISIBLE);
+                else
+                    badge.setVisibility(View.GONE);
             } else {
                 badge.setVisibility(View.GONE);
             }
@@ -538,12 +544,23 @@ public class EntrantProfileFragment extends Fragment {
 
         // Set up the ListView with notifications
         notificationList = popupView.findViewById(R.id.notification_list_view);
+        Button stopNotificationsButton = popupView.findViewById(R.id.stop_notifications_button);
+
 //        notifications = entrant.getNotifications();
         retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
             @Override
             public void onNotificationsRetrieved(ArrayList<Notification> notifications1) {
+                ListView listView = popupView.findViewById(R.id.notification_list_view);
+                if (!entrant.getReceiveNotification()) {
+                    listView.setVisibility(View.GONE);
+                    stopNotificationsButton.setText("Receive\nNotification");
+                }
+                else if (entrant.getReceiveNotification()) {
+                    listView.setVisibility(View.VISIBLE);
+                    stopNotificationsButton.setText("Stop\nNotification");
+                }
                 notifications = notifications1;
-                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
+//                Log.d("notification1", String.valueOf(notifications.get(0).isRead()));
                 if (notificationAdapter == null) {
                     notificationAdapter = new NotificationArrayAdapter(getContext(), notifications);
                 }
@@ -551,6 +568,28 @@ public class EntrantProfileFragment extends Fragment {
             }
             @Override
             public void onError(Exception e) {}
+        });
+
+        // Stop Notifications button
+        stopNotificationsButton.setOnClickListener(v -> {
+            stopNotificationsForEntrant(entrant, new FirestoreUpdateCallback() {
+                @Override
+                public void onSuccess() {
+                    unlockUI();
+                    popupWindow.dismiss();
+                    if (entrant.getReceiveNotification())
+                        Toast.makeText(getContext(), "Notifications enabled.", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(getContext(), "Notifications stopped.", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    unlockUI();
+                    Toast.makeText(getContext(), "Failed to stop Notifications.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
         });
 
         // Show the PopupWindow at the right end under the toolbar
@@ -583,6 +622,11 @@ public class EntrantProfileFragment extends Fragment {
     }
 
     private void showNotificationDetailPopup(Notification notification) {
+        Context context = getContext();
+        if (context == null) {
+            Log.e("PopupError", "Context is null, cannot inflate the popup layout");
+            return;
+        }
         View detailPopupView = LayoutInflater.from(getContext()).inflate(R.layout.popup_notification_detail, null);
 
         // Initialize the PopupWindow for the detail view
@@ -665,6 +709,9 @@ public class EntrantProfileFragment extends Fragment {
                     }
                 }
                 Log.d("Notifications", "Notifications: " + notifications);
+
+                // sort notifications according to timestamp
+                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 
@@ -773,6 +820,55 @@ public class EntrantProfileFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error finding document", e);
+                });
+    }
+
+    private void lockUI() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    //method to stop notifications
+    private void stopNotificationsForEntrant(Entrant entrant, FirestoreUpdateCallback callback) {
+        // Update a flag in the database to disable notifications
+        lockUI();
+
+        Boolean flag;
+        if (entrant.getReceiveNotification()) {
+            flag = false;
+            entrant.setReceiveNotification(false);
+        } else {
+            flag = true;
+            entrant.setReceiveNotification(true);
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("entrants")
+                .document(entrant.getId())
+                .update("receiveNotification", flag)
+                .addOnSuccessListener(aVoid -> {
+                    // Handle success
+                    Log.d("StopNotifications", "Notifications disabled for entrant: " + entrant.getId());
+                    unlockUI();
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Log.e("StopNotifications", "Failed to disable notifications for entrant: " + entrant.getId(), e);
+                    unlockUI();
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
                 });
     }
 
