@@ -1,5 +1,6 @@
 package com.example.cmput301project.view;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
+import com.example.cmput301project.controller.QRCodeGenerator;
 import com.example.cmput301project.model.Event;
 
 import java.util.List;
@@ -44,14 +46,19 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         Event event = events.get(position);
         holder.eventNameTextView.setText(event.getName());
 
-        // Display a hashed placeholder or indicate it's a hashed QR code
-        if (event.getHashedQRCode() != null && !event.getHashedQRCode().isEmpty()) {
+        // Display the QR code
+        if (event.getQrCode() != null && !event.getQrCode().isEmpty()) {
             holder.qrCodeImageView.setVisibility(View.VISIBLE);
-            holder.qrCodeImageView.setImageResource(R.drawable.ic_launcher_foreground);
-            holder.qrCodeImageView.setColorFilter(Color.DKGRAY); // Placeholder for hashed QR code
+            // Generate QR code using QRCodeGenerator
+            Bitmap qrCodeBitmap = QRCodeGenerator.generateQRCode(event.getQrCode());
+            if (qrCodeBitmap != null) {
+                // Display the QR code
+                holder.qrCodeImageView.setImageBitmap(qrCodeBitmap);
+            }
         } else {
-            holder.qrCodeImageView.setVisibility(View.INVISIBLE);  // Indicate no QR code exists
+            holder.qrCodeImageView.setVisibility(View.INVISIBLE); // No QR code exists
         }
+
 
         holder.itemView.setOnClickListener(v -> {
             selectedPosition = holder.getAdapterPosition();

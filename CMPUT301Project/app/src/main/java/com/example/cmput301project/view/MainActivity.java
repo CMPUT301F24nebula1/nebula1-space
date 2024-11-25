@@ -1,20 +1,12 @@
 package com.example.cmput301project.view;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
@@ -50,12 +42,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * MainActivity
@@ -79,41 +69,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        id = getDeviceId(this);
+//        id = getDeviceId(this);
 
-//        id = "8";
-//        id = "8e488662a2c3a895";
+        id = "1d98b5f2ca50879e";
 
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+
+        ((MyApplication) this.getApplication()).setUserId(id);
+        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
+        db = ((MyApplication) this.getApplication()).getDb();
+        retrieveUser(id);
+        ((MyApplication) this.getApplication()).listenToOrganizerFirebaseUpdates(id);
+        ((MyApplication) this.getApplication()).listenToEntrantFirebaseUpdates(id);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
 //        setSupportActionBar(findViewById(R.id.toolbar));
-
-        ((MyApplication) this.getApplication()).setUserId(id);
-        ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
-        db = ((MyApplication) this.getApplication()).getDb();
-
-        requestNotificationPermission(new PermissionCallback() {
-            @Override
-            public void onPermissionGranted() {
-                retrieveUser(id);
-                ((MyApplication) getApplication()).listenToOrganizerFirebaseUpdates(id);
-                ((MyApplication) getApplication()).listenToEntrantFirebaseUpdates(id);
-            }
-
-            @Override
-            public void onPermissionDenied() {
-                retrieveUser(id);
-                ((MyApplication) getApplication()).listenToOrganizerFirebaseUpdates(id);
-                ((MyApplication) getApplication()).listenToEntrantFirebaseUpdates(id);
-            }
-        });
 
         Intent intent = getIntent();
         String navigateTo = intent.getStringExtra("navigateTo");
@@ -195,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Navigating to entrantEventView");
             findEventInAllOrganizers(eventId, navController);
         }
-        createNotificationChannel(this);
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -207,9 +182,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void findEventInAllOrganizers(String eventId, NavController nc) {
+        Log.d("wishlist before nav1", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference organizersRef = db.collection("organizers");
+        Log.d("wishlist before nav2", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
         organizersRef.get().addOnCompleteListener(task -> {
+            Log.d("wishlist before nav3", ((MyApplication) this.getApplication()).getEntrantLiveData().getValue().getWaitlistEventIds().toString());
             if (task.isSuccessful() && task.getResult() != null) {
 
                 for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
@@ -300,24 +278,7 @@ public class MainActivity extends AppCompatActivity {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    private void lockUI() {
-        if (binding.progressBar != null && binding.mainLayout != null) {
-            binding.progressBar.setVisibility(View.VISIBLE);
-            binding.mainLayout.setAlpha(0.5f); // Dim background for effect
-            this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        }
-    }
-
-    private void unlockUI() {
-        if (binding.progressBar != null && binding.mainLayout != null) {
-            binding.progressBar.setVisibility(View.GONE);
-            binding.mainLayout.setAlpha(1.0f); // Restore background opacity
-            this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        }
-    }
-
     private void retrieveUser(String userId) {
-        lockUI();
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -333,20 +294,16 @@ public class MainActivity extends AppCompatActivity {
 //                                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
                                 else {
-                                    unlockUI();
                                     Entrant entrant = new Entrant(userId);
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
                                 }
-
                             })
-                            .addOnFailureListener(e -> {
-                                unlockUI();
-                                Log.w("Firestore", "Error retrieving entrant data", e);
-                            });
+                            .addOnFailureListener(e -> Log.w("Firestore", "Error retrieving entrant data", e));
+
                 }
                 if (roles != null && roles.contains("organizer")) {
                     // set up organizer part for this user
-                    lockUI();
+
                     db.collection("organizers").document(userId).get()
                             .addOnSuccessListener(organizerSnapshot -> {
                                 if (organizerSnapshot.exists()) {
@@ -358,96 +315,75 @@ public class MainActivity extends AppCompatActivity {
                                         eventsRef.get()
                                                 .addOnSuccessListener(eventsSnapshot -> {
                                                     ArrayList<Event> eventsList = new ArrayList<>();
-                                                    AtomicInteger pendingTasks = new AtomicInteger(eventsSnapshot.size());
-
-                                                    if (eventsSnapshot.isEmpty()) {
-                                                        // No events found, directly set the organizer
-                                                        organizer.setEvents(eventsList);
-                                                        ((MyApplication) getApplication()).setOrganizer(organizer);
-                                                        ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
-                                                        unlockUI();
-                                                        return;
-                                                    }
-
                                                     for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
                                                         Event event = eventDoc.toObject(Event.class);
 
-                                                        fetchEventDetails(event, eventsRef, new FirebaseCallback<Event>() {
-                                                            @Override
-                                                            public void onSuccess(Event updatedEvent) {
-                                                                eventsList.add(updatedEvent); // Add the updated event to the list
-                                                                if (pendingTasks.decrementAndGet() == 0) {
-                                                                    // All tasks are complete
-                                                                    organizer.setEvents(eventsList);
-                                                                    ((MyApplication) getApplication()).setOrganizer(organizer);
-                                                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
-                                                                    unlockUI();
-                                                                    Log.d("Firestore", "Organizer and events successfully loaded.");
-                                                                }
-                                                            }
+                                                        eventsRef.document(event.getId()).get().addOnCompleteListener(eventTask -> {
+                                                            if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+//                                                                Event event = eventTask.getResult().toObject(Event.class);
 
-                                                            @Override
-                                                            public void onFailure(Exception e) {
-                                                                Log.e("FirestoreError", "Error retrieving event details", e);
-                                                                if (pendingTasks.decrementAndGet() == 0) {
-                                                                    unlockUI();
-                                                                }
+                                                                ArrayList<String> wishlishIds = new ArrayList<>();
+
+                                                                eventsRef.document(event.getId()).collection("userId").get()
+                                                                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                                                                            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                                                                // field "userId" that stores a string
+                                                                                String entrantId = document.getString("userId");
+                                                                                if (entrantId != null) {
+                                                                                    wishlishIds.add(entrantId);
+                                                                                }
+                                                                            }
+                                                                            event.setWaitlistEntrantIds(wishlishIds);
+                                                                            if (event != null) {
+                                                                                Log.d("Firestore", "Found event with ID: " + event.getId() + " in organizer: " + organizer.getId());
+                                                                                eventsList.add(event);
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(e -> {
+                                                                            // Handle any errors here
+                                                                            Log.e("FirestoreError", "Error retrieving user IDs", e);
+                                                                        });
+
+                                                            } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
+                                                                Log.d("Firestore", "No matching event found with ID: " + event.getId() + " in organizer: " + organizer.getId());
+                                                            } else {
+                                                                Log.w("Firestore", "Error getting event", eventTask.getException());
                                                             }
                                                         });
                                                     }
+
+                                                    // Set the events list in the organizer object
+                                                    organizer.setEvents(eventsList);
+
+                                                    // Update the global instance and LiveData
+                                                    ((MyApplication) getApplication()).setOrganizer(organizer);
+                                                    ((MyApplication) getApplication()).setOrganizerLiveData(organizer);
+
+                                                    Log.d("Firestore", "Organizer and events successfully loaded.");
                                                 })
                                                 .addOnFailureListener(e -> {
-                                                    unlockUI();
                                                     Log.w("Firestore", "Error retrieving events data", e);
                                                 });
                                     }
                                 } else {
-                                    unlockUI();
                                     Log.w("Firestore", "Organizer document does not exist.");
                                 }
                             })
                             .addOnFailureListener(e -> {
-                                unlockUI();
                                 Log.w("Firestore", "Error retrieving organizer data", e);
                             });
+
                 }
+
             } else {
-                unlockUI();
                 User u = new User(userId);
                 addUser(u);
                 addEntrant(new Entrant(userId));
             }
         }).addOnFailureListener(e -> {
-            unlockUI();
             Log.e("Firebase", "Error retrieving user", e);
         });
     }
-
-    public interface FirebaseCallback<T> {
-        void onSuccess(T result); // Called when the task is successful
-        void onFailure(Exception e); // Called when the task fails
-    }
-
-    private void fetchEventDetails(Event event, CollectionReference eventsRef, FirebaseCallback<Event> callback) {
-        eventsRef.document(event.getId()).collection("userId").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    ArrayList<String> wishlistIds = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        String entrantId = document.getString("userId");
-                        if (entrantId != null) {
-                            wishlistIds.add(entrantId);
-                        }
-                    }
-                    // Set waitlist entrant IDs
-                    event.setWaitlistEntrantIds(wishlistIds);
-                    callback.onSuccess(event);
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e);
-                });
-    }
-
-
 
     private void retrieveEntrantWishlist(Entrant entrant) {
         CollectionReference waitlistRef = db.collection("entrants").document(entrant.getId()).collection("entrantWaitList");
@@ -468,21 +404,10 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("Wishlist main", "Wishlist items: " + wishlist);
                             entrant.setWaitlistEventIds(wishlist);
                             retrieveEntrantNotification(entrant, new MyApplication.NotificationCallback() {
-
                                 @Override
                                 public void onNotificationsRetrieved(ArrayList<Notification> notifications) {
                                     ((MyApplication) getApplication()).setEntrantLiveData(entrant);
-                                    unlockUI();
                                     Log.d("retrieve entrant", "succeed");
-
-                                    int i = 0;
-                                    for (Notification notification: notifications) {
-                                        if (!notification.isRead()) {
-                                            Log.d("notification", "count");
-                                            showNotification("New Notifications", notification.getMessage(), i);
-                                            i++;
-                                        }
-                                    }
                                 }
 
                                 @Override
@@ -497,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
+    private void retrieveEntrantNotification(Entrant entrant, MyApplication.NotificationCallback callback) {
         CollectionReference notificationRef = db.collection("entrants")
                 .document(entrant.getId())
                 .collection("notifications");
@@ -514,7 +439,6 @@ public class MainActivity extends AppCompatActivity {
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Notification item = document.toObject(Notification.class);
                     if (item != null) {
-                        item.setId(document.getId());
                         notifications.add(item);
                     }
                 }
@@ -527,72 +451,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    public interface PermissionCallback {
-        void onPermissionGranted();
-        void onPermissionDenied();
-    }
-
-    private void requestNotificationPermission(PermissionCallback callback) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-
-                this.permissionCallback = callback;
-            } else {
-                callback.onPermissionGranted();
-            }
-        } else {
-            callback.onPermissionGranted();
-        }
-    }
-
-    private PermissionCallback permissionCallback;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 1 && permissionCallback != null) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionCallback.onPermissionGranted();
-            } else {
-                permissionCallback.onPermissionDenied();
-            }
-        }
-    }
-
-
-    public void showNotification(String title, String message, int id) {
-        String channelId = "default_channel_id";
-
-        // Create a notification channel (Required for Android 8.0+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    "Default Channel",
-                    NotificationManager.IMPORTANCE_HIGH // Set importance to HIGH for heads-up notifications
-            );
-            channel.setDescription("This is the default notification channel");
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's small icon
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set priority to HIGH
-                .setDefaults(NotificationCompat.DEFAULT_ALL) // Enable sound and vibration
-                .setAutoCancel(true); // Dismiss notification on click
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Show the notification
-        notificationManager.notify(id, builder.build());
     }
 
     public void addUser(User user) {
@@ -629,21 +487,6 @@ public class MainActivity extends AppCompatActivity {
 
     public interface OnAdminCheckListener {
         void onAdminCheckCompleted(boolean isAdmin);
-    }
-
-    public void createNotificationChannel(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = "default_channel_id";
-            CharSequence channelName = "Default Channel";
-            String channelDescription = "Channel for app notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
-            channel.setDescription(channelDescription);
-
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     // for ui test
