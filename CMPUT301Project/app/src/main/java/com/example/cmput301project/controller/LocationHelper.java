@@ -21,7 +21,7 @@ public class LocationHelper {
         locationListener = listener;
         try {
             locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+                    LocationManager.GPS_PROVIDER, 86400, 10000, locationListener);
         } catch (SecurityException e) {
             e.printStackTrace();
         }
