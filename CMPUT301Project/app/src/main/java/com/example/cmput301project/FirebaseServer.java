@@ -1264,59 +1264,33 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnFailureListener(onFailure);
     }
 
-    public void deleteEvent(String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        // Retrieve all organizers to locate the event
+    public void deleteEvent(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (organizerId == null || organizerId.isEmpty() || eventId == null || eventId.isEmpty()) {
+            onFailure.onFailure(new Exception("Invalid organizerId or eventId"));
+            return;
+        }
         db.collection("organizers")
-                .get()
-                .addOnSuccessListener(organizersSnapshot -> {
-                    boolean[] eventFound = {false}; // Track if the event is found
-
-                    for (DocumentSnapshot organizerDoc : organizersSnapshot.getDocuments()) {
-                        String organizerId = organizerDoc.getId();
-
-                        // Check the events subcollection for the matching eventId
-                        db.collection("organizers")
-                                .document(organizerId)
-                                .collection("events")
-                                .document(eventId)
-                                .get()
-                                .addOnSuccessListener(eventSnapshot -> {
-                                    if (eventSnapshot.exists()) {
-                                        eventFound[0] = true;
-
-                                        // Delete the event document
-                                        eventSnapshot.getReference().delete()
-                                                .addOnSuccessListener(aVoid -> {
-
-                                                    Log.d("FirebaseServer", "Event deleted successfully: " + eventId);
-                                                    onSuccess.onSuccess(aVoid);
-                                                })
-                                                .addOnFailureListener(onFailure);
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e("FirebaseServer", "Failed to retrieve event: " + eventId, e);
-                                    onFailure.onFailure(e);
-                                });
-                    }
-
-                    // If the event is not found after iterating through all organizers
-                    if (!eventFound[0]) {
-                        onFailure.onFailure(new Exception("Event not found: " + eventId));
-                    }
+                .document(organizerId)
+                .collection("events")
+                .document(eventId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseServer", "Event deleted successfully: " + eventId);
+                    onSuccess.onSuccess(aVoid);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirebaseServer", "Failed to retrieve organizers", e);
+                    Log.e("FirebaseServer", "Error deleting event: " + eventId, e);
                     onFailure.onFailure(e);
                 });
     }
+
 
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         db.collection("organizers")
                 .document(organizerId)
                 .collection("events")
                 .document(eventId)
-                .update("hashedQRCode", null) // Remove the hashed QR code
+                .update("qrCode", null) // Remove the QR code
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }

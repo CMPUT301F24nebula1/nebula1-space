@@ -9,11 +9,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 
+import android.location.Location;
+import android.location.LocationListener;
+import androidx.annotation.NonNull;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -22,7 +27,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
+import com.example.cmput301project.controller.LocationHelper;
 import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
@@ -56,6 +63,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * MainActivity

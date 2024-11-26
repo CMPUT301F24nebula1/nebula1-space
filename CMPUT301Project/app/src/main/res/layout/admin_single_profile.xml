@@ -24,7 +24,6 @@
                 android:background="?attr/colorPrimary"
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:navigationIcon="?attr/homeAsUpIndicator"
                 app:title="Profile"
                 app:titleTextColor="@android:color/white" />
 
@@ -38,6 +37,7 @@
                 android:layout_marginTop="8dp" />
 
         </RelativeLayout>
+
         <!-- Profile Picture -->
         <ImageView
             android:id="@+id/edit_profile_imageview"
@@ -100,11 +100,27 @@
             android:layout_gravity="start"
             android:layout_marginStart="10dp" />
 
-        <Button
-            android:id="@+id/deleteUserButton"
-            android:layout_width="wrap_content"
+        <!-- Buttons for saving and deleting, side by side -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete User"
-            android:layout_marginTop="24dp" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp">
+
+            <Button
+                android:id="@+id/saveUserButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Changes"
+                android:layout_marginEnd="16dp" />
+
+            <Button
+                android:id="@+id/deleteUserButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete User" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

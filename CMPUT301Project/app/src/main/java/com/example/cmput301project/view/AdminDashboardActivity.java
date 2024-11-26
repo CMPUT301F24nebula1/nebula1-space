@@ -40,7 +40,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
             Log.d("AdminDashboardActivity", "Intent to AdminAllEventsActivity started");
         });
 
+
         manageImagesButton.setOnClickListener(v -> {
+
             Log.d("AdminDashboardActivity", "Manage Images button clicked");
             Intent intent = new Intent(AdminDashboardActivity.this, AdminManageImagesActivity.class);
             startActivity(intent);
