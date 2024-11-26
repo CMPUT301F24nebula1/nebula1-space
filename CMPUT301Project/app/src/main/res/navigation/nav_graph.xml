@@ -112,6 +112,9 @@
         <argument
             android:name="e"
             app:argType="com.example.cmput301project.model.Event" />
+        <argument
+            android:name="category"
+            app:argType="string" />
     </fragment>
 
     <fragment

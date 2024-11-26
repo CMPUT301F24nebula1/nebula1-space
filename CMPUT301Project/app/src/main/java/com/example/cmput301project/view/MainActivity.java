@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (event != null) {
                                             Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                             Bundle bundle = new Bundle();
-                                            bundle.putSerializable("e", event);
+                                            bundle.putString("category", "WAITING");
                                             nc.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
                                         }
                                     })

@@ -41,7 +41,7 @@ public class EntrantClassFragment extends Fragment {
 
     private ArrayList<Event> events;
     private ListView eventList;
-    private EventArrayAdapter eventAdapter;
+    CategorizedEventAdapter adapter;
 
     private ArrayList<String> wishlistEventIds;
 
@@ -82,8 +82,17 @@ public class EntrantClassFragment extends Fragment {
                             Map<String, ArrayList<Event>> sortedEvents = sortCategorizedEvents(groupedEvents);
 
                             // Use the categorized adapter that reuses EventArrayAdapter
-                            CategorizedEventAdapter categorizedAdapter = new CategorizedEventAdapter(getContext(), sortedEvents);
-                            eventList.setAdapter(categorizedAdapter);
+//                            CategorizedEventAdapter categorizedAdapter = new CategorizedEventAdapter(getContext(), sortedEvents);
+//                            eventList.setAdapter(categorizedAdapter);
+
+                            if (eventList.getAdapter() instanceof CategorizedEventAdapter) {
+                                CategorizedEventAdapter adapter = (CategorizedEventAdapter) eventList.getAdapter();
+                                adapter.updateData(sortedEvents);
+                            } else {
+                                CategorizedEventAdapter categorizedAdapter = new CategorizedEventAdapter(getContext(), sortedEvents);
+                                eventList.setAdapter(categorizedAdapter);
+                            }
+
                         }
                     });
 
@@ -93,9 +102,24 @@ public class EntrantClassFragment extends Fragment {
 
         eventList.setOnItemClickListener((adapterView, view1, position, id) -> {
             Object item = eventList.getAdapter().getItem(position);
+            String category = "";
             if (item instanceof Event) {
+                Event clickedEvent = (Event) item;
+
+                CategorizedEventAdapter adapter = (CategorizedEventAdapter) eventList.getAdapter();
+                Map<String, ArrayList<Event>> categorizedEvents = adapter.getCategorizedEvents();
+
+                for (Map.Entry<String, ArrayList<Event>> entry : categorizedEvents.entrySet()) {
+                    if (entry.getValue().contains(clickedEvent)) {
+                        category = entry.getKey();
+                        break;
+                    }
+                }
+
+//                String category = "SELECTED"; // Replace with the appropriate category logic
+
                 EntrantClassFragmentDirections.ActionEntrantClassToEntrantEventView action =
-                        EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView((Event) item);
+                        EntrantClassFragmentDirections.actionEntrantClassToEntrantEventView((Event) item, category);
                 NavHostFragment.findNavController(EntrantClassFragment.this).navigate(action);
             }
         });
@@ -103,12 +127,6 @@ public class EntrantClassFragment extends Fragment {
 
     private Map<String, ArrayList<Event>> groupEventsByStatus(ArrayList<Event> events, Map<String, String> waitlistMap) {
         Map<String, ArrayList<Event>> categorizedEvents = new LinkedHashMap<>();
-
-//        categorizedEvents.put("WAITING", new ArrayList<>());
-//        categorizedEvents.put("WAITING1", new ArrayList<>());
-//        categorizedEvents.put("SELECTED", new ArrayList<>());
-//        categorizedEvents.put("CANCELED", new ArrayList<>());
-//        categorizedEvents.put("FINAL", new ArrayList<>());
 
         for (Event event : events) {
             String status = waitlistMap.get(event.getId());
@@ -141,7 +159,6 @@ public class EntrantClassFragment extends Fragment {
 
         return sortedMap;
     }
-
 
 
     public interface EventsCallback {
