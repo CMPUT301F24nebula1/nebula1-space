@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("androidx.navigation.safeargs")
     id("com.google.gms.google-services")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {

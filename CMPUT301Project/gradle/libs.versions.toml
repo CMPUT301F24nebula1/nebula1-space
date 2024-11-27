@@ -12,6 +12,8 @@ uiautomator = "2.3.0"
 runner = "1.6.1"
 espressoIntents = "3.6.1"
 filamentAndroid = "1.17.1"
+googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
+playServicesMaps = "19.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -26,8 +28,10 @@ uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = 
 runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 filament-android = { group = "com.google.ar.sceneform", name = "filament-android", version.ref = "filamentAndroid" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "googleAndroidLibrariesMapsplatformSecretsGradlePlugin" }
 
