@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference userRef;
     private String id;
 
-    // manages whether it's entrant homepage or organizer homepage
+    // manages whether it's entrant homepage or organizer or admin homepage
     private MaterialButtonToggleGroup toggleGroup;
 
 
@@ -83,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        id = getDeviceId(this);
+//        id = getDeviceId(this);
 
 //        id = "8";
-//        id = "8e488662a2c3a895";
+        id = "1d98b5f2ca50879e";
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
