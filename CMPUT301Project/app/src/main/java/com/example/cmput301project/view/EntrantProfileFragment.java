@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE;
 
 import android.app.AlertDialog;
@@ -119,6 +120,28 @@ public class EntrantProfileFragment extends Fragment {
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
+
+        // Custom behavior for tName
+        t_name.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
+
+        t_email.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
+
+        t_phone.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
 
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
             entrant = entrant1;
@@ -872,5 +895,12 @@ public class EntrantProfileFragment extends Fragment {
                 });
     }
 
+    // Helper method to hide the keyboard
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager)requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
 }

@@ -225,14 +225,15 @@ public class MainActivity extends AppCompatActivity {
             callback.onFailure(null);
             return;
         }
-        AtomicBoolean isFound = new AtomicBoolean(false);
+
+        AtomicBoolean isFound = new AtomicBoolean(false); // Track if the event is found
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference organizersRef = db.collection("organizers");
+
         organizersRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
-
-                int totalOrganizers = task.getResult().size();
-                AtomicInteger processedOrganizers = new AtomicInteger(0);
+                int totalOrganizers = task.getResult().size(); // Total organizers
+                AtomicInteger processedOrganizers = new AtomicInteger(0); // Track processed organizers
 
                 for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
                     String organizerId = organizerDoc.getId();
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                     CollectionReference eventsRef = organizersRef.document(organizerId).collection("events");
 
                     eventsRef.document(eventId).get().addOnCompleteListener(eventTask -> {
-                        processedOrganizers.incrementAndGet();
+                        processedOrganizers.incrementAndGet(); // Increment processed count
 
                         if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
                             isFound.set(true);
@@ -252,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
                             eventsRef.document(event.getId()).collection("userId").get()
                                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                         for (DocumentSnapshot document : queryDocumentSnapshots) {
-                                            // field "userId" that stores a string
                                             String userId = document.getString("userId");
                                             if (userId != null) {
                                                 userIdList.add(userId);
@@ -260,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         event.setWaitlistEntrantIds(userIdList);
                                         Log.d("wishlist of event1", event.getWaitlistEntrantIds().toString());
+
+                                        // Navigate to the event view
                                         if (event != null) {
                                             Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                             Bundle bundle = new Bundle();
@@ -269,29 +271,25 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Handle any errors here
                                         Log.e("FirestoreError", "Error retrieving user IDs", e);
                                     });
                             Log.d("wishlist of event2", event.getWaitlistEntrantIds().toString());
+                        }
 
-                            if (callback != null)
-                                callback.onSuccess(null);
-                        } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
-//                            Toast.makeText(this, "Invalid qr code.", Toast.LENGTH_SHORT).show();
-                            Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
-                        } else if (processedOrganizers.get() == totalOrganizers && !isFound.get()) {
-                            // When all organizers are processed and no match is found
+                        // Check if all organizers are processed and no match is found
+                        if (processedOrganizers.get() == totalOrganizers && !isFound.get()) {
+                            Log.d("Firestore", "No matching event found after processing all organizers");
                             callback.onFailure(null);
-                        } else {
-                            Log.w("Firestore", "Error getting event", eventTask.getException());
                         }
                     });
                 }
             } else {
                 Log.w("Firestore", "Error getting organizers", task.getException());
+                callback.onFailure(null);
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
