@@ -42,6 +42,10 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         ImageView poster = view.findViewById(R.id.event_poster);
         TextView name = view.findViewById(R.id.event_name);
         TextView endDateTextView = view.findViewById(R.id.lottery_ends_date);
+
+        // Clear the ImageView before loading a new image
+        Glide.with(getContext()).clear(poster);
+
         if (e != null) {
             String text = "Ends date: " + e.getEndDate();
             endDateTextView.setText(text);
@@ -49,6 +53,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
             name.setText(e.getName());
 
             if (!(e.getPosterUrl() == null) && !e.getPosterUrl().isEmpty()) {
+                poster.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
@@ -56,6 +61,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
                         .into(poster);
             }
             else {
+                poster.setVisibility(View.GONE);
                 Log.e("Error", "Poster URL is null");
             }
         }
