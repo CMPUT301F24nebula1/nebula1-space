@@ -109,7 +109,7 @@ public class AdminAllEventsActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     private void filterEvents(String query) {
         List<Event> filteredList = new ArrayList<>();
         for (Event event : eventList) {

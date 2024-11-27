@@ -20,6 +20,10 @@ import com.example.cmput301project.MyApplication;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.databinding.EntrantEventViewBinding;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Fragment for entrants to view an event after scanning the QR code
@@ -31,6 +35,7 @@ public class EntrantEventViewFragment extends Fragment {
     Event e;
     EntrantController ec;
     Entrant entrant;
+    String category;
 
     @Override
     public View onCreateView(
@@ -41,6 +46,39 @@ public class EntrantEventViewFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = EntrantEventViewBinding.inflate(inflater, container, false);
         e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
+        category = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getCategory();
+
+        // Customize UI based on category
+        switch (category) {
+            case "SELECTED":
+                // Handle Pending events
+                binding.joinClassButton.setText("Accept");
+                binding.leaveClassButton.setText("Decline");
+//                binding.joinClassButton.setEnabled(true);
+//                binding.leaveClassButton.setEnabled(true);
+
+//                binding.joinClassButton.setOnClickListener(v -> {
+//                    Log.d("Pending Invitation", "Accepted event: " + e.getName());
+//                    proceedToAcceptEvent();
+//                });
+
+//                binding.leaveClassButton.setOnClickListener(v -> {
+//                    Log.d("Pending Invitation", "Declined event: " + e.getName());
+//                    proceedToDeclineEvent();
+//                });
+                break;
+            case "CANCELED":
+            case "FINAL":
+                // Handle Canceled/Declined events
+                binding.joinClassButton.setVisibility(View.GONE);
+                binding.leaveClassButton.setVisibility(View.GONE);
+                break;
+            default:
+                // Handle default case
+                binding.joinClassButton.setText("Join Class");
+                binding.leaveClassButton.setText("Leave Class");
+                break;
+        }
         Log.d("waitlist entrants", e.getName() + ' ' + String.valueOf(e.getWaitlistEntrantIds().size()));
         Log.d("waitlist limit", e.getName() + String.valueOf(e.getLimit()));
         app = (MyApplication) requireActivity().getApplication();
@@ -131,61 +169,94 @@ public class EntrantEventViewFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
-                if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                if (category.equals("WAITING")) {
+                    if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
 
-                    if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                        builder.setTitle("Information")
-                                .setMessage("This event is full.")
-                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                                .setCancelable(false)  // prevents dialog from closing on back press
-                                .show();
-                    } else if (e.requiresGeolocation()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                        builder.setTitle("Geolocation Required");
-                        builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");
+                        if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                            builder.setTitle("Information")
+                                    .setMessage("This event is full.")
+                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                    .setCancelable(false)  // prevents dialog from closing on back press
+                                    .show();
+                        } else if (e.requiresGeolocation()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                            builder.setTitle("Geolocation Required");
+                            builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");
 
-                        //"Proceed" Button
-                        builder.setPositiveButton("Proceed", (dialog, which) -> proceedToJoinEvent());
+                            //"Proceed" Button
+                            builder.setPositiveButton("Proceed", (dialog, which) -> proceedToJoinEvent());
 
-                        //"Cancel" Button
-                        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                            //"Cancel" Button
+                            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
-                        builder.create().show();
+                            builder.create().show();
+                        } else {
+                            //direct to join event
+                            proceedToJoinEvent();
+                        }
+
                     } else {
-                        //direct to join event
-                        proceedToJoinEvent();
+                        Log.d("join event", "you are already in the waitlist");
+                        Toast.makeText(getContext(), "You are already in the waitlist!", Toast.LENGTH_SHORT).show();
+                        setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
                     }
-
                 }
-                else {
-                    Log.d("join event", "you are already in the waitlist");
-                    Toast.makeText(getContext(), "You are already in the waitlist!", Toast.LENGTH_SHORT).show();
-                    setButtonSelected(binding.leaveClassButton, binding.joinClassButton);
+                else if (category.equals("SELECTED")) {
+                    proceedToAcceptEvent();
                 }
             }
         });
 
         binding.leaveClassButton.setOnClickListener(view1 -> {
-            if (app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
-                app.getEntrant().leave_event(e);
-                e.remove_entrant(app.getEntrant());
+            if (category.equals("WAITING")) {
+                if (app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                    app.getEntrant().leave_event(e);
+                    e.remove_entrant(app.getEntrant());
 
-                ec.leaveEventWaitingList(e);
-                Log.d("leave event", "You leave the wishlist");
-                Toast.makeText(getContext(), "You leaved the waiting list!", Toast.LENGTH_SHORT).show();
-                ec.removeFromEventWaitingList(e);
-                setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
+                    ec.leaveEventWaitingList(e);
+                    Log.d("leave event", "You leave the wishlist");
+                    Toast.makeText(getContext(), "You leaved the waiting list!", Toast.LENGTH_SHORT).show();
+                    ec.removeFromEventWaitingList(e);
+                    setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
+                } else {
+                    Log.d("leave event", "you are not in the waitlist");
+                    Toast.makeText(getContext(), "You are not in the waiting list!", Toast.LENGTH_SHORT).show();
+                    setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
+                }
             }
-            else {
-                Log.d("leave event", "you are not in the waitlist");
-                Toast.makeText(getContext(), "You are not in the waiting list!", Toast.LENGTH_SHORT).show();
-                setButtonSelected(binding.joinClassButton, binding.leaveClassButton);
+            else if (category.equals("SELECTED")) {
+                proceedToDeclineEvent();
             }
         });
     }
 
     private void setButtonSelected(Button selectedButton, Button unselectedButton) {
+
+        switch (category) {
+            case "SELECTED": {
+                // Set the background of the selected button to the solid style
+                binding.joinClassButton.setBackgroundResource(R.drawable.rounded_button_join_solid); // or the relevant solid background
+                binding.joinClassButton.setEnabled(true);
+                binding.joinClassButton.setAlpha(1f);
+                binding.joinClassButton.setTextColor(Color.parseColor("#FFFFFF"));
+
+                // Set the background of the unselected button to the outline style
+                binding.leaveClassButton.setBackgroundResource(R.drawable.rounded_button_join_solid); // or the relevant outline background
+                binding.leaveClassButton.setEnabled(true);
+                binding.leaveClassButton.setAlpha(1f);
+                binding.leaveClassButton.setTextColor(Color.parseColor("#FFFFFF"));
+                return;
+            }
+            case "CANCELED":
+            case "FINAL":
+                // Handle Canceled/Declined events
+                binding.joinClassButton.setVisibility(View.GONE);
+                binding.leaveClassButton.setVisibility(View.GONE);
+                return;
+            default:
+                break;
+        }
         // Set the background of the selected button to the solid style
         selectedButton.setBackgroundResource(R.drawable.rounded_button_join_solid); // or the relevant solid background
         selectedButton.setEnabled(true);
@@ -209,4 +280,96 @@ public class EntrantEventViewFragment extends Fragment {
         setButtonSelected(binding.leaveClassButton, binding.joinClassButton); // Update UI
         Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
     }
+
+    private void proceedToAcceptEvent() {
+        updateStatus(entrant, "FINAL", e.getId(), new UpdateStatusCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getContext(), "You accepted the invitation!", Toast.LENGTH_SHORT).show();
+                binding.joinClassButton.setVisibility(View.GONE);
+                binding.leaveClassButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Failed to accept.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNotFound() {
+                Toast.makeText(getContext(), "Event not found!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private  void  proceedToDeclineEvent() {
+        updateStatus(entrant, "CANCELED", e.getId(), new UpdateStatusCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getContext(), "You declined the invitation!", Toast.LENGTH_SHORT).show();
+                binding.joinClassButton.setVisibility(View.GONE);
+                binding.leaveClassButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Failed to decline.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNotFound() {
+                Toast.makeText(getContext(), "Event not found!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public interface UpdateStatusCallback {
+        void onSuccess();  // Called when the status update is successful
+        void onFailure(Exception e);  // Called when the status update fails
+        void onNotFound();  // Called when no matching document is found
+    }
+
+    public void updateStatus(Entrant entrant, String status, String eventId, UpdateStatusCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference waitlistRef = db.collection("entrants")
+                .document(entrant.getId())
+                .collection("entrantWaitList");
+
+        Log.d("notification eventId", eventId);
+        waitlistRef.whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            DocumentReference docRef = document.getReference();
+                            // Update the status field
+                            docRef.update("status", status)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Status field updated successfully");
+                                        if (callback != null) {
+                                            callback.onSuccess();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error updating status field", e);
+                                        if (callback != null) {
+                                            callback.onFailure(e);
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.d("Firestore", "No document found with the specified eventId");
+                        if (callback != null) {
+                            callback.onNotFound();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error finding document", e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+    }
+
 }
