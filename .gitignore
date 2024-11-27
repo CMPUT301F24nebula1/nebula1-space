@@ -1,0 +1,36 @@
+# macOS 系统文件
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# 文件夹特定
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.iml
+
+# 构建输出
+/build/
+/out/
+*.log
+*.tmp
+
+# 其他不必要的文件
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.class
+*.jar
+*.war
+*.ear
+
