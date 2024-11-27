@@ -40,6 +40,8 @@ public class EntrantHomepageFragment extends Fragment {
         app = (MyApplication) requireActivity().getApplication();
         app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant -> {
             if (entrant.getReceiveNotification()) {
+                if (entrant.getNotifications() == null)
+                    return;
                 if (Entrant.hasUnreadNotifications(entrant.getNotifications())) {
                     binding.notificationBadge.setVisibility(View.VISIBLE);
                 } else {
@@ -85,6 +87,7 @@ public class EntrantHomepageFragment extends Fragment {
         });
         binding.profileButton.setOnClickListener(v ->
                 app.getEntrantLiveData().observe(getViewLifecycleOwner(), entrant1 -> {
+                    Log.d("profileButton", "debug");
                     if (entrant1 != null) {
                         try {
                             Log.d("profileButton", entrant1.getName());
