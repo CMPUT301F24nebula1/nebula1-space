@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                                             Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                             Bundle bundle = new Bundle();
                                             bundle.putString("category", "WAITING");
+                                            bundle.putSerializable("e", event);
                                             nc.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
                                         }
                                     })
@@ -260,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                         } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
+//                            Toast.makeText(this, "Invalid qr code.", Toast.LENGTH_SHORT).show();
                             Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
                         } else {
                             Log.w("Firestore", "Error getting event", eventTask.getException());

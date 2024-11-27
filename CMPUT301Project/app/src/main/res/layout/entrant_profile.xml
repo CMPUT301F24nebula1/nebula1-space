@@ -106,7 +106,9 @@
                                 android:focusedByDefault="true"
                                 android:text=""
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:singleLine="true"
+                                android:imeOptions="actionDone" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -164,10 +166,12 @@
                                 android:id="@+id/entrant_profile_email"
                                 android:layout_width="match_parent"
                                 android:layout_height="38dp"
+                                android:imeOptions="actionDone"
+                                android:inputType="textEmailAddress"
+                                android:singleLine="true"
                                 android:text="Your Email"
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp"
-                                android:inputType="textEmailAddress"/>
+                                android:textSize="16sp" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -228,7 +232,10 @@
                                 android:layout_height="38dp"
                                 android:text=""
                                 android:textColor="#1D1B20"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:inputType="phone"
+                                android:singleLine="true"
+                                android:imeOptions="actionDone" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
