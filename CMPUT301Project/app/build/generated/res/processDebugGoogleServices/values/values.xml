@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">463670061705</string>
+    <string name="google_api_key" translatable="false">AIzaSyDatQorEG4kfAt1DSqHLifLd6Qnj5C85cU</string>
+    <string name="google_app_id" translatable="false">1:463670061705:android:e88a7d7ec8d86df0a1b458</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDatQorEG4kfAt1DSqHLifLd6Qnj5C85cU</string>
+    <string name="google_storage_bucket" translatable="false">cmput301-f24-nebula1.appspot.com</string>
+    <string name="project_id" translatable="false">cmput301-f24-nebula1</string>
+</resources>

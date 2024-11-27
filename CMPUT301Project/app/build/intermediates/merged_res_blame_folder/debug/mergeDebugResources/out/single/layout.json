@@ -1,0 +1,138 @@
+[
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/popup_notification_detail.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/popup_notification_detail.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/organizer_event_view.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/organizer_event_view.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_homepage.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_homepage.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/entrant_profile.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/entrant_profile.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_single_profile.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_single_profile.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/activity_pooling.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/activity_pooling.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/search_bar.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/search_bar.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/content_main.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/content_main.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/event_list_item.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/event_list_item.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/event_list.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/event_list.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/menu_notification_badge.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/menu_notification_badge.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_qr_codes.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_qr_codes.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/popup_notifications.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/popup_notifications.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/organizer_homepage.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/organizer_homepage.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_events.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_events.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/event_poster.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/event_poster.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/participant_list.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/participant_list.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_single_event.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_single_event.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/activity_scanner.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/activity_scanner.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_profiles.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_profiles.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/entrant_homepage.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/entrant_homepage.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/admin_event_posters.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/admin_event_posters.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/activity_map.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/activity_map.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/qrcode_list.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/qrcode_list.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/participant_list_item.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/participant_list_item.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/activity_entrant_status.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/activity_entrant_status.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/empty_fragment.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/empty_fragment.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/notification_list_item.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/notification_list_item.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/item_header.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/item_header.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/image_item.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/image_item.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/entrant_event_view.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/entrant_event_view.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/profile_list_item.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/profile_list_item.xml"
+    },
+    {
+        "merged": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-mergeDebugResources-55:/layout/activity_main.xml",
+        "source": "/Users/hongweiliu/.gradle/daemon/8.7/com.example.cmput301project.app-main-58:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.cmput301project.app-mergeDebugResources-55:/layout/organizer_event_view.xml",
+        "source": "com.example.cmput301project.app-main-58:/layout/organizer_event_view.xml"
+    }
+]

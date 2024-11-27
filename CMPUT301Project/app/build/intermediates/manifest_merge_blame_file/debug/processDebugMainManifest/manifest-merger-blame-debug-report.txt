@@ -1,0 +1,521 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.cmput301project"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:4:5-67
+11-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.CAMERA" />
+12-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:5:5-65
+12-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:5:22-62
+13    <!-- for geolocation -->
+14    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+14-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:7:5-79
+14-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:7:22-76
+15    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+15-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:8:5-81
+15-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:8:22-78
+16    <!-- for google maps api -->
+17    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+17-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:7:5-79
+17-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:7:22-76
+18    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+18-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:8:5-81
+18-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:8:22-78
+19
+20    <uses-feature
+20-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:12:5-84
+21        android:name="android.hardware.camera"
+21-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:12:19-57
+22        android:required="true" />
+22-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:12:58-81
+23    <uses-feature android:name="android.hardware.camera.autofocus" />
+23-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:13:5-70
+23-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:13:19-67
+24
+25    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+25-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:14:5-77
+25-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:14:22-74
+26    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+26-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:15:5-81
+26-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:15:22-78
+27    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+27-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:14:5-77
+27-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:14:22-74
+28
+29    <!-- Include required permissions for Google Maps API to run. -->
+30    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+30-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:23:5-79
+30-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:23:22-76
+31
+32    <uses-feature
+32-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:26:5-28:35
+33        android:glEsVersion="0x00020000"
+33-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:27:9-41
+34        android:required="true" />
+34-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:28:9-32
+35
+36    <queries>
+36-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:30:5-34:15
+37
+38        <!-- Needs to be explicitly declared on Android R+ -->
+39        <package android:name="com.google.android.apps.maps" />
+39-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:33:9-64
+39-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:33:18-61
+40        <package android:name="androidx.test.orchestrator" />
+40-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:25:9-62
+40-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:25:18-59
+41        <package android:name="androidx.test.services" />
+41-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:26:9-58
+41-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:26:18-55
+42        <package android:name="com.google.android.apps.common.testing.services" />
+42-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:27:9-83
+42-->[androidx.test:runner:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/9964740c9d05f3dffced3f386e975a6e/transformed/runner-1.6.1/AndroidManifest.xml:27:18-80
+43    </queries>
+44
+45    <uses-feature
+45-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:28:5-30:36
+46        android:name="android.hardware.camera.front"
+46-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:29:9-53
+47        android:required="false" />
+47-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:30:9-33
+48    <uses-feature
+48-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:36:5-38:36
+49        android:name="android.hardware.camera.flash"
+49-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:37:9-53
+50        android:required="false" />
+50-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:38:9-33
+51    <uses-feature
+51-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:39:5-41:36
+52        android:name="android.hardware.screen.landscape"
+52-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:40:9-57
+53        android:required="false" />
+53-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:41:9-33
+54    <uses-feature
+54-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:42:5-44:36
+55        android:name="android.hardware.wifi"
+55-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:43:9-45
+56        android:required="false" />
+56-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:44:9-33
+57
+58    <uses-permission android:name="android.permission.REORDER_TASKS" />
+58-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:24:5-72
+58-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:24:22-69
+59
+60    <permission
+60-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:22:5-24:47
+61        android:name="com.example.cmput301project.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+61-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:23:9-81
+62        android:protectionLevel="signature" />
+62-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:24:9-44
+63
+64    <uses-permission android:name="com.example.cmput301project.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+64-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:26:5-97
+64-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:26:22-94
+65    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+66    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+67
+68    <application
+68-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:18:5-67:19
+69        android:name="com.example.cmput301project.MyApplication"
+69-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:19:9-38
+70        android:allowBackup="true"
+70-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:20:9-35
+71        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+71-->[androidx.core:core:1.13.0] /Users/hongweiliu/.gradle/caches/transforms-4/1ee53503456ea50c9552920f77a60189/transformed/core-1.13.0/AndroidManifest.xml:28:18-86
+72        android:dataExtractionRules="@xml/data_extraction_rules"
+72-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:21:9-65
+73        android:debuggable="true"
+74        android:extractNativeLibs="false"
+75        android:fullBackupContent="@xml/backup_rules"
+75-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:22:9-54
+76        android:icon="@mipmap/ic_launcher"
+76-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:23:9-43
+77        android:label="@string/app_name"
+77-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:24:9-41
+78        android:roundIcon="@mipmap/ic_launcher_round"
+78-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:25:9-54
+79        android:supportsRtl="true"
+79-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:26:9-35
+80        android:testOnly="true"
+81        android:theme="@style/Theme.CMPUT301Project" >
+81-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:27:9-53
+82        <provider
+82-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:30:9-38:20
+83            android:name="androidx.core.content.FileProvider"
+83-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:31:13-62
+84            android:authorities="com.example.cmput301project.fileprovider"
+84-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:32:13-75
+85            android:exported="false"
+85-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:33:13-37
+86            android:grantUriPermissions="true" >
+86-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:34:13-47
+87            <meta-data
+87-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:35:13-37:54
+88                android:name="android.support.FILE_PROVIDER_PATHS"
+88-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:36:17-67
+89                android:resource="@xml/file_paths" />
+89-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:37:17-51
+90        </provider>
+91
+92        <activity
+92-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:40:9-48:20
+93            android:name="com.example.cmput301project.view.MainActivity"
+93-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:41:13-46
+94            android:exported="true"
+94-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:42:13-36
+95            android:theme="@style/Theme.CMPUT301Project" >
+95-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:43:13-57
+96            <intent-filter>
+96-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:44:13-47:29
+97                <action android:name="android.intent.action.MAIN" />
+97-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:45:17-69
+97-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:45:25-66
+98
+99                <category android:name="android.intent.category.LAUNCHER" />
+99-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:17-77
+99-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:27-74
+100            </intent-filter>
+101        </activity>
+102
+103        <!-- Other activities -->
+104        <activity
+104-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:51:9-87
+105            android:name="com.example.cmput301project.view.EditProfileActivity"
+105-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:51:19-59
+106            android:exported="false" />
+106-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:51:60-84
+107        <activity
+107-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:52:9-82
+108            android:name="com.example.cmput301project.view.ScannerActivity"
+108-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:52:19-55
+109            android:exported="false" />
+109-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:52:56-80
+110        <activity
+110-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:53:9-90
+111            android:name="com.example.cmput301project.view.ParticipantListActivity"
+111-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:53:19-63
+112            android:exported="false" />
+112-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:53:64-88
+113        <activity
+113-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:54:9-91
+114            android:name="com.example.cmput301project.pooling.EntrantStatusActivity"
+114-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:54:19-64
+115            android:exported="false" />
+115-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:54:65-89
+116        <activity
+116-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:55:9-85
+117            android:name="com.example.cmput301project.pooling.PoolingActivity"
+117-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:55:19-58
+118            android:exported="false" />
+118-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:55:59-83
+119        <activity
+119-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:56:9-89
+120            android:name="com.example.cmput301project.view.AdminDashboardActivity"
+120-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:56:19-62
+121            android:exported="false" />
+121-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:56:63-87
+122        <activity
+122-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:57:9-89
+123            android:name="com.example.cmput301project.view.AdminAllEventsActivity"
+123-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:57:19-62
+124            android:exported="false" />
+124-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:57:63-87
+125        <activity
+125-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:58:9-91
+126            android:name="com.example.cmput301project.view.AdminAllProfilesActivity"
+126-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:58:19-64
+127            android:exported="false" />
+127-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:58:65-89
+128        <activity
+128-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:59:9-87
+129            android:name="com.example.cmput301project.view.EventDetailsActivity"
+129-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:59:19-60
+130            android:exported="false" />
+130-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:59:61-85
+131        <activity
+131-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:60:9-92
+132            android:name="com.example.cmput301project.view.AdminManageImagesActivity"
+132-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:60:19-65
+133            android:exported="false" />
+133-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:60:66-90
+134        <activity
+134-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:61:9-90
+135            android:name="com.example.cmput301project.controller.AdminQRController"
+135-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:61:19-63
+136            android:exported="false" />
+136-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:61:64-88
+137
+138        <!-- Google Maps API key -->
+139        <meta-data
+139-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:64:9-66:45
+140            android:name="com.google.android.geo.API_KEY"
+140-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:65:13-58
+141            android:value="PUTAPIKEYHERE" />
+141-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:66:13-42
+142        <!-- Needs to be explicitly declared on P+ -->
+143        <uses-library
+143-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:39:9-41:40
+144            android:name="org.apache.http.legacy"
+144-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:40:13-50
+145            android:required="false" />
+145-->[com.google.android.gms:play-services-maps:18.0.2] /Users/hongweiliu/.gradle/caches/transforms-4/73d4597d93526411b92198a9e5276c68/transformed/play-services-maps-18.0.2/AndroidManifest.xml:41:13-37
+146
+147        <activity
+147-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:47:9-53:63
+148            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+148-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:48:13-74
+149            android:clearTaskOnLaunch="true"
+149-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:49:13-45
+150            android:screenOrientation="sensorLandscape"
+150-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:50:13-56
+151            android:stateNotNeeded="true"
+151-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:51:13-42
+152            android:theme="@style/zxing_CaptureTheme"
+152-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:52:13-54
+153            android:windowSoftInputMode="stateAlwaysHidden" />
+153-->[com.journeyapps:zxing-android-embedded:4.2.0] /Users/hongweiliu/.gradle/caches/transforms-4/69438ae7b168f2c5c786577eb259a034/transformed/zxing-android-embedded-4.2.0/AndroidManifest.xml:53:13-60
+154
+155        <service
+155-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:14:9-23:19
+156            android:name="com.google.firebase.components.ComponentDiscoveryService"
+156-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:15:13-84
+157            android:directBootAware="true"
+157-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:32:13-43
+158            android:exported="false" >
+158-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:16:13-37
+159            <meta-data
+159-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:17:13-19:85
+160                android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar"
+160-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:18:17-122
+161                android:value="com.google.firebase.components.ComponentRegistrar" />
+161-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:19:17-82
+162            <meta-data
+162-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:20:13-22:85
+163                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+163-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:21:17-111
+164                android:value="com.google.firebase.components.ComponentRegistrar" />
+164-->[com.google.firebase:firebase-firestore:24.10.1] /Users/hongweiliu/.gradle/caches/transforms-4/cfb34c49ba6fcfd9119fcc0408e96f6e/transformed/firebase-firestore-24.10.1/AndroidManifest.xml:22:17-82
+165            <meta-data
+165-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:30:13-32:85
+166                android:name="com.google.firebase.components:com.google.firebase.storage.FirebaseStorageKtxRegistrar"
+166-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:31:17-118
+167                android:value="com.google.firebase.components.ComponentRegistrar" />
+167-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:32:17-82
+168            <meta-data
+168-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:33:13-35:85
+169                android:name="com.google.firebase.components:com.google.firebase.storage.StorageRegistrar"
+169-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:34:17-107
+170                android:value="com.google.firebase.components.ComponentRegistrar" />
+170-->[com.google.firebase:firebase-storage:20.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/0309ce92130280d161777138ff11800a/transformed/firebase-storage-20.3.0/AndroidManifest.xml:35:17-82
+171            <meta-data
+171-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:25:13-27:85
+172                android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckKtxRegistrar"
+172-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:26:17-120
+173                android:value="com.google.firebase.components.ComponentRegistrar" />
+173-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:27:17-82
+174            <meta-data
+174-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:28:13-30:85
+175                android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckRegistrar"
+175-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:29:17-117
+176                android:value="com.google.firebase.components.ComponentRegistrar" />
+176-->[com.google.firebase:firebase-appcheck:17.1.1] /Users/hongweiliu/.gradle/caches/transforms-4/ebc8b768e4a3b28c485935c42d073d83/transformed/firebase-appcheck-17.1.1/AndroidManifest.xml:30:17-82
+177            <meta-data
+177-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/bf39f15b69c4cdaba806cb2143347dd2/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:12:13-14:85
+178                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+178-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/bf39f15b69c4cdaba806cb2143347dd2/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:13:17-116
+179                android:value="com.google.firebase.components.ComponentRegistrar" />
+179-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/bf39f15b69c4cdaba806cb2143347dd2/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:14:17-82
+180            <meta-data
+180-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:35:13-37:85
+181                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+181-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:36:17-109
+182                android:value="com.google.firebase.components.ComponentRegistrar" />
+182-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:37:17-82
+183        </service>
+184
+185        <activity
+185-->[com.google.android.gms:play-services-base:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/d68d64a53335152ef0e776ffc2765a25/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+186            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+186-->[com.google.android.gms:play-services-base:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/d68d64a53335152ef0e776ffc2765a25/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+187            android:exported="false"
+187-->[com.google.android.gms:play-services-base:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/d68d64a53335152ef0e776ffc2765a25/transformed/play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+188            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+188-->[com.google.android.gms:play-services-base:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/d68d64a53335152ef0e776ffc2765a25/transformed/play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+189
+190        <provider
+190-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:23:9-28:39
+191            android:name="com.google.firebase.provider.FirebaseInitProvider"
+191-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:24:13-77
+192            android:authorities="com.example.cmput301project.firebaseinitprovider"
+192-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:25:13-72
+193            android:directBootAware="true"
+193-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:26:13-43
+194            android:exported="false"
+194-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:27:13-37
+195            android:initOrder="100" />
+195-->[com.google.firebase:firebase-common:20.4.2] /Users/hongweiliu/.gradle/caches/transforms-4/1f0ca1d84b03627cabfb4da6453b03a9/transformed/firebase-common-20.4.2/AndroidManifest.xml:28:13-36
+196
+197        <activity
+197-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:27:9-34:20
+198            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+198-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:28:13-99
+199            android:exported="true"
+199-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:29:13-36
+200            android:theme="@style/WhiteBackgroundTheme" >
+200-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:30:13-56
+201            <intent-filter android:priority="-100" >
+201-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:13-33:29
+201-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:28-51
+202                <category android:name="android.intent.category.LAUNCHER" />
+202-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:17-77
+202-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:27-74
+203            </intent-filter>
+204        </activity>
+205        <activity
+205-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:35:9-42:20
+206            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+206-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:36:13-95
+207            android:exported="true"
+207-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:37:13-36
+208            android:theme="@style/WhiteBackgroundTheme" >
+208-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:38:13-56
+209            <intent-filter android:priority="-100" >
+209-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:13-33:29
+209-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:28-51
+210                <category android:name="android.intent.category.LAUNCHER" />
+210-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:17-77
+210-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:27-74
+211            </intent-filter>
+212        </activity>
+213        <activity
+213-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:43:9-50:20
+214            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+214-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:44:13-103
+215            android:exported="true"
+215-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:45:13-36
+216            android:theme="@style/WhiteBackgroundDialogTheme" >
+216-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:46:13-62
+217            <intent-filter android:priority="-100" >
+217-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:13-33:29
+217-->[androidx.test:core:1.6.1] /Users/hongweiliu/.gradle/caches/transforms-4/b51f0216a37993843d5f6ead3afcb9d2/transformed/core-1.6.1/AndroidManifest.xml:31:28-51
+218                <category android:name="android.intent.category.LAUNCHER" />
+218-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:17-77
+218-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:46:27-74
+219            </intent-filter>
+220        </activity>
+221
+222        <provider
+222-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+223            android:name="androidx.startup.InitializationProvider"
+223-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+224            android:authorities="com.example.cmput301project.androidx-startup"
+224-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+225            android:exported="false" >
+225-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+226            <meta-data
+226-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+227                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+227-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+228                android:value="androidx.startup" />
+228-->[androidx.emoji2:emoji2:1.3.0] /Users/hongweiliu/.gradle/caches/transforms-4/636ea72c73d2ab2cfe1decd6abd5405c/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+229            <meta-data
+229-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/f1f878e48fe120c197b5245a597ccc76/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+230                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+230-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/f1f878e48fe120c197b5245a597ccc76/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+231                android:value="androidx.startup" />
+231-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/f1f878e48fe120c197b5245a597ccc76/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+232            <meta-data
+232-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+233                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+233-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+234                android:value="androidx.startup" />
+234-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+235        </provider>
+236
+237        <uses-library
+237-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:25:9-27:40
+238            android:name="androidx.window.extensions"
+238-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:26:13-54
+239            android:required="false" />
+239-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:27:13-37
+240        <uses-library
+240-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:28:9-30:40
+241            android:name="androidx.window.sidecar"
+241-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:29:13-51
+242            android:required="false" />
+242-->[androidx.window:window:1.0.0] /Users/hongweiliu/.gradle/caches/transforms-4/572574b3665da0dfd36278e1d37cefc7/transformed/window-1.0.0/AndroidManifest.xml:30:13-37
+243
+244        <meta-data
+244-->[com.google.android.gms:play-services-basement:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/78da0c928ae6fc04873c697502e1ac89/transformed/play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+245            android:name="com.google.android.gms.version"
+245-->[com.google.android.gms:play-services-basement:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/78da0c928ae6fc04873c697502e1ac89/transformed/play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+246            android:value="@integer/google_play_services_version" />
+246-->[com.google.android.gms:play-services-basement:18.1.0] /Users/hongweiliu/.gradle/caches/transforms-4/78da0c928ae6fc04873c697502e1ac89/transformed/play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+247
+248        <activity
+248-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:26:9-35:20
+249            android:name="androidx.fragment.app.testing.EmptyFragmentActivity"
+249-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:27:13-79
+250            android:exported="true"
+250-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:28:13-36
+251            android:multiprocess="true"
+251-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:29:13-40
+252            android:taskAffinity=""
+252-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:30:13-36
+253            android:theme="@style/FragmentScenarioEmptyFragmentActivityTheme" >
+253-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:31:13-78
+254            <intent-filter>
+254-->[androidx.fragment:fragment-testing-manifest:1.6.2] /Users/hongweiliu/.gradle/caches/transforms-4/47d9a39fd242bc57fe1c27888d408818/transformed/fragment-testing-manifest-1.6.2/AndroidManifest.xml:32:13-34:29
+255                <action android:name="android.intent.action.MAIN" />
+255-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:45:17-69
+255-->/Users/hongweiliu/Desktop/nebula1-space-newMain/CMPUT301Project/app/src/main/AndroidManifest.xml:45:25-66
+256            </intent-filter>
+257        </activity>
+258
+259        <receiver
+259-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+260            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+260-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+261            android:directBootAware="false"
+261-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+262            android:enabled="true"
+262-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+263            android:exported="true"
+263-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+264            android:permission="android.permission.DUMP" >
+264-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+265            <intent-filter>
+265-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+266                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+266-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+266-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+267            </intent-filter>
+268            <intent-filter>
+268-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+269                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+269-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+269-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+270            </intent-filter>
+271            <intent-filter>
+271-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+272                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+272-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+272-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+273            </intent-filter>
+274            <intent-filter>
+274-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+275                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+275-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+275-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/hongweiliu/.gradle/caches/transforms-4/023ccb1597da90fd48428e50ab87501b/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+276            </intent-filter>
+277        </receiver>
+278    </application>
+279
+280</manifest>

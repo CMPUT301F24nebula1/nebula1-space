@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="charcoal">#333333</color>
+    <color name="colorHint">#808080</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="grey">#534654</color>
+    <color name="light_blue">#F8FCFF</color>
+    <color name="light_grey">#D9D9D9</color>
+    <color name="light_pink">#FEF7FF</color>
+    <color name="light_purple">#E8DEF8</color>
+    <color name="purple">#6A673AB7</color>
+    <color name="white">#FFFFFFFF</color>
+    <dimen name="fab_margin">16dp</dimen>
+    <string name="Edit">Edit</string>
+    <string name="Name">Name</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_event_fragment_label">Add Event</string>
+    <string name="admin">Admin</string>
+    <string name="app_name">CMPUT301Project</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete_image">Delete Image</string>
+    <string name="edit_profile_picture">Edit Profile Picture</string>
+    <string name="email">Email</string>
+    <string name="event_list_fragment_label">Events</string>
+    <string name="event_list_title">Events</string>
+    <string name="gcm_defaultSenderId" translatable="false">463670061705</string>
+    <string name="google_api_key" translatable="false">AIzaSyDatQorEG4kfAt1DSqHLifLd6Qnj5C85cU</string>
+    <string name="google_app_id" translatable="false">1:463670061705:android:e88a7d7ec8d86df0a1b458</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDatQorEG4kfAt1DSqHLifLd6Qnj5C85cU</string>
+    <string name="google_maps_key" translatable="false">PUTAPIKEYHERE</string>
+    <string name="google_storage_bucket" translatable="false">cmput301-f24-nebula1.appspot.com</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="homepage_fragment_label">Entrant Homepage</string>
+    <string name="image">Profile Icon\n</string>
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+    </string>
+    <string name="manage_images">Manage Images</string>
+    <string name="name">Name</string>
+    <string name="next">Next</string>
+    <string name="optional">Optional</string>
+    <string name="organizer_event_list_fragment_label">Events</string>
+    <string name="organizer_homepage_fragment_label">Home</string>
+    <string name="phone_number">Phone number</string>
+    <string name="poster_title">Poster title</string>
+    <string name="previous">Previous</string>
+    <string name="profile_fragment_label">Profile</string>
+    <string name="profile_picture">Profile</string>
+    <string name="profile_title">Profile</string>
+    <string name="project_id" translatable="false">cmput301-f24-nebula1</string>
+    <style name="Base.Theme.CMPUT301Project" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="actionMenuTextColor">#000000</item>
+        
+        
+    </style>
+    <style name="CustomHintTextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">#808080</item> 
+        <item name="android:textSize">14sp</item>      
+    </style>
+    <style name="FancyHintText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="FancyTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+
+        
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxStrokeColor">@color/text_input_selector</item>
+
+        <item name="hintTextColor">@color/colorHint</item>
+
+        
+        <item name="boxStrokeErrorColor">#FF6F61</item> 
+        <item name="hintTextAppearance">@style/FancyHintText</item>
+    </style>
+    <style name="LeftRoundedButtonShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+    <style name="RightRoundedButtonShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+    <style name="Theme.CMPUT301Project" parent="Base.Theme.CMPUT301Project"/>
+</resources>
