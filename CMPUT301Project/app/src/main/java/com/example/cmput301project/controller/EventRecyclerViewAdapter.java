@@ -52,6 +52,8 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         if(event.getStartDate() != null) { holder.eventStartDate.setText("Start date: " + event.getStartDate());}
         if(event.getEndDate() != null){holder.eventEndDate.setText("End date: " + event.getEndDate());}
 
+        // Clear the ImageView before loading a new image
+        Glide.with(context).clear(holder.eventPoster);
 
         // Load image
         if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
@@ -60,6 +62,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_image) // Replace with your error image
                     .into(holder.eventPoster);
+            holder.eventPoster.setVisibility(View.VISIBLE);
         }else{
             holder.eventPoster.setVisibility(View.GONE);
         }
