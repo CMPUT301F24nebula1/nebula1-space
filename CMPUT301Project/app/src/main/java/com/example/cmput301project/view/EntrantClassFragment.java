@@ -5,8 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Holding global variables
@@ -71,9 +74,11 @@ public class EntrantClassFragment extends Fragment {
             entrant = entrant1;
             wishlistEventIds = entrant.getWaitlistEventIds();
 
+            lockUI();
             retrieveEvents(entrant, new EventsCallback() {
                 @Override
                 public void onEventsRetrieved(ArrayList<Event> events) {
+                    unlockUI();
                     listenToEntrantWaitlist(entrant.getId(), new WaitlistCallback() {
                         @Override
                         public void onWaitlistUpdated(Map<String, String> waitlistMap) {
@@ -92,10 +97,15 @@ public class EntrantClassFragment extends Fragment {
                                 CategorizedEventAdapter categorizedAdapter = new CategorizedEventAdapter(getContext(), sortedEvents);
                                 eventList.setAdapter(categorizedAdapter);
                             }
-
                         }
                     });
 
+                }
+
+                @Override
+                public void emptyEvents() {
+                    unlockUI();
+                    Toast.makeText(getContext(), "No classes!", Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -163,6 +173,7 @@ public class EntrantClassFragment extends Fragment {
 
     public interface EventsCallback {
         void onEventsRetrieved(ArrayList<Event> events);
+        void emptyEvents();
     }
 
     public void retrieveEvents(Entrant entrant, EventsCallback callback) {
@@ -170,6 +181,14 @@ public class EntrantClassFragment extends Fragment {
         ArrayList<String> wishlistEventIds = entrant.getWaitlistEventIds();
 
         events.clear();
+
+        if (wishlistEventIds.isEmpty()) {
+            callback.emptyEvents();
+            return;
+        }
+
+        // Counter for processed IDs
+        AtomicInteger processedCount = new AtomicInteger(0);
 
         // Loop through each event ID in the wishlist
         for (String eventId : wishlistEventIds) {
@@ -184,24 +203,41 @@ public class EntrantClassFragment extends Fragment {
                                         .collection("events").document(eventId)
                                         .get()
                                         .addOnCompleteListener(eventTask -> {
+                                            processedCount.incrementAndGet(); // Increment the counter
+
                                             if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
                                                 Event event = eventTask.getResult().toObject(Event.class);
                                                 events.add(event); // Add the found event to the list
-                                                if (events.size() == wishlistEventIds.size()) {
-//                                                    eventAdapter.notifyDataSetChanged();
-                                                    Log.d("My class after retrieve", events.toString());
-                                                    callback.onEventsRetrieved(events); // Trigger callback when done
+                                            }
+
+                                            // If all IDs are processed, trigger the callback
+                                            if (processedCount.get() == wishlistEventIds.size()) {
+                                                if (events.isEmpty()) {
+                                                    callback.emptyEvents(); // No valid events found
+                                                } else {
+                                                    callback.onEventsRetrieved(events); // Found events
                                                 }
                                             }
                                         });
                             }
                         } else {
+                            processedCount.incrementAndGet(); // Increment for the current ID
+
+                            // If all IDs are processed, trigger the callback
+                            if (processedCount.get() == wishlistEventIds.size()) {
+                                if (events.isEmpty()) {
+                                    callback.emptyEvents(); // No valid events found
+                                } else {
+                                    callback.onEventsRetrieved(events); // Found events
+                                }
+                            }
+
                             Log.d("Firebase", "Error getting event documents: ", task.getException());
                         }
                     });
         }
-
     }
+
 
     public interface WaitlistCallback {
         void onWaitlistUpdated(Map<String, String> waitlistMap);
@@ -243,6 +279,18 @@ public class EntrantClassFragment extends Fragment {
                 callback.onWaitlistUpdated(waitlistMap);
             }
         });
+    }
+
+    private void lockUI() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
 }
