@@ -580,8 +580,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -590,6 +592,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirebaseServer implements FirebaseInterface {
     private FirebaseFirestore db;
@@ -1264,25 +1267,82 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnFailureListener(onFailure);
     }
 
+//    public void deleteEvent(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+//        if (organizerId == null || organizerId.isEmpty() || eventId == null || eventId.isEmpty()) {
+//            onFailure.onFailure(new Exception("Invalid organizerId or eventId"));
+//            return;
+//        }
+//        db.collection("organizers")
+//                .document(organizerId)
+//                .collection("events")
+//                .document(eventId)
+//                .delete()
+//                .addOnSuccessListener(aVoid -> {
+//                    Log.d("FirebaseServer", "Event deleted successfully: " + eventId);
+//                    onSuccess.onSuccess(aVoid);
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("FirebaseServer", "Error deleting event: " + eventId, e);
+//                    onFailure.onFailure(e);
+//                });
+//    }
+
     public void deleteEvent(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         if (organizerId == null || organizerId.isEmpty() || eventId == null || eventId.isEmpty()) {
             onFailure.onFailure(new Exception("Invalid organizerId or eventId"));
             return;
         }
-        db.collection("organizers")
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("organizers")
                 .document(organizerId)
                 .collection("events")
-                .document(eventId)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("FirebaseServer", "Event deleted successfully: " + eventId);
-                    onSuccess.onSuccess(aVoid);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FirebaseServer", "Error deleting event: " + eventId, e);
-                    onFailure.onFailure(e);
-                });
+                .document(eventId);
+
+        // Step 1: Delete the "userId" subcollection
+        deleteSubcollection(eventRef.collection("userId"), db, new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // Step 2: Delete the parent document
+                eventRef.delete()
+                        .addOnSuccessListener(aVoid1 -> {
+                            Log.d("FirebaseServer", "Event and subcollections deleted successfully: " + eventId);
+                            onSuccess.onSuccess(aVoid1);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("FirebaseServer", "Error deleting event document: " + eventId, e);
+                            onFailure.onFailure(e);
+                        });
+            }
+        }, e -> {
+            Log.e("FirebaseServer", "Error deleting subcollection 'userId' for event: " + eventId, e);
+            onFailure.onFailure(e);
+        });
     }
+
+    private void deleteSubcollection(CollectionReference subcollection, FirebaseFirestore db, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        subcollection.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                WriteBatch batch = db.batch();
+                for (DocumentSnapshot document : task.getResult()) {
+                    batch.delete(document.getReference());
+                }
+
+                // Commit the batch to delete all documents in the subcollection
+                batch.commit()
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("FirebaseServer", "Subcollection deleted successfully: " + subcollection.getPath());
+                            onSuccess.onSuccess(null);
+                        })
+                        .addOnFailureListener(onFailure::onFailure);
+            } else {
+                onFailure.onFailure(task.getException());
+            }
+        });
+    }
+
+
+
 
 
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {

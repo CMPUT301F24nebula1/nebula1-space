@@ -183,60 +183,71 @@ public class EntrantClassFragment extends Fragment {
         events.clear();
 
         if (wishlistEventIds.isEmpty()) {
+            Log.d("entrant class", "debug1");
             callback.emptyEvents();
             return;
         }
 
-        // Counter for processed IDs
+        // Counter for processed event IDs
         AtomicInteger processedCount = new AtomicInteger(0);
+        int totalEventIds = wishlistEventIds.size();
 
-        // Loop through each event ID in the wishlist
         for (String eventId : wishlistEventIds) {
-            // Query each organizer's "events" subcollection for an event with the matching ID
-            db.collection("organizers")
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
-                                // Access the "events" subcollection for each organizer
-                                db.collection("organizers").document(organizerDoc.getId())
-                                        .collection("events").document(eventId)
-                                        .get()
-                                        .addOnCompleteListener(eventTask -> {
-                                            processedCount.incrementAndGet(); // Increment the counter
+            Log.d("entrant class", eventId);
 
-                                            if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
-                                                Event event = eventTask.getResult().toObject(Event.class);
-                                                events.add(event); // Add the found event to the list
-                                            }
+            // Query all organizers for the current event ID
+            db.collection("organizers").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    AtomicInteger organizerProcessedCount = new AtomicInteger(0);
+                    boolean[] eventFound = {false}; // Use an array to allow modification in inner classes
 
-                                            // If all IDs are processed, trigger the callback
-                                            if (processedCount.get() == wishlistEventIds.size()) {
-                                                if (events.isEmpty()) {
-                                                    callback.emptyEvents(); // No valid events found
-                                                } else {
-                                                    callback.onEventsRetrieved(events); // Found events
-                                                }
+                    for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
+                        // Access the "events" subcollection for each organizer
+                        db.collection("organizers").document(organizerDoc.getId())
+                                .collection("events").document(eventId)
+                                .get()
+                                .addOnCompleteListener(eventTask -> {
+                                    organizerProcessedCount.incrementAndGet(); // Track organizer checks for this eventId
+
+                                    if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+                                        if (!eventFound[0]) { // Ensure we only add the event once
+                                            Event event = eventTask.getResult().toObject(Event.class);
+                                            events.add(event);
+                                            eventFound[0] = true;
+                                        }
+                                    }
+
+                                    // Once all organizers are processed for this eventId
+                                    if (organizerProcessedCount.get() == task.getResult().size()) {
+                                        processedCount.incrementAndGet(); // Increment only once for this eventId
+                                        if (processedCount.get() == totalEventIds) {
+                                            if (events.isEmpty()) {
+                                                Log.d("entrant class", "debug2");
+                                                callback.emptyEvents(); // No valid events found
+                                            } else {
+                                                callback.onEventsRetrieved(events); // Found events
                                             }
-                                        });
-                            }
+                                        }
+                                    }
+                                });
+                    }
+                } else {
+                    // If the organizer query fails, treat this eventId as processed
+                    processedCount.incrementAndGet();
+                    if (processedCount.get() == totalEventIds) {
+                        if (events.isEmpty()) {
+                            Log.d("entrant class", "debug3");
+                            callback.emptyEvents();
                         } else {
-                            processedCount.incrementAndGet(); // Increment for the current ID
-
-                            // If all IDs are processed, trigger the callback
-                            if (processedCount.get() == wishlistEventIds.size()) {
-                                if (events.isEmpty()) {
-                                    callback.emptyEvents(); // No valid events found
-                                } else {
-                                    callback.onEventsRetrieved(events); // Found events
-                                }
-                            }
-
-                            Log.d("Firebase", "Error getting event documents: ", task.getException());
+                            callback.onEventsRetrieved(events);
                         }
-                    });
+                    }
+                    Log.d("Firebase", "Error getting organizers: ", task.getException());
+                }
+            });
         }
     }
+
 
 
     public interface WaitlistCallback {

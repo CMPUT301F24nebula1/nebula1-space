@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -83,6 +85,28 @@ public class OrganizerFacilityProfileFragment extends Fragment {
         t_name = binding.entrantProfileName;
         t_email = binding.entrantProfileEmail;
         t_phone = binding.entrantProfilePhone;
+
+        // Custom behavior for tName
+        t_name.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
+
+        t_email.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
+
+        t_phone.setOnEditorActionListener((v, actionId, event) -> {
+            // Prevent moving to the next EditText
+            v.clearFocus();
+            hideKeyboard(v);
+            return true; // Indicate the action is handled
+        });
 
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer1 -> {
             organizer = organizer1;
@@ -457,6 +481,14 @@ public class OrganizerFacilityProfileFragment extends Fragment {
         binding.progressBar.setVisibility(View.GONE);
         binding.mainLayout.setAlpha(1.0f); // Restore background opacity
         requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    // Helper method to hide the keyboard
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager)requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 }
