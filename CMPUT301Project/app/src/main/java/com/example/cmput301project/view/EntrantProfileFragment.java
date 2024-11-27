@@ -418,9 +418,9 @@ public class EntrantProfileFragment extends Fragment {
             binding.rfiks2zoyc1.setBackground(getResources().getDrawable(R.drawable.grey_border));
             binding.ruyuoa2jj66p.setBackground(getResources().getDrawable(R.drawable.grey_border));
             binding.rntsn8cfg1cd.setBackground(getResources().getDrawable(R.drawable.grey_border));
-            t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
-            t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
-            t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E9E9E9FF")));
+            t_name.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#00FFFFFF")));
+            t_email.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#00FFFFFF")));
+            t_phone.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#00FFFFFF")));
             editImageButton.setVisibility(View.INVISIBLE);
         }
         t_email.setEnabled(enabled);

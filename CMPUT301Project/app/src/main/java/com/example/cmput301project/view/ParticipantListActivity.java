@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -104,6 +105,9 @@ public class ParticipantListActivity extends AppCompatActivity {
         notifyButton = findViewById(R.id.notify_button);
         progressBar = findViewById(R.id.progressBar);
         mainLayout = findViewById(R.id.main_layout);
+        TextView capacity = findViewById(R.id.capacity_text);
+
+        capacity.setVisibility(View.GONE);
 
         setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -604,6 +608,10 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             setButtonInvisible();
             entrantAdapter.setCheckboxVisibility(true);
             cancelButton.setVisibility(View.VISIBLE);
+            if (entrants_selected.isEmpty()) {
+                cancelButton.setAlpha(0.2f);
+                cancelButton.setClickable(false);
+            }
             status = "SELECTED";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
             updateEntrantsList(new ArrayList<>(entrants_canceled));
@@ -653,6 +661,7 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
         else if (waitingListLength == 0) {
             slider.setValue(1f);
             slider.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.GONE);
         }
         if (entrantAdapter != null)
             entrantAdapter.setCheckboxVisibility(false);
