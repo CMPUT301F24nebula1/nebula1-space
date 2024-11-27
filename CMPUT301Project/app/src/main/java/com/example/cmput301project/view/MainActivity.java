@@ -356,6 +356,13 @@ public class MainActivity extends AppCompatActivity {
                                 Log.w("Firestore", "Error retrieving entrant data", e);
                             });
                 }
+                else {
+                    UserController.updateUserRole(id, "entrant");
+                    addEntrant(new Entrant(userId));
+                    Entrant entrant = new Entrant(userId);
+                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                    unlockUI();
+                }
                 if (roles != null && roles.contains("organizer")) {
                     // set up organizer part for this user
                     lockUI();

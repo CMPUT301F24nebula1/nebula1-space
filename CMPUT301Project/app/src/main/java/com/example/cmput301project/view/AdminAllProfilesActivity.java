@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.ProfileRecyclerViewAdapter;
 import com.example.cmput301project.model.Entrant;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -117,14 +118,44 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
         db.collection("entrants").document(entrant.getId())
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
-                    entrantList.remove(position); // Remove from the list
-                    profileAdapter.notifyItemRemoved(position); // Notify adapter
+                    deleteUserRole("entrant", entrant.getId(), new DeleteRoleCallback() {
+                        @Override
+                        public void onSuccess(String message) {
+                            Toast.makeText(AdminAllProfilesActivity.this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
+                            entrantList.remove(position); // Remove from the list
+                            profileAdapter.notifyItemRemoved(position); // Notify adapter
+                        }
+                        @Override
+                        public void onFailure(String error) {
+                            Toast.makeText(AdminAllProfilesActivity.this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    public interface DeleteRoleCallback {
+        void onSuccess(String message);
+        void onFailure(String error);
+    }
+
+    private void deleteUserRole(String role, String id, DeleteRoleCallback callback) {
+        // Reference the specific document in the "users" collection
+        db.collection("users").document(id)
+                .update("role", FieldValue.arrayRemove(role))
+                .addOnSuccessListener(aVoid -> {
+                    String message = "Successfully removed '" + role + "' from the role array of document: " + id;
+                    callback.onSuccess(message);
+                })
+                .addOnFailureListener(e -> {
+                    String error = "Error removing '" + role + "' from document " + id + ": " + e.getMessage();
+                    callback.onFailure(error);
+                });
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
