@@ -172,6 +172,15 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
                 if (category.equals("WAITING")) {
                     if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                        try {
+                            if (app.getEntrant().getName().isEmpty() || app.getEntrant().getEmail().isEmpty()) {
+                                Toast.makeText(getContext(), "You cannot join an event waitlist without providing your name and email.!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        } catch (NullPointerException e) {
+                            Toast.makeText(getContext(), "You cannot join an event waitlist without providing your name and email.!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());

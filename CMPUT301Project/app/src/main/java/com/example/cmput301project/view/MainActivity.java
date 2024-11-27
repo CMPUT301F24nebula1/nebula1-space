@@ -9,11 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 
-import android.location.Location;
-import android.location.LocationListener;
 import androidx.annotation.NonNull;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
@@ -29,7 +26,6 @@ import androidx.navigation.ui.NavigationUI;
 
 //import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
-import com.example.cmput301project.controller.LocationHelper;
 import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
@@ -42,8 +38,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.shape.MaterialShapeDrawable;
-import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,9 +56,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -203,7 +197,17 @@ public class MainActivity extends AppCompatActivity {
 
         if ("entrantEventViewFragment".equals(navigateTo)) {
             Log.d("MainActivity", "Navigating to entrantEventView");
-            findEventInAllOrganizers(eventId, navController);
+            findEventInAllOrganizers(eventId, navController, new FirebaseCallback() {
+                @Override
+                public void onSuccess(Object result) {
+                    ;
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(MainActivity.this, "Invalid QR code.", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         createNotificationChannel(this);
     }
@@ -216,11 +220,19 @@ public class MainActivity extends AppCompatActivity {
                 .commitNow();;
     }
 
-    public void findEventInAllOrganizers(String eventId, NavController nc) {
+    public void findEventInAllOrganizers(String eventId, NavController nc, FirebaseCallback callback) {
+        if (!isValidUUID(eventId)) {
+            callback.onFailure(null);
+            return;
+        }
+        AtomicBoolean isFound = new AtomicBoolean(false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference organizersRef = db.collection("organizers");
         organizersRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
+
+                int totalOrganizers = task.getResult().size();
+                AtomicInteger processedOrganizers = new AtomicInteger(0);
 
                 for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
                     String organizerId = organizerDoc.getId();
@@ -229,7 +241,10 @@ public class MainActivity extends AppCompatActivity {
                     CollectionReference eventsRef = organizersRef.document(organizerId).collection("events");
 
                     eventsRef.document(eventId).get().addOnCompleteListener(eventTask -> {
+                        processedOrganizers.incrementAndGet();
+
                         if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+                            isFound.set(true);
                             Event event = eventTask.getResult().toObject(Event.class);
 
                             ArrayList<String> userIdList = new ArrayList<>();
@@ -259,10 +274,14 @@ public class MainActivity extends AppCompatActivity {
                                     });
                             Log.d("wishlist of event2", event.getWaitlistEntrantIds().toString());
 
-
+                            if (callback != null)
+                                callback.onSuccess(null);
                         } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
 //                            Toast.makeText(this, "Invalid qr code.", Toast.LENGTH_SHORT).show();
                             Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
+                        } else if (processedOrganizers.get() == totalOrganizers && !isFound.get()) {
+                            // When all organizers are processed and no match is found
+                            callback.onFailure(null);
                         } else {
                             Log.w("Firestore", "Error getting event", eventTask.getException());
                         }
@@ -668,6 +687,15 @@ public class MainActivity extends AppCompatActivity {
 
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public boolean isValidUUID(String uuid) {
+        try {
+            UUID.fromString(uuid);
+            return true; // The string is a valid UUID
+        } catch (IllegalArgumentException e) {
+            return false; // The string is not a valid UUID
         }
     }
 

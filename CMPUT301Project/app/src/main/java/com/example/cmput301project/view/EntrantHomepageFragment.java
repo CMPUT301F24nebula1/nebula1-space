@@ -125,7 +125,7 @@ public class EntrantHomepageFragment extends Fragment {
                     if (entrant1 != null) {
                         try {
                             Log.d("My Classes", entrant1.getWaitlistEventIds().toString());
-                            Toast.makeText(getContext(), "Loading!", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getContext(), "Loading!", Toast.LENGTH_SHORT).show();
                         } catch (NullPointerException e) {
                             Log.d("My Classes", "No class");
                             Toast.makeText(getContext(), "Class data is not ready yet.", Toast.LENGTH_SHORT).show();
