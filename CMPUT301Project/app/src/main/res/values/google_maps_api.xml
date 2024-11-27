@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="google_maps_key" translatable="false">AIzaSyBD7z9oJ_EE96W049-JEm2bU6BYBvq5tnw</string>
+    <string name="google_maps_key" translatable="false">PUTAPIKEYHERE</string>
 </resources>
