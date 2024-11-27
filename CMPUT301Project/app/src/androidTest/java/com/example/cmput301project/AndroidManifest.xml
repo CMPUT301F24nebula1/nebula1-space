@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.cmput301project.androidTest">
+
+    <application>
+        <!-- Add any test-specific configurations here -->
+        android:name="com.example.cmput301project.TestMyApplication"
+        <uses-library android:name="android.test.runner" android:required="false" />
+        
+
+    </application>
+</manifest>

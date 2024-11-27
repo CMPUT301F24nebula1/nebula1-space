@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <FrameLayout
+        android:id="@+id/profile_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/profile_button"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/transparent"
+            app:cornerRadius="24dp"
+            app:icon="@drawable/ic_profile"
+            app:iconSize="36dp"
+            app:iconTint="@android:color/black" />
+
+        <View
+            android:id="@+id/notification_badge"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/badge_background"
+            android:layout_gravity="end|top"
+            android:layout_margin="2dp"
+            android:visibility="gone" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/badge_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="end|bottom"-->
+<!--            android:layout_marginEnd="4dp"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:background="@drawable/badge_background"-->
+<!--            android:gravity="center"-->
+<!--            android:text=" "-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="10sp" />-->
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/scan_qr_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageButton
+            android:id="@+id/scan_qr_button"
+            android:layout_width="140dp"
+            android:layout_height="113dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_qr_scan"
+            app:tint="@android:color/black" />
+
+        <TextView
+            android:id="@+id/scan_qr_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Scan QR Code"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/my_class_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#78673AB7"
+        android:drawableLeft="@drawable/ic_list"
+        android:drawablePadding="8dp"
+        android:text="My Classes"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scan_qr_layout"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
