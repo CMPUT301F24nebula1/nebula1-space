@@ -277,10 +277,6 @@ public class ParticipantListActivity extends AppCompatActivity {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            Intent mapIntent = new Intent(ParticipantListActivity.this, MapActivity.class);
-            mapIntent.putExtra("entrants", entrants_waitlist); // Passing entrant data
-            startActivity(mapIntent);
         });
 
 
