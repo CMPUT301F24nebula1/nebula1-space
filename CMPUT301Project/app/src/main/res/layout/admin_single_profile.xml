@@ -21,11 +21,13 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
+                android:background="#FDE0F3"
+                android:fitsSystemWindows="true"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:title="Profile"
-                app:titleTextColor="@android:color/white" />
+                app:titleTextColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/profileTitle"

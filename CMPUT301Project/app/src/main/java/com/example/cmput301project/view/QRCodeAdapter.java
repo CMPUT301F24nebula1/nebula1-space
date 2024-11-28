@@ -24,14 +24,21 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
     private List<Event> events;
     private OnQRCodeSelectedListener selectedListener;
     private int selectedPosition = -1;
+    private QRCodeClickListener qrCodeClickListener;
+
 
     public interface OnQRCodeSelectedListener {
         void onQRCodeSelected(Event event);
     }
+    public interface QRCodeClickListener {
+        void onQRCodeClick(Bitmap qrCodeBitmap);
+    }
 
-    public QRCodeAdapter(List<Event> events, OnQRCodeSelectedListener selectedListener) {
+
+    public QRCodeAdapter(List<Event> events, OnQRCodeSelectedListener selectedListener, QRCodeClickListener qrCodeClickListener) {
         this.events = events;
         this.selectedListener = selectedListener;
+        this.qrCodeClickListener = qrCodeClickListener;
     }
 
     @NonNull
@@ -40,6 +47,7 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.qrcode_list, parent, false);
         return new QRCodeViewHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull QRCodeViewHolder holder, int position) {
@@ -54,6 +62,12 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
             if (qrCodeBitmap != null) {
                 // Display the QR code
                 holder.qrCodeImageView.setImageBitmap(qrCodeBitmap);
+                // Add click listener to display enlarged QR code
+                holder.qrCodeImageView.setOnClickListener(v -> {
+                    if (qrCodeClickListener != null) {
+                        qrCodeClickListener.onQRCodeClick(qrCodeBitmap);
+                    }
+                });
             }
         } else {
             holder.qrCodeImageView.setVisibility(View.INVISIBLE); // No QR code exists
@@ -88,5 +102,3 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         }
     }
 }
-
-

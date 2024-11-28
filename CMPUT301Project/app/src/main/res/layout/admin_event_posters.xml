@@ -7,16 +7,17 @@
     android:layout_height="match_parent"
     android:background="@drawable/homepage">
 
-    <!-- Toolbar with back button and user icon -->
+    <!-- Toolbar with back button -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
         app:navigationIcon="?attr/homeAsUpIndicator"
+        android:fitsSystemWindows="true"
         app:title="Event Posters"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:background="#FDE0F3" />
 
     <!-- Search bar -->
     <androidx.cardview.widget.CardView
@@ -24,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         app:cardCornerRadius="104dp"
         app:cardBackgroundColor="#ECE6F0"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -48,7 +50,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- RecyclerView for displaying images -->
+    <!-- RecyclerView for images -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -59,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Delete Button at the bottom -->
+    <!-- Delete Button -->
     <Button
         android:id="@+id/deletePoster"
         android:layout_width="wrap_content"
