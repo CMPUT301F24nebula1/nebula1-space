@@ -12,10 +12,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="#FDE0F3"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        app:title="Event Posters"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="Event Posters"
         tools:ignore="MissingConstraints" />
 
     <!-- Search bar -->
