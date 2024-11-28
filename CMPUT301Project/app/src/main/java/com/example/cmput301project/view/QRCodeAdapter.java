@@ -1,18 +1,20 @@
 package com.example.cmput301project.view;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.QRCodeGenerator;
 import com.example.cmput301project.model.Event;
@@ -54,6 +56,11 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
             if (qrCodeBitmap != null) {
                 // Display the QR code
                 holder.qrCodeImageView.setImageBitmap(qrCodeBitmap);
+
+                // Add click listener to enlarge the QR code
+                holder.qrCodeImageView.setOnClickListener(v -> {
+                    showEnlargedQRCode(holder.qrCodeImageView.getContext(), qrCodeBitmap);
+                });
             }
         } else {
             holder.qrCodeImageView.setVisibility(View.INVISIBLE); // No QR code exists
@@ -75,6 +82,19 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
     @Override
     public int getItemCount() {
         return events.size();
+    }
+
+    private void showEnlargedQRCode(Context context, Bitmap qrCodeBitmap) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_enlarged_photo, null);
+        builder.setView(dialogView);
+
+        ImageView enlargedQrCodeImageView = dialogView.findViewById(R.id.enlargedImage);
+        enlargedQrCodeImageView.setImageBitmap(qrCodeBitmap);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     static class QRCodeViewHolder extends RecyclerView.ViewHolder {
