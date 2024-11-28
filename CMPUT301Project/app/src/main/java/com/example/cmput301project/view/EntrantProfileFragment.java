@@ -4,6 +4,7 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static androidx.core.content.ContextCompat.getSystemService;
 import static com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,6 +51,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -280,32 +282,6 @@ public class EntrantProfileFragment extends Fragment {
             return false;
         }
     }
-
-//    private void toggleImageSize() {
-//        if (isImageEnlarged) {
-//            // Shrink back to original size
-//            ScaleAnimation shrinkAnimation = new ScaleAnimation(
-//                    2.0f, 1.0f,   // Start and end values for the X axis scaling
-//                    2.0f, 1.0f,   // Start and end values for the Y axis scaling
-//                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
-//                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
-//            shrinkAnimation.setDuration(300);
-//            shrinkAnimation.setFillAfter(true); // Keeps the result of the animation
-//            imageView.startAnimation(shrinkAnimation);
-//        } else {
-//            // Enlarge the image
-//            ScaleAnimation enlargeAnimation = new ScaleAnimation(
-//                    1.0f, 2.0f,   // Start and end values for the X axis scaling
-//                    1.0f, 2.0f,   // Start and end values for the Y axis scaling
-//                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
-//                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
-//            enlargeAnimation.setDuration(300);
-//            enlargeAnimation.setFillAfter(true); // Keeps the result of the animation
-//            imageView.startAnimation(enlargeAnimation);
-//        }
-//        // Toggle the boolean flag
-//        isImageEnlarged = !isImageEnlarged;
-//    }
 
     private void toggleImageSize() {
         if (!isImageEnlarged) {
@@ -626,9 +602,9 @@ public class EntrantProfileFragment extends Fragment {
                     unlockUI();
                     popupWindow.dismiss();
                     if (entrant.getReceiveNotification())
-                        Toast.makeText(getContext(), "Notifications enabled.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "In-app notifications enabled.", Toast.LENGTH_SHORT).show();
                     else
-                        Toast.makeText(getContext(), "Notifications stopped.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "In-app notifications stopped.", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -890,6 +866,7 @@ public class EntrantProfileFragment extends Fragment {
 
         Boolean flag;
         if (entrant.getReceiveNotification()) {
+//            showDisableNotificationsDialog();
             flag = false;
             entrant.setReceiveNotification(false);
         } else {
@@ -918,6 +895,52 @@ public class EntrantProfileFragment extends Fragment {
                         callback.onFailure(e);
                     }
                 });
+    }
+
+    public interface PermissionCallback {
+        void onPermissionGranted();
+        void onPermissionDenied();
+    }
+
+    private void requestNotificationPermission(MainActivity.PermissionCallback callback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+
+                this.permissionCallback = callback;
+            } else {
+                callback.onPermissionGranted();
+            }
+        } else {
+            callback.onPermissionGranted();
+        }
+    }
+
+    private MainActivity.PermissionCallback permissionCallback;
+
+    private void showDisableNotificationsDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Disable Notifications")
+                .setMessage("To stop system notifications, you need to turn them off in the app settings.")
+                .setPositiveButton("Go to Settings", (dialog, which) -> {
+                    // Open the app's notification settings
+                    Intent intent = new Intent();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                        intent.putExtra("android.provider.extra.APP_PACKAGE", requireContext().getPackageName());
+                    } else {
+                        // Fallback for older Android versions
+                        intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                        Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+                        intent.setData(uri);
+                    }
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 
     // Helper method to hide the keyboard
