@@ -1,0 +1,59 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Facility Image -->
+        <ImageView
+            android:id="@+id/facilityImageView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_image" />
+
+        <!-- Facility Name -->
+        <TextView
+            android:id="@+id/facilityNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/facilityImageView"
+            android:text="Facility Name"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Facility Phone -->
+        <TextView
+            android:id="@+id/facilityPhoneTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/facilityNameTextView"
+            android:layout_toEndOf="@id/facilityImageView"
+            android:layout_marginTop="4dp"
+            android:text="123-456-7890"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp" />
+
+        <!-- Delete Button -->
+        <ImageButton
+            android:id="@+id/deleteFacilityButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:contentDescription="Delete Facility"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/colorPrimary" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
