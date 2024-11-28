@@ -48,7 +48,7 @@
         </activity>
 
         <!-- Other activities -->
-        <activity android:name=".view.EditProfileActivity" android:exported="false" />
+        <activity android:name=".view.EntrantHomepageFragment" android:exported="false" />
         <activity android:name=".view.ScannerActivity" android:exported="false"/>
         <activity android:name=".view.ParticipantListActivity" android:exported="false"/>
         <activity android:name=".pooling.EntrantStatusActivity" android:exported="false"/>

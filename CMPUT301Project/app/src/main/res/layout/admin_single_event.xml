@@ -7,16 +7,17 @@ android:layout_height="match_parent"
 android:padding="16dp"
 android:background="@drawable/homepage">
 
-<!-- Toolbar with back button and title -->
+<!-- Toolbar with back button-->
 <androidx.appcompat.widget.Toolbar
-    android:id="@+id/toolbar"
+    android:id="@+id/toolbar_single_event"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/light_purple"
+    android:background="#FDE0F3"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-
+    app:navigationIcon="?attr/homeAsUpIndicator"
+    android:fitsSystemWindows="true"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:title="Event"
     app:titleTextAppearance="@style/TextAppearance.AppCompat.Large" />
@@ -29,10 +30,11 @@ android:background="@drawable/homepage">
     android:text="Event"
     android:textStyle="bold"
     android:textSize="20sp"
-    app:layout_constraintTop_toBottomOf="@id/toolbar"
+    app:layout_constraintTop_toBottomOf="@id/toolbar_single_event"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="16dp" />
+    android:layout_marginTop="16dp"
+    android:layout_marginStart="8dp"/>
     <!-- Event Start Date -->
     <TextView
         android:id="@+id/eventStartDateTextView"
@@ -44,7 +46,8 @@ android:background="@drawable/homepage">
         app:layout_constraintTop_toBottomOf="@id/eventNameTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"/>
 
     <!-- Event End Date -->
     <TextView
@@ -57,7 +60,8 @@ android:background="@drawable/homepage">
         app:layout_constraintTop_toBottomOf="@id/eventStartDateTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"/>
 
 <!-- Event poster -->
 <ImageView
@@ -69,6 +73,7 @@ android:background="@drawable/homepage">
     app:layout_constraintTop_toBottomOf="@id/eventEndDateTextView"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginStart="8dp"
     />
 
 
@@ -83,48 +88,21 @@ android:background="@drawable/homepage">
     android:textSize="16sp"
     app:layout_constraintTop_toBottomOf="@id/eventImageView"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
-
-<!-- View Entrants Button -->
-<Button
-    android:id="@+id/viewEntrantsButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:text="View Entrants"
-    android:textColor="#5C3A8E"
-    android:backgroundTint="#FFFFFF"
-    android:elevation="2dp"
-    app:layout_constraintTop_toBottomOf="@id/eventDescriptionTextView"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toStartOf="@+id/editButton"
-    android:padding="8dp"
-    style="?attr/borderlessButtonStyle" />
-
-<!-- Edit Button -->
-<Button
-    android:id="@+id/editButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Edit"
-    android:textColor="#FFFFFF"
-    android:backgroundTint="#5C3A8E"
-    android:layout_marginStart="8dp"
-    app:layout_constraintTop_toTopOf="@id/viewEntrantsButton"
-    app:layout_constraintStart_toEndOf="@id/viewEntrantsButton"
     app:layout_constraintEnd_toEndOf="parent"
-    android:padding="8dp" />
+    android:layout_marginStart="8dp"/>
+
+
 
 <!-- Delete Event Button -->
 <Button
     android:id="@+id/deleteEventButton"
-    android:layout_width="0dp"
+    android:layout_width="190dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
     android:text="Delete Event"
     android:textColor="#FFFFFF"
     android:backgroundTint="#5C3A8E"
-    app:layout_constraintTop_toBottomOf="@id/viewEntrantsButton"
+    app:layout_constraintTop_toBottomOf="@id/eventDescriptionTextView"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:padding="12dp" />

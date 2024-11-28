@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.admin_single_event);
         db = FirebaseFirestore.getInstance();
 
+        setSupportActionBar(findViewById(R.id.toolbar_single_event));
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         // Retrieve the Event object passed from Admin Events (list of events)
         event = (Event) getIntent().getSerializableExtra("event");
 
@@ -109,12 +115,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
         );
     }
-
-
-
-
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -1,8 +1,13 @@
 package com.example.cmput301project.controller;
 
+import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,15 +29,21 @@ public class AdminQRController extends AppCompatActivity {
     private RecyclerView recyclerView;
     private QRCodeAdapter adapter;
     private List<Event> events;
-    private Event selectedEvent; // To track the selected event
+    private Event selectedEvent;
     private Button deleteButton;
     private FirebaseServer firebaseServer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_qr_codes);
 
+        setSupportActionBar(findViewById(R.id.toolbar_qr));
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         firebaseServer = new FirebaseServer(getApplication());
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -44,7 +55,7 @@ public class AdminQRController extends AppCompatActivity {
         events = new ArrayList<>();
         loadEvents();
 
-        adapter = new QRCodeAdapter(events, this::onQRCodeSelected);
+        adapter = new QRCodeAdapter(events, this::onQRCodeSelected, this::showEnlargedQRCode);
         recyclerView.setAdapter(adapter);
 
         deleteButton.setOnClickListener(v -> {
@@ -103,7 +114,21 @@ public class AdminQRController extends AppCompatActivity {
         selectedEvent = event;
         deleteButton.setEnabled(true);
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // Navigate back to the previous activity
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void showEnlargedQRCode(Bitmap qrCodeBitmap) {
+        // displays a dialog with the enlarged QR code
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.enlarged_qr);
+        ImageView qrImageView = dialog.findViewById(R.id.enlargedQRCodeImageView);
+        qrImageView.setImageBitmap(qrCodeBitmap);
+        dialog.show();
+    }
+
 }
-
-
-
