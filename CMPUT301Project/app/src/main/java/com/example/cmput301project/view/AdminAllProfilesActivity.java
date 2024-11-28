@@ -94,7 +94,7 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
                         entrantList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Entrant entrant = document.toObject(Entrant.class);
-                            if (entrant != null) {
+                            if (entrant != null && entrant.getName() != null && !entrant.getName().isEmpty()) {
                                 entrant.setId(document.getId()); // Set the ID manually
                                 entrantList.add(entrant);
                             }
