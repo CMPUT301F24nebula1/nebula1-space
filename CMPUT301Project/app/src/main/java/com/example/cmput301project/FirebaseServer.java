@@ -1085,8 +1085,19 @@ public class FirebaseServer implements FirebaseInterface {
             }
             Log.d("FirebaseServer", "Organizer events successfully updated in Firebase");
         }).addOnFailureListener(e -> {
-            Log.e("FirebaseServer", "Organizer events successfully updated in Firebase");
+            Log.e("FirebaseServer", "Error updating organizer events in Firebase", e);
         });
+    }
+    public void addEvent(String organizerId, Event event, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        CollectionReference eventsRef = FirebaseFirestore.getInstance()
+                .collection("organizers")
+                .document(organizerId)
+                .collection("events");
+
+        eventsRef.document(event.getId())
+                .set(event)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 
     @Override
@@ -1295,6 +1306,36 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnFailureListener(onFailure);
     }
 
+    public void loadEvent(String organizerId, String eventId, OnSuccessListener<Event> onSuccess, OnFailureListener onFailure) {
+        DocumentReference eventRef = FirebaseFirestore.getInstance()
+                .collection("organizers")
+                .document(organizerId)
+                .collection("events")
+                .document(eventId);
+
+        eventRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        if (event != null) {
+                            onSuccess.onSuccess(event);
+                        }
+                    }
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void updateEvent(String organizerId, Event event, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        DocumentReference eventRef = FirebaseFirestore.getInstance()
+                .collection("organizers")
+                .document(organizerId)
+                .collection("events")
+                .document(event.getId());
+
+        eventRef.set(event)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
 
 
 

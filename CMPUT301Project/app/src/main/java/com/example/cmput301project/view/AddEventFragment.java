@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,17 @@ public class AddEventFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        CheckBox geolocationCheckbox = binding.switchGeolocation;
+        geolocationCheckbox.setChecked(false);
+
+        geolocationCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Log.d("AddEventFragment", "Geolocation required: " + isChecked);
+        });
+
         binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
         setButtonsEnabled();
 
@@ -71,13 +82,9 @@ public class AddEventFragment extends Fragment {
         binding.text.setText("Save");
 
         MyApplication app = (MyApplication) requireActivity().getApplication();
-
-        setButtonsEnabled();
-
         db = app.getDb();
         app.getOrganizerLiveData().observe(getViewLifecycleOwner(), organizer -> {
             if (organizer != null) {
-                // Update the UI with the organizer data
                 organizerEventController = new OrganizerEventController(organizer, db);
             }
         });
@@ -85,35 +92,28 @@ public class AddEventFragment extends Fragment {
         binding.saveEventButton.setOnClickListener(view1 -> {
             String name = (binding.eventName.getEditText() != null) ? binding.eventName.getEditText().getText().toString() : "";
             String description = (binding.eventDescription.getEditText() != null) ? binding.eventDescription.getEditText().getText().toString() : "";
-            // check if date is ok
-            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
-            if (!name.isEmpty() &&
-                    startDateText.getText().toString().matches(pattern) &&
+            String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
+            if (!name.isEmpty() && startDateText.getText().toString().matches(pattern) &&
                     endDateText.getText().toString().matches(pattern)) {
+
                 if (!containsAlphabeticCharacter(name)) {
                     Toast.makeText(getContext(), "Event name must include alphabetical characters.", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 if (!isValidPositiveInteger(Objects.requireNonNull(binding.lotteryCapacity.getEditText()).getText().toString())) {
                     Toast.makeText(getContext(), "Capacity must be greater or equal to 0.\n0 means unlimited.", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 Event event = new Event();
                 event.setName(name);
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
                 event.setDescription(description);
-                String inputCapacity = binding.lotteryCapacity.getEditText().getText().toString().trim();
-                int lotteryCapacity;
-                try {
-                    lotteryCapacity = Integer.parseInt(inputCapacity);
-                } catch (NumberFormatException e) {
-                    lotteryCapacity = 0;  // Or any default value or error handling logic
-                    // Optionally, you can show an error message to the user
-                    binding.lotteryCapacity.setError("Please enter a valid number");
-                }
-                event.setLimit(lotteryCapacity);
+
+                event.setRequiresGeolocation(geolocationCheckbox.isChecked());
 
                 lockUI();
                 organizerEventController.addEvent(event, imageUri, aVoid -> {
@@ -124,7 +124,6 @@ public class AddEventFragment extends Fragment {
                             .build();
                     AddEventFragmentDirections.ActionAddEventToEventDetail action = AddEventFragmentDirections.actionAddEventToEventDetail(event);
                     NavHostFragment.findNavController(AddEventFragment.this).navigate(action, navOptions);
-
                 }, e -> {
                     unlockUI();
                     Log.e("save event", "Error: " + e.getMessage());
@@ -134,41 +133,19 @@ public class AddEventFragment extends Fragment {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Alert")
                         .setMessage("An event has to have a name, start date and end date.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();  // Close the dialog
-                            }
-                        })
+                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-                return;
             }
         });
 
-        // Find views and add click listeners
         startDateText = binding.startDateText;
         endDateText = binding.endDateText;
 
-        if (startDateText == null || endDateText == null) {
-            Log.e("DatePicker", "startDateText or endDateText is null, check your layout ID"); // Log if null
-//            return view;
-        }
-
-        // Initialize Calendar instances
-        startDate = Calendar.getInstance();
-        endDate = Calendar.getInstance();
-
-        startDateText.setOnClickListener(v -> {
-            Log.d("DatePicker", "Start Date Clicked");
-            showDatePickerDialog(true);
-        });
-        endDateText.setOnClickListener(v -> {
-            Log.d("DatePicker", "End Date Clicked");
-            showDatePickerDialog(false);
-        });
-
-        binding.selectImageButton.setOnClickListener(view12 -> openImagePicker());
+        startDateText.setOnClickListener(v -> showDatePickerDialog(true));
+        endDateText.setOnClickListener(v -> showDatePickerDialog(false));
     }
+
 
     public void setButtonsEnabled() {
         binding.eventName.setEnabled(true);
