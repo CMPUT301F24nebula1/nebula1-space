@@ -9,11 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 
-import android.location.Location;
-import android.location.LocationListener;
 import androidx.annotation.NonNull;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
@@ -29,7 +26,6 @@ import androidx.navigation.ui.NavigationUI;
 
 //import com.example.cmput301project.Manifest;
 import com.example.cmput301project.MyApplication;
-import com.example.cmput301project.controller.LocationHelper;
 import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Notification;
 import com.example.cmput301project.model.Organizer;
@@ -42,8 +38,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.shape.MaterialShapeDrawable;
-import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,9 +56,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -81,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference userRef;
     private String id;
 
-    // manages whether it's entrant homepage or organizer homepage
+    // manages whether it's entrant homepage or organizer or admin homepage
     private MaterialButtonToggleGroup toggleGroup;
 
 
@@ -89,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        id = getDeviceId(this);
+//        id = getDeviceId(this);
 
 //        id = "8";
-//        id = "8e488662a2c3a895";
+        id = "1d98b5f2ca50879e";
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
@@ -203,7 +197,17 @@ public class MainActivity extends AppCompatActivity {
 
         if ("entrantEventViewFragment".equals(navigateTo)) {
             Log.d("MainActivity", "Navigating to entrantEventView");
-            findEventInAllOrganizers(eventId, navController);
+            findEventInAllOrganizers(eventId, navController, new FirebaseCallback() {
+                @Override
+                public void onSuccess(Object result) {
+                    ;
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(MainActivity.this, "Invalid QR code.", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         createNotificationChannel(this);
     }
@@ -216,11 +220,20 @@ public class MainActivity extends AppCompatActivity {
                 .commitNow();;
     }
 
-    public void findEventInAllOrganizers(String eventId, NavController nc) {
+    public void findEventInAllOrganizers(String eventId, NavController nc, FirebaseCallback callback) {
+        if (!isValidUUID(eventId)) {
+            callback.onFailure(null);
+            return;
+        }
+
+        AtomicBoolean isFound = new AtomicBoolean(false); // Track if the event is found
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference organizersRef = db.collection("organizers");
+
         organizersRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
+                int totalOrganizers = task.getResult().size(); // Total organizers
+                AtomicInteger processedOrganizers = new AtomicInteger(0); // Track processed organizers
 
                 for (QueryDocumentSnapshot organizerDoc : task.getResult()) {
                     String organizerId = organizerDoc.getId();
@@ -229,7 +242,10 @@ public class MainActivity extends AppCompatActivity {
                     CollectionReference eventsRef = organizersRef.document(organizerId).collection("events");
 
                     eventsRef.document(eventId).get().addOnCompleteListener(eventTask -> {
+                        processedOrganizers.incrementAndGet(); // Increment processed count
+
                         if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
+                            isFound.set(true);
                             Event event = eventTask.getResult().toObject(Event.class);
 
                             ArrayList<String> userIdList = new ArrayList<>();
@@ -237,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
                             eventsRef.document(event.getId()).collection("userId").get()
                                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                         for (DocumentSnapshot document : queryDocumentSnapshots) {
-                                            // field "userId" that stores a string
                                             String userId = document.getString("userId");
                                             if (userId != null) {
                                                 userIdList.add(userId);
@@ -245,32 +260,36 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         event.setWaitlistEntrantIds(userIdList);
                                         Log.d("wishlist of event1", event.getWaitlistEntrantIds().toString());
+
+                                        // Navigate to the event view
                                         if (event != null) {
                                             Log.d("Firestore", "Found event with ID: " + eventId + " in organizer: " + organizerId);
                                             Bundle bundle = new Bundle();
                                             bundle.putString("category", "WAITING");
+                                            bundle.putSerializable("e", event);
                                             nc.navigate(R.id.action_EntrantHomepage_to_EntrantEventView, bundle);
                                         }
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Handle any errors here
                                         Log.e("FirestoreError", "Error retrieving user IDs", e);
                                     });
                             Log.d("wishlist of event2", event.getWaitlistEntrantIds().toString());
+                        }
 
-
-                        } else if (eventTask.isSuccessful() && (eventTask.getResult() == null || !eventTask.getResult().exists())) {
-                            Log.d("Firestore", "No matching event found with ID: " + eventId + " in organizer: " + organizerId);
-                        } else {
-                            Log.w("Firestore", "Error getting event", eventTask.getException());
+                        // Check if all organizers are processed and no match is found
+                        if (processedOrganizers.get() == totalOrganizers && !isFound.get()) {
+                            Log.d("Firestore", "No matching event found after processing all organizers");
+                            callback.onFailure(null);
                         }
                     });
                 }
             } else {
                 Log.w("Firestore", "Error getting organizers", task.getException());
+                callback.onFailure(null);
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -353,6 +372,13 @@ public class MainActivity extends AppCompatActivity {
                                 unlockUI();
                                 Log.w("Firestore", "Error retrieving entrant data", e);
                             });
+                }
+                else {
+                    UserController.updateUserRole(id, "entrant");
+                    addEntrant(new Entrant(userId));
+                    Entrant entrant = new Entrant(userId);
+                    ((MyApplication) getApplication()).setEntrantLiveData(entrant);
+                    unlockUI();
                 }
                 if (roles != null && roles.contains("organizer")) {
                     // set up organizer part for this user
@@ -659,6 +685,15 @@ public class MainActivity extends AppCompatActivity {
 
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public boolean isValidUUID(String uuid) {
+        try {
+            UUID.fromString(uuid);
+            return true; // The string is a valid UUID
+        } catch (IllegalArgumentException e) {
+            return false; // The string is not a valid UUID
         }
     }
 

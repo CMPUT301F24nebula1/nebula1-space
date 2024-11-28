@@ -4,16 +4,15 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-19T21:47:34.826931500Z">
+        <DropdownSelection timestamp="2024-11-27T22:25:20.386826500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fxj\.android\avd\Copy_of_Medium_Phone_API_35_2.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fxj\.android\avd\Medium_Phone_API_35_2.avd" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-
       <SelectionState runConfigName="manageFacilityProfile1()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -26,10 +25,6 @@
       <SelectionState runConfigName="testAddEvent()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AddEventFragmentTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-
     </selectionStates>
   </component>
 </project>

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -171,6 +172,15 @@ public class EntrantEventViewFragment extends Fragment {
                 Log.d("wishlist click listener", app.getEntrant().getWaitlistEventIds().toString());
                 if (category.equals("WAITING")) {
                     if (!app.getEntrant().getWaitlistEventIds().contains(e.getId())) {
+                        try {
+                            if (app.getEntrant().getName().isEmpty() || app.getEntrant().getEmail().isEmpty()) {
+                                Toast.makeText(getContext(), "You cannot join an event waitlist without providing your name and email.!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        } catch (NullPointerException e) {
+                            Toast.makeText(getContext(), "You cannot join an event waitlist without providing your name and email.!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         if (e.getLimit() > 0 && e.getWaitlistEntrantIds().size() >= e.getLimit()) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -282,9 +292,11 @@ public class EntrantEventViewFragment extends Fragment {
     }
 
     private void proceedToAcceptEvent() {
+        lockUI();
         updateStatus(entrant, "FINAL", e.getId(), new UpdateStatusCallback() {
             @Override
             public void onSuccess() {
+                unlockUI();
                 Toast.makeText(getContext(), "You accepted the invitation!", Toast.LENGTH_SHORT).show();
                 binding.joinClassButton.setVisibility(View.GONE);
                 binding.leaveClassButton.setVisibility(View.GONE);
@@ -292,20 +304,24 @@ public class EntrantEventViewFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
+                unlockUI();
                 Toast.makeText(getContext(), "Failed to accept.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNotFound() {
+                unlockUI();
                 Toast.makeText(getContext(), "Event not found!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private  void  proceedToDeclineEvent() {
+        lockUI();
         updateStatus(entrant, "CANCELED", e.getId(), new UpdateStatusCallback() {
             @Override
             public void onSuccess() {
+                unlockUI();
                 Toast.makeText(getContext(), "You declined the invitation!", Toast.LENGTH_SHORT).show();
                 binding.joinClassButton.setVisibility(View.GONE);
                 binding.leaveClassButton.setVisibility(View.GONE);
@@ -313,11 +329,13 @@ public class EntrantEventViewFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
+                unlockUI();
                 Toast.makeText(getContext(), "Failed to decline.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNotFound() {
+                unlockUI();
                 Toast.makeText(getContext(), "Event not found!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -372,4 +390,15 @@ public class EntrantEventViewFragment extends Fragment {
                 });
     }
 
+    private void lockUI() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.mainLayout.setAlpha(0.5f); // Dim background for effect
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.mainLayout.setAlpha(1.0f); // Restore background opacity
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
 }

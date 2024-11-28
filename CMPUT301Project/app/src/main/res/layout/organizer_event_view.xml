@@ -54,7 +54,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:singleLine="true"
+                        android:imeOptions="actionDone"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -240,7 +242,8 @@
                         android:layout_height="wrap_content"
                         android:enabled="false"
                         android:inputType="phone"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 

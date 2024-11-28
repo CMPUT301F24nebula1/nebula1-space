@@ -193,12 +193,17 @@ public class Entrant extends User implements Serializable {
     }
 
     static public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
-        for (Notification notification : notifications) {
-            if (!notification.isRead()) {
-                return true; // There is at least one unread notification
+        if (notifications != null) {
+            for (Notification notification : notifications) {
+                if (!notification.isRead()) {
+                    return true; // There is at least one unread notification
+                }
             }
+            // All notifications are read
+            return false;
         }
-        return false; // All notifications are read
+        else
+            return false;
     }
 
 
