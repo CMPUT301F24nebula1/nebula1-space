@@ -29,9 +29,11 @@ import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
 import com.example.cmput301project.databinding.OrganizerEventViewBinding;
 import com.example.cmput301project.model.Event;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;

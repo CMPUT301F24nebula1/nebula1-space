@@ -3,6 +3,7 @@ package com.example.cmput301project.model;
 import com.google.firebase.firestore.PropertyName;
 
 import java.io.Serializable;
+import com.google.firebase.Timestamp;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class Event extends Observable implements Serializable {
     private final String id;
     private boolean requiresGeolocation;
     private String organizerId;
+    private transient Timestamp timestamp;
+    private boolean isQrRemoved = false;
 
 
     /**
@@ -243,5 +246,22 @@ public class Event extends Observable implements Serializable {
     @PropertyName("requiresGeolocation")
     public void setRequiresGeolocation(boolean requiresGeolocation) {
         this.requiresGeolocation = requiresGeolocation;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @PropertyName("isQrRemoved")
+    public boolean isQrRemoved() {
+        return isQrRemoved;
+    }
+
+    public void setQrRemoved(boolean qrRemoved) {
+        isQrRemoved = qrRemoved;
     }
 }
