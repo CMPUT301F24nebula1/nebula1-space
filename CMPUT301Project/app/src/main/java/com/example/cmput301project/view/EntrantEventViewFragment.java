@@ -49,24 +49,21 @@ public class EntrantEventViewFragment extends Fragment {
         e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
         category = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getCategory();
 
+        if (e.isRequiresGeolocation()) {
+            binding.geolocationContainer.setVisibility(View.VISIBLE);
+            binding.geolocationWarning.setText("This event utilizes geolocation.");
+            binding.geolocationCheckbox.setChecked(true);
+            binding.geolocationCheckbox.setEnabled(false);
+        } else {
+            binding.geolocationContainer.setVisibility(View.GONE);
+        }
         // Customize UI based on category
         switch (category) {
             case "SELECTED":
                 // Handle Pending events
                 binding.joinClassButton.setText("Accept");
                 binding.leaveClassButton.setText("Decline");
-//                binding.joinClassButton.setEnabled(true);
-//                binding.leaveClassButton.setEnabled(true);
 
-//                binding.joinClassButton.setOnClickListener(v -> {
-//                    Log.d("Pending Invitation", "Accepted event: " + e.getName());
-//                    proceedToAcceptEvent();
-//                });
-
-//                binding.leaveClassButton.setOnClickListener(v -> {
-//                    Log.d("Pending Invitation", "Declined event: " + e.getName());
-//                    proceedToDeclineEvent();
-//                });
                 break;
             case "CANCELED":
             case "FINAL":
@@ -189,7 +186,7 @@ public class EntrantEventViewFragment extends Fragment {
                                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                                     .setCancelable(false)  // prevents dialog from closing on back press
                                     .show();
-                        } else if (e.requiresGeolocation()) {
+                        } else if (e.isRequiresGeolocation()) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                             builder.setTitle("Geolocation Required");
                             builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");

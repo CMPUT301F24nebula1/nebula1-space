@@ -1,5 +1,7 @@
 package com.example.cmput301project.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -228,7 +230,8 @@ public class Event extends Observable implements Serializable {
      * Does this event need geolocation?
      * @return true if geolocation is required for this event
      */
-    public boolean requiresGeolocation() {
+    @PropertyName("requiresGeolocation")
+    public boolean isRequiresGeolocation() {
         return requiresGeolocation;
     }
 
@@ -237,6 +240,7 @@ public class Event extends Observable implements Serializable {
      * set geolocate reqs
      * @param requiresGeolocation true if geolocation for this event is required
      */
+    @PropertyName("requiresGeolocation")
     public void setRequiresGeolocation(boolean requiresGeolocation) {
         this.requiresGeolocation = requiresGeolocation;
     }

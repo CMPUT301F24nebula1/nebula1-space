@@ -111,6 +111,7 @@
             app:layout_constraintTop_toBottomOf="@+id/event_description" />
 
         <LinearLayout
+            android:id="@+id/geolocation_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -120,6 +121,7 @@
             app:layout_constraintTop_toBottomOf="@+id/join_class_button">
 
             <TextView
+                android:id="@+id/geolocation_warning"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Enable geolocation for this event:"

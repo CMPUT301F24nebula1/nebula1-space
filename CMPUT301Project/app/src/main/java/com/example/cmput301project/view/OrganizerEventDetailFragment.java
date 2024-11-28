@@ -137,6 +137,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         startDate.getEditText().setText(e.getStartDate());
         endDate.getEditText().setText(e.getEndDate());
         limit.getEditText().setText(e.getLimit() != 0 ? String.valueOf(e.getLimit()) : "No limit.");
+        binding.geolocationCheckbox.setChecked(e.isRequiresGeolocation());
 
         String pattern = "^\\d{2}/\\d{2}/\\d{4}$";
 
@@ -187,6 +188,7 @@ public class OrganizerEventDetailFragment extends Fragment {
                         e.setEndDate(endDate.getEditText().getText().toString());
                         e.setDescription(t1.getEditText().getText().toString());
                         e.setLimit(Integer.parseInt(binding.lotteryCapacity.getEditText().getText().toString()));
+                        e.setRequiresGeolocation(binding.geolocationCheckbox.isChecked());
                         lockUI();
                         ec.editEvent(e, imageUri, aVoid -> {
                             unlockUI();
@@ -249,6 +251,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding.lotteryEndsDate.setEnabled(true);
         binding.lotteryCapacity.setEnabled(true);
         binding.posterGroup.setEnabled(true);
+        binding.geolocationCheckbox.setEnabled(true);
 
         binding.lotteryEndsDate.setEndIconVisible(true);
         binding.lotteryStartsDate.setEndIconVisible(true);
@@ -263,6 +266,7 @@ public class OrganizerEventDetailFragment extends Fragment {
         binding.lotteryEndsDate.setEnabled(false);
         binding.lotteryCapacity.setEnabled(false);
         binding.posterGroup.setEnabled(false);
+        binding.geolocationCheckbox.setEnabled(false);
 
         binding.lotteryEndsDate.setEndIconVisible(false);
         binding.lotteryStartsDate.setEndIconVisible(false);
@@ -393,18 +397,12 @@ public class OrganizerEventDetailFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         mainLayout.setAlpha(0.5f); // Dim background for effect
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//        binding.saveEventButton.setEnabled(false); // Disable save button
-//        disableBackButton();
-//        setButtonDisabled();
     }
 
     private void unlockUI() {
         progressBar.setVisibility(View.GONE);
         mainLayout.setAlpha(1.0f); // Restore background opacity
         requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//        binding.saveEventButton.setEnabled(true); // Re-enable save button
-//        enableBackButton();
-//        setButtonsEnabled();
     }
 
     @Override
