@@ -57,8 +57,9 @@
         <activity android:name=".view.AdminAllEventsActivity" android:exported="false"/>
         <activity android:name=".view.AdminAllProfilesActivity" android:exported="false"/>
         <activity android:name=".view.EventDetailsActivity" android:exported="false"/>
-        <activity android:name=".view.AdminManageImagesActivity" android:exported="false"/>
         <activity android:name=".controller.AdminQRController" android:exported="false"/>
+        <activity android:name=".view.AdminManageImagesActivity" android:exported="false"/>
+        <activity android:name=".view.AdminManageFacilitiesActivity" android:exported="false"/>
 
         <!-- Google Maps API key -->
         <meta-data

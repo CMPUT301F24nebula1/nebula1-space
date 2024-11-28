@@ -21,6 +21,8 @@ public class Organizer extends User {
 
     private String profilePictureUrl;
 
+    private String imageUrl;
+
     /**
      * Default constructor initializing an empty list of events and assigning the organizer role.
      */
@@ -37,6 +39,24 @@ public class Organizer extends User {
         super(id);
         addOrganizerRole();
         this.events = new ArrayList<Event>();
+    }
+
+    /**
+     * Gets the image URL associated with the Organizer.
+     *
+     * @return The image URL as a String.
+     */
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    /**
+     * Sets the image URL associated with the Organizer.
+     *
+     * @param imageUrl The image URL to set.
+     */
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     /**
