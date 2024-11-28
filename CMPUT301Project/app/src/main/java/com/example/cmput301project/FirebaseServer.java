@@ -572,7 +572,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.cmput301project.model.Admin;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
-import com.example.cmput301project.model.Facility;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
