@@ -79,7 +79,6 @@ public class AdminQRController extends AppCompatActivity {
         );
     }
 
-
     private void deleteQRCode(Event event) {
         if (event.getId() == null || event.getOrganizerId() == null || event.getId().isEmpty()) {
             Toast.makeText(this, "Invalid event or organizer ID.", Toast.LENGTH_SHORT).show();
@@ -91,12 +90,8 @@ public class AdminQRController extends AppCompatActivity {
 
         firebaseServer.deleteQRCode(event.getOrganizerId(), event.getId(),
                 aVoid -> {
-                    for (Event e : events) {
-                        if (e.getId().equals(event.getId())) {
-                            e.setQrCode(null); // Update the list
-                            break;
-                        }
-                    }
+
+                    events.remove(event);
                     adapter.notifyDataSetChanged(); // Notify adapter of changes
                     selectedEvent = null;
                     deleteButton.setEnabled(false);
@@ -109,11 +104,11 @@ public class AdminQRController extends AppCompatActivity {
         );
     }
 
-
     private void onQRCodeSelected(Event event) {
         selectedEvent = event;
         deleteButton.setEnabled(true);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -122,6 +117,7 @@ public class AdminQRController extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void showEnlargedQRCode(Bitmap qrCodeBitmap) {
         // displays a dialog with the enlarged QR code
         Dialog dialog = new Dialog(this);
@@ -130,5 +126,4 @@ public class AdminQRController extends AppCompatActivity {
         qrImageView.setImageBitmap(qrCodeBitmap);
         dialog.show();
     }
-
 }
