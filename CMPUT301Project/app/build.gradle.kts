@@ -66,7 +66,7 @@ dependencies {
     implementation(libs.filament.android)
 
     //for google maps api
-    implementation ("com.google.android.gms:play-services-maps:18.0.2")
+    implementation ("com.google.android.gms:play-services-maps:19.0.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")

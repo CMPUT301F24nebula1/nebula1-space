@@ -14,6 +14,8 @@
 
     <string name="event_list_title">Events</string>
 
+    <string name="google_maps_key" translatable="false">AIzaSyC28pTVyDx_jhGyBXtRN2qkhvIMHm19lQk</string>
+
     <string name="profile_title">Profile</string>
     <string name="Name">Name</string>
     <string name="Edit">Edit</string>

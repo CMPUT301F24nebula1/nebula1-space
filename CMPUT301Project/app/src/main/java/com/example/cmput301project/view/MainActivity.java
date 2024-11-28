@@ -38,8 +38,11 @@ import com.example.cmput301project.model.User;
 import com.example.cmput301project.databinding.ActivityMainBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.shape.MaterialShapeDrawable;
@@ -72,7 +75,7 @@ import java.util.Map;
  * @author Xinjia Fan
  * @author Zaid Islam
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -83,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
     // manages whether it's entrant homepage or organizer homepage
     private MaterialButtonToggleGroup toggleGroup;
+
+    private GoogleMap gmap;
 
 
     @Override
@@ -101,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        //added trying to get google maps to work - neoki
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.id_map);
+//        mapFragment.getMapAsync(this);
 
         setSupportActionBar(binding.toolbar);
 //        setSupportActionBar(findViewById(R.id.toolbar));
@@ -433,6 +442,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error retrieving data.", Toast.LENGTH_SHORT).show();
             Log.e("Firebase", "Error retrieving user", e);
         });
+    }
+
+    //added for gmaps by implements onMapReady - neoki
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+
     }
 
     public interface FirebaseCallback<T> {
