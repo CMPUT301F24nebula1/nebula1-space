@@ -53,6 +53,12 @@ public class EventListFragment extends Fragment {
         if (o != null) {
             // Update UI
             events = o.getEvents();
+            events.sort((e1, e2) -> {
+                if (e1.getTimestamp() == null && e2.getTimestamp() == null) return 0;
+                if (e1.getTimestamp() == null) return 1; // e1 comes after e2
+                if (e2.getTimestamp() == null) return -1; // e2 comes after e1
+                return e1.getTimestamp().compareTo(e2.getTimestamp()); // Compare non-null timestamps
+            });
             Log.d("event list initial", String.valueOf(events.size()));
 //            for (int i = 0; i < events.size(); i++) {
 //                Log.d("event wishlist", events.get(i).getWaitlistEntrantIds().toString());
@@ -68,6 +74,12 @@ public class EventListFragment extends Fragment {
             if (organizer != null) {
                 // Update UI
                 events = organizer.getEvents();
+                events.sort((e1, e2) -> {
+                    if (e1.getTimestamp() == null && e2.getTimestamp() == null) return 0;
+                    if (e1.getTimestamp() == null) return 1; // e1 comes after e2
+                    if (e2.getTimestamp() == null) return -1; // e2 comes after e1
+                    return e1.getTimestamp().compareTo(e2.getTimestamp()); // Compare non-null timestamps
+                });
                 Log.d("event list livedata", String.valueOf(events.size()));
             }
             if (eventList != null && events != null) {

@@ -118,6 +118,17 @@ public class MyApplication extends Application {
                                 subcollectionListeners.clear();
 
                                 for (QueryDocumentSnapshot eventDoc : eventsSnapshot) {
+                                    Object timestampValue = eventDoc.get("timestamp");
+                                    // Print the type and value of the "timestamp" field
+                                    if (timestampValue != null) {
+                                        Log.d("Timestamp Type", "Type: " + timestampValue.getClass().getName());
+                                        Log.d("Timestamp Value", "Value: " + timestampValue.toString());
+                                    } else {
+                                        Log.d("Timestamp", "Field 'timestamp' is null.");
+                                    }
+                                    Object name = eventDoc.get("name");
+                                    Log.d("Timestamp name", name.toString());
+
                                     Event event = eventDoc.toObject(Event.class);
                                     eventsList.add(event);
 

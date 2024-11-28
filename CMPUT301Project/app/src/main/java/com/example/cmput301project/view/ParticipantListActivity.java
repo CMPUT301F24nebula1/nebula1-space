@@ -2,7 +2,6 @@ package com.example.cmput301project.view;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,7 +24,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
-import com.example.cmput301project.controller.EntrantController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.service.PoolingService;
@@ -37,8 +34,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -479,7 +474,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                                         });
 
                                 // retrieving location info of users from database
-                                if (event.requiresGeolocation()) {
+                                if (event.isRequiresGeolocation()) {
                                     db.collection("locations").document(entrantId).get().addOnSuccessListener(locationDoc -> {
                                         if (locationDoc.exists()) {
                                             Double latitude = locationDoc.getDouble("latitude");

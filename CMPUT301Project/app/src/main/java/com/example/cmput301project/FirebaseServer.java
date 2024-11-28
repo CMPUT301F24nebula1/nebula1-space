@@ -1346,11 +1346,15 @@ public class FirebaseServer implements FirebaseInterface {
 
 
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("qrCode", null); // Remove the QR code
+        updates.put("isQrRemoved", true); // Set isQrRemoved to true
+
         db.collection("organizers")
                 .document(organizerId)
                 .collection("events")
                 .document(eventId)
-                .update("qrCode", null) // Remove the QR code
+                .update(updates) // Remove the QR code
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
