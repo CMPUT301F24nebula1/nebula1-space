@@ -61,10 +61,10 @@
         <activity android:name=".view.AdminManageImagesActivity" android:exported="false"/>
         <activity android:name=".view.AdminManageFacilitiesActivity" android:exported="false"/>
 
-        <!-- Google Maps API key -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="PUTAPIKEYHERE" />
+        <!-- Google Maps API  - REMOVED FOR NOW BY NEOKI -->
+<!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="PUTAPIKEYHERE" />-->
     </application>
 
 </manifest>
