@@ -48,7 +48,7 @@
         </activity>
 
         <!-- Other activities -->
-        <activity android:name=".view.EditProfileActivity" android:exported="false" />
+        <activity android:name=".view.EntrantHomepageFragment" android:exported="false" />
         <activity android:name=".view.ScannerActivity" android:exported="false"/>
         <activity android:name=".view.ParticipantListActivity" android:exported="false"/>
         <activity android:name=".pooling.EntrantStatusActivity" android:exported="false"/>
@@ -57,8 +57,9 @@
         <activity android:name=".view.AdminAllEventsActivity" android:exported="false"/>
         <activity android:name=".view.AdminAllProfilesActivity" android:exported="false"/>
         <activity android:name=".view.EventDetailsActivity" android:exported="false"/>
-        <activity android:name=".view.AdminManageImagesActivity" android:exported="false"/>
         <activity android:name=".controller.AdminQRController" android:exported="false"/>
+        <activity android:name=".view.AdminManageImagesActivity" android:exported="false"/>
+        <activity android:name=".view.AdminManageFacilitiesActivity" android:exported="false"/>
 
         <!-- Google Maps API key -->
         <meta-data

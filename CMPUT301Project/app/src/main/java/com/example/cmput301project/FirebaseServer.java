@@ -678,8 +678,6 @@ public class FirebaseServer implements FirebaseInterface {
     }
 
 
-
-
     private void removeImageReferenceFromFirestore(String imageUrl, OnImageDeletedListener listener) {
         db.collection("organizers")
                 .get()
@@ -759,6 +757,63 @@ public class FirebaseServer implements FirebaseInterface {
                     listener.onError(e);
                 });
     }
+
+    public void fetchAllFacilities(OnSuccessListener<List<Organizer>> onSuccess, OnFailureListener onFailure) {
+        db.collection("organizers")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Organizer> organizers = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        Organizer organizer = doc.toObject(Organizer.class);
+                        if (organizer != null) {
+                            organizer.setId(doc.getId());
+                            organizers.add(organizer);
+                        }
+                    }
+                    onSuccess.onSuccess(organizers);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void deleteOrganizerWithDependencies(String organizerId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        DocumentReference organizerRef = db.collection("organizers").document(organizerId);
+
+        // Step 1: Get the `events` subcollection
+        organizerRef.collection("events").get().addOnSuccessListener(eventsSnapshot -> {
+            for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
+                String eventId = eventDoc.getId();
+
+                // Step 2: Delete `waitlistEntrantIds` subcollection
+                deleteSubcollection(eventDoc.getReference().collection("waitlistEntrantIds"), () -> {
+                    // Step 3: Delete the event itself
+                    eventDoc.getReference().delete().addOnSuccessListener(aVoid -> {
+                        Log.d("Firebase", "Event deleted: " + eventId);
+                    }).addOnFailureListener(e -> Log.e("Firebase", "Failed to delete event: " + eventId, e));
+                }, failure -> Log.e("Firebase", "Failed to delete 'waitlistEntrantIds' subcollection", failure));
+            }
+
+            // Step 4: Delete the organizer document itself
+            organizerRef.delete().addOnSuccessListener(aVoid -> {
+                Log.d("Firebase", "Organizer and dependencies deleted: " + organizerId);
+                onSuccess.onSuccess(aVoid);
+            }).addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
+    // Helper method to delete subcollections
+    private void deleteSubcollection(CollectionReference subcollectionRef, Runnable onComplete, OnFailureListener onFailure) {
+        subcollectionRef.get().addOnSuccessListener(querySnapshot -> {
+            WriteBatch batch = db.batch();
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                batch.delete(doc.getReference());
+            }
+            batch.commit().addOnSuccessListener(aVoid -> {
+                Log.d("FirebaseServer", "Deleted subcollection: " + subcollectionRef.getPath());
+                onComplete.run();
+            }).addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
 
     @Override
     public void listenToEntrantUpdates(String userId) {
@@ -1341,10 +1396,6 @@ public class FirebaseServer implements FirebaseInterface {
         });
     }
 
-
-
-
-
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("qrCode", null); // Remove the QR code
@@ -1358,10 +1409,6 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
-
-
-
-
 
     @Override
     public LiveData<Entrant> getEntrantLiveData() {

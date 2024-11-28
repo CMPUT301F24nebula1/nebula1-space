@@ -26,7 +26,7 @@
 
     <include layout="@layout/search_bar" />
 
-    <!-- RecyclerView for displaying events -->
+    <!-- RecyclerView for events -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

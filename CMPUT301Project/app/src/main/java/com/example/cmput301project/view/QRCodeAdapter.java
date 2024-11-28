@@ -1,20 +1,18 @@
 package com.example.cmput301project.view;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.QRCodeGenerator;
 import com.example.cmput301project.model.Event;
@@ -26,14 +24,21 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
     private List<Event> events;
     private OnQRCodeSelectedListener selectedListener;
     private int selectedPosition = -1;
+    private QRCodeClickListener qrCodeClickListener;
+
 
     public interface OnQRCodeSelectedListener {
         void onQRCodeSelected(Event event);
     }
+    public interface QRCodeClickListener {
+        void onQRCodeClick(Bitmap qrCodeBitmap);
+    }
 
-    public QRCodeAdapter(List<Event> events, OnQRCodeSelectedListener selectedListener) {
+
+    public QRCodeAdapter(List<Event> events, OnQRCodeSelectedListener selectedListener, QRCodeClickListener qrCodeClickListener) {
         this.events = events;
         this.selectedListener = selectedListener;
+        this.qrCodeClickListener = qrCodeClickListener;
     }
 
     @NonNull
@@ -42,6 +47,7 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.qrcode_list, parent, false);
         return new QRCodeViewHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull QRCodeViewHolder holder, int position) {
@@ -56,10 +62,11 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
             if (qrCodeBitmap != null) {
                 // Display the QR code
                 holder.qrCodeImageView.setImageBitmap(qrCodeBitmap);
-
-                // Add click listener to enlarge the QR code
+                // Add click listener to display enlarged QR code
                 holder.qrCodeImageView.setOnClickListener(v -> {
-                    showEnlargedQRCode(holder.qrCodeImageView.getContext(), qrCodeBitmap);
+                    if (qrCodeClickListener != null) {
+                        qrCodeClickListener.onQRCodeClick(qrCodeBitmap);
+                    }
                 });
             }
         } else {
@@ -84,19 +91,6 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         return events.size();
     }
 
-    private void showEnlargedQRCode(Context context, Bitmap qrCodeBitmap) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View dialogView = inflater.inflate(R.layout.dialog_enlarged_photo, null);
-        builder.setView(dialogView);
-
-        ImageView enlargedQrCodeImageView = dialogView.findViewById(R.id.enlargedImage);
-        enlargedQrCodeImageView.setImageBitmap(qrCodeBitmap);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     static class QRCodeViewHolder extends RecyclerView.ViewHolder {
         TextView eventNameTextView;
         ImageView qrCodeImageView;
@@ -108,5 +102,3 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         }
     }
 }
-
-
