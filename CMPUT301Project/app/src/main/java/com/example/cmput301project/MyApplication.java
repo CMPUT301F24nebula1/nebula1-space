@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Notification;
@@ -78,6 +79,11 @@ public class MyApplication extends Application {
                 retrieveEntrantWishlist(entrant);
                 Log.d("wishlist track", "1");
 //                setEntrantLiveData(entrant);
+            } else {
+                UserController.updateUserRole(userId, "entrant");
+                addEntrant(new Entrant(userId));
+                Entrant entrant = new Entrant(userId);
+                this.setEntrantLiveData(entrant);
             }
         });
     }
@@ -172,6 +178,17 @@ public class MyApplication extends Application {
                 setOrganizerLiveData(organizer);
             }
         });
+    }
+
+    public void addEntrant(Entrant e) {
+        db.collection("entrants").document(e.getId())
+                .set(e)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "User successfully added!");
+                })
+                .addOnFailureListener(f -> {
+                    Log.w("Firestore", "Error adding user", f);
+                });
     }
 
     private void retrieveEntrantWishlist(Entrant entrant) {

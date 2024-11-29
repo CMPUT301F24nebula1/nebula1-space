@@ -14,6 +14,8 @@ import com.example.cmput301project.R;
 import com.example.cmput301project.controller.FacilityAdapter;
 import com.example.cmput301project.model.Organizer;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,13 @@ public class AdminManageFacilitiesActivity extends AppCompatActivity {
         // Setup RecyclerView
         facilitiesRecyclerView = findViewById(R.id.facilitiesRecyclerView);
         facilitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        facilityAdapter = new FacilityAdapter(facilitiesList, this::onDeleteFacility);
+//        facilityAdapter = new FacilityAdapter(facilitiesList, this::onDeleteFacility);
+        facilityAdapter = new FacilityAdapter(facilitiesList, new FacilityAdapter.OnDeleteFacilityListener() {
+            @Override
+            public void onDeleteClick(Organizer facility) {
+                onDeleteFacility(facility);
+            }
+        });
         facilitiesRecyclerView.setAdapter(facilityAdapter);
 
         // Setup SearchView
@@ -95,4 +103,6 @@ public class AdminManageFacilitiesActivity extends AppCompatActivity {
         }
         facilityAdapter.updateFacilities(filteredList); // Update the adapter with filtered results
     }
+
+
 }

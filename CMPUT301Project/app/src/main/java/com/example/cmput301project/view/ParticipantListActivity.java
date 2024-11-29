@@ -30,6 +30,7 @@ import com.example.cmput301project.service.PoolingService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.slider.Slider;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
@@ -48,6 +49,9 @@ public class ParticipantListActivity extends AppCompatActivity {
 
     private MaterialButtonToggleGroup toggleGroup;
 
+    private String organizerId;
+    Event event;
+
     private ArrayList<Entrant> entrants_store;
     private ArrayList<Entrant> entrants_waitlist; // entrants with status "WAITING"
     private ArrayList<Entrant> entrants_selected; // entrants with status "SELECTED"
@@ -64,9 +68,11 @@ public class ParticipantListActivity extends AppCompatActivity {
     private MaterialButton selectButton;
     private MaterialButton geoButton;
     private Button cancelButton;
+    private Button finalizeButton;
     private MaterialButton notifyButton;
     private ProgressBar progressBar;
     private ConstraintLayout mainLayout;
+    TextView finalizationText;
 
     private boolean isDataLoaded = false;
 
@@ -81,7 +87,9 @@ public class ParticipantListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        Event event = (Event) intent.getSerializableExtra("event");
+        event = (Event) intent.getSerializableExtra("event");
+        organizerId = (String) intent.getStringExtra("organizerId");
+        Log.d("organizerId", organizerId);
 
         entrants_store = new ArrayList<Entrant>();
         entrants_waitlist = new ArrayList<Entrant>();
@@ -98,11 +106,12 @@ public class ParticipantListActivity extends AppCompatActivity {
         geoButton = findViewById(R.id.select_button3);
         cancelButton = findViewById(R.id.remove_button);
         notifyButton = findViewById(R.id.notify_button);
+        finalizeButton = findViewById(R.id.finalize_button);
         progressBar = findViewById(R.id.progressBar);
         mainLayout = findViewById(R.id.main_layout);
-        TextView capacity = findViewById(R.id.capacity_text);
+        finalizationText = findViewById(R.id.finalization_text);
 
-        capacity.setVisibility(View.GONE);
+        finalizationText.setVisibility(View.GONE);
 
         setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,7 +126,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                 if (entrants == null || entrants.isEmpty()) {
                     setToggleButtonsAndSlider(0);
-                    Toast.makeText(ParticipantListActivity.this, "No entrants.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ParticipantListActivity.this, "Waitlist is empty.", Toast.LENGTH_SHORT).show();
                 } else if (entrants.size() == 1) {
 //                    setButtonState(true);
 //                    slider.setVisibility(View.GONE);
@@ -272,6 +281,31 @@ public class ParticipantListActivity extends AppCompatActivity {
             }
         });
 
+        finalizeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (event.isFinalized()) {
+                    Toast.makeText(ParticipantListActivity.this, "This event has been finalized.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Finalize Action")
+                        .setMessage("Are you sure you want to finalize?")
+                        .setPositiveButton("Confirm", (dialog, which) -> {
+                            // Code to execute after "Confirm" is clicked
+                            finalizeEvent(event.getId());
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            // Just dismiss the dialog
+                            dialog.dismiss();
+                        })
+                        .create()
+                        .show();
+
+            }
+        });
+
         geoButton.setOnClickListener(view -> {
             if (entrants_waitlist.isEmpty()) {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
@@ -284,6 +318,33 @@ public class ParticipantListActivity extends AppCompatActivity {
 
 
     }
+
+    public void finalizeEvent(String eventId) {
+        lockUI(); // Show progress or disable UI interactions
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Reference to the specific document in the 'organizers' collection
+        DocumentReference organizerDocRef = db.collection("organizers")
+                .document(organizerId)
+                .collection("events")
+                .document(eventId);
+        Log.d("organizerId final", organizerId);
+
+        // Update the 'Finalized' field to true
+        organizerDocRef.update("isFinalized", true)
+                .addOnSuccessListener(aVoid -> {
+                    unlockUI(); // Re-enable UI or hide progress
+                    Toast.makeText(this, "Event finalized successfully.", Toast.LENGTH_SHORT).show();
+                    event.setFinalized(true);
+                })
+                .addOnFailureListener(e -> {
+                    unlockUI(); // Re-enable UI even on failure
+                    Toast.makeText(this, "Failed to finalize event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("FinalizeEvent", "Error updating Firestore", e);
+                });
+    }
+
 
     public interface InputDialogCallback {
         void onInputConfirmed(String notification);
@@ -591,10 +652,13 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
         if (entrantAdapter != null)
             entrantAdapter.setAllCheckboxesSelected(false);
 
+        finalizationText.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
-            cancelButton.setVisibility(View.GONE);
+
             entrantAdapter.setCheckboxVisibility(true);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
@@ -603,20 +667,60 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             entrantAdapter.setCheckboxVisibility(true);
             cancelButton.setVisibility(View.VISIBLE);
             if (entrants_selected.isEmpty()) {
+                Log.d("notifyButton", "debug1");
                 cancelButton.setAlpha(0.2f);
                 cancelButton.setClickable(false);
+                notifyButton.setAlpha(0.2f);
+                notifyButton.setClickable(false);
+            } else {
+                cancelButton.setAlpha(1f);
+                cancelButton.setClickable(true);
+                notifyButton.setAlpha(1f);
+                notifyButton.setClickable(true);
             }
             status = "SELECTED";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
             updateEntrantsList(new ArrayList<>(entrants_canceled));
             setButtonInvisible();
+            if (entrants_canceled.isEmpty()) {
+                notifyButton.setAlpha(0.2f);
+                notifyButton.setClickable(false);
+            } else {
+                notifyButton.setAlpha(1f);
+                notifyButton.setClickable(true);
+            }
             entrantAdapter.setCheckboxVisibility(true);
             status = "CANCELED";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_final) {
             updateEntrantsList(new ArrayList<>(entrants_final));
             setButtonInvisible();
+            finalizeButton.setVisibility(View.VISIBLE);
+            if (event.isFinalized()) {
+                finalizationText.setVisibility(View.VISIBLE);
+            }
+            if (entrants_final.isEmpty()) {
+                finalizeButton.setAlpha(0.2f);
+                finalizeButton.setClickable(false);
+                notifyButton.setAlpha(0.2f);
+                Log.d("notifyButton", "debug2");
+                notifyButton.setClickable(false);
+            } else {
+                finalizeButton.setAlpha(1f);
+                finalizeButton.setClickable(true);
+                notifyButton.setAlpha(1f);
+                notifyButton.setClickable(true);
+            }
             entrantAdapter.setCheckboxVisibility(true);
             status = "FINAL";
+        }
+
+        if (event.isFinalized()) {
+            finalizeButton.setAlpha(0.2f);
+            finalizeButton.setClickable(false);
+            cancelButton.setAlpha(0.2f);
+            cancelButton.setClickable(false);
+            selectButton.setAlpha(0.2f);
+            selectButton.setClickable(false);
         }
     }
 
@@ -676,6 +780,7 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
         geoButton.setVisibility(View.GONE);
         slider.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
+        finalizeButton.setVisibility(View.GONE);
     }
 
     private void lockUI() {

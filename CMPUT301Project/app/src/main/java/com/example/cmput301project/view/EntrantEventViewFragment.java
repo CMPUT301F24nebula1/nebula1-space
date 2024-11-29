@@ -83,6 +83,11 @@ public class EntrantEventViewFragment extends Fragment {
                 binding.leaveClassButton.setText("Leave Class");
                 break;
         }
+        if (e.isFinalized()) {
+            binding.joinClassButton.setVisibility(View.GONE);
+            binding.leaveClassButton.setVisibility(View.GONE);
+            binding.eventFinalizedText.setVisibility(View.VISIBLE);
+        }
         Log.d("waitlist entrants", e.getName() + ' ' + String.valueOf(e.getWaitlistEntrantIds().size()));
         Log.d("waitlist limit", e.getName() + String.valueOf(e.getLimit()));
         app = (MyApplication) requireActivity().getApplication();
