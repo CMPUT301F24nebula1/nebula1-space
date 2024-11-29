@@ -86,7 +86,7 @@
             android:layout_marginBottom="40dp"
             android:text="This event has been finalized."
             android:textColor="#49454F"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

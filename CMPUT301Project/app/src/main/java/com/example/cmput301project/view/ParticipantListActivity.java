@@ -130,7 +130,7 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                 if (entrants == null || entrants.isEmpty()) {
                     setToggleButtonsAndSlider(0);
-                    Toast.makeText(ParticipantListActivity.this, "No entrants.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ParticipantListActivity.this, "Waitlist is empty.", Toast.LENGTH_SHORT).show();
                 } else if (entrants.size() == 1) {
 //                    setButtonState(true);
 //                    slider.setVisibility(View.GONE);
@@ -288,6 +288,10 @@ public class ParticipantListActivity extends AppCompatActivity {
         finalizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (event.isFinalized()) {
+                    Toast.makeText(ParticipantListActivity.this, "This event has been finalized.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 new AlertDialog.Builder(view.getContext())
                         .setTitle("Finalize Action")
@@ -661,11 +665,16 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             entrantAdapter.setCheckboxVisibility(true);
             cancelButton.setVisibility(View.VISIBLE);
             if (entrants_selected.isEmpty()) {
+                Log.d("notifyButton", "debug1");
                 cancelButton.setAlpha(0.2f);
                 cancelButton.setClickable(false);
+                notifyButton.setAlpha(0.2f);
+                notifyButton.setClickable(false);
             } else {
                 cancelButton.setAlpha(1f);
                 cancelButton.setClickable(true);
+                notifyButton.setAlpha(1f);
+                notifyButton.setClickable(true);
             }
             status = "SELECTED";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_canceled) {
@@ -688,6 +697,7 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
                 finalizeButton.setAlpha(0.2f);
                 finalizeButton.setClickable(false);
                 notifyButton.setAlpha(0.2f);
+                Log.d("notifyButton", "debug2");
                 notifyButton.setClickable(false);
             } else {
                 finalizeButton.setAlpha(1f);
@@ -697,6 +707,15 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             }
             entrantAdapter.setCheckboxVisibility(true);
             status = "FINAL";
+        }
+
+        if (event.isFinalized()) {
+            finalizeButton.setAlpha(0.2f);
+            finalizeButton.setClickable(false);
+            cancelButton.setAlpha(0.2f);
+            cancelButton.setClickable(false);
+            selectButton.setAlpha(0.2f);
+            selectButton.setClickable(false);
         }
     }
 
