@@ -11,4 +11,11 @@
         android:layout_gravity="center"
         android:contentDescription="@string/geolocation_map" />
 
+    <!-- Container for dynamic pins -->
+    <FrameLayout
+        android:id="@+id/pinContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
 </FrameLayout>

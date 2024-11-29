@@ -311,7 +311,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
             } else {
                 // Show the dialog with the map
-                waitlistMapFragment dialog = waitlistMapFragment.newInstance();
+                waitlistMapFragment dialog = waitlistMapFragment.newInstance(event.getId());
                 dialog.show(getSupportFragmentManager(), "WaitlistMapFragment");
             }
         });
