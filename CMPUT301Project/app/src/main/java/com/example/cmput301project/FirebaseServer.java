@@ -625,6 +625,7 @@ public class FirebaseServer implements FirebaseInterface {
         void onError(Exception e);
     }
 
+
     public void retrieveAllPosterUrls(OnImagesRetrievedListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         List<String> allPosterUrls = new ArrayList<>();
@@ -679,7 +680,45 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnFailureListener(listener::onError);
     }
 
+    public void retrieveAllImages(OnImagesRetrievedListener listener) {
+        List<String> allImageUrls = new ArrayList<>();
 
+        // First, retrieve all poster URLs
+        retrieveAllPosterUrls(new OnImagesRetrievedListener() {
+            @Override
+            public void onImagesRetrieved(List<String> posterUrls) {
+                allImageUrls.addAll(posterUrls); // Add poster URLs to the list
+
+                // Then, retrieve all entrant profile picture URLs
+                retrieveAllEntrantProfileImages(new OnImagesRetrievedListener() {
+                    @Override
+                    public void onImagesRetrieved(List<String> profileUrls) {
+                        allImageUrls.addAll(profileUrls); // Add profile URLs to the list
+
+                        // Return the consolidated list of image URLs
+                        listener.onImagesRetrieved(allImageUrls);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        // If fetching profile images fails, notify the listener
+                        listener.onError(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // If fetching poster images fails, notify the listener
+                listener.onError(e);
+            }
+        });
+    }
+
+    /**
+     * Retrieve all entrant profile images.
+     */
+    
     private void removeImageReferenceFromFirestore(String imageUrl, OnImageDeletedListener listener) {
         db.collection("organizers")
                 .get()
@@ -1460,5 +1499,42 @@ public class FirebaseServer implements FirebaseInterface {
     public void setDb(FirebaseFirestore db) {
         this.db = db;
     }
-}
 
+    public void retrieveAllEntrantProfileImages(OnImagesRetrievedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<String> profileImageUrls = new ArrayList<>();
+
+        db.collection("entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        Entrant entrant = doc.toObject(Entrant.class);
+                        if (entrant != null && entrant.getProfilePictureUrl() != null && !entrant.getProfilePictureUrl().isEmpty()) {
+                            profileImageUrls.add(entrant.getProfilePictureUrl());
+                        }
+                    }
+                    listener.onImagesRetrieved(profileImageUrls);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void deleteEntrantProfileImage(String imageUrl, OnImageDeletedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("entrants")
+                .whereEqualTo("profilePictureUrl", imageUrl)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().update("profilePictureUrl", null)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FirebaseServer", "Profile image reference removed for entrant.");
+                                    listener.onImageDeleted();
+                                })
+                                .addOnFailureListener(listener::onError);
+                    }
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+}
