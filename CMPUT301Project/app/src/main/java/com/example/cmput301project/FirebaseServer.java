@@ -778,41 +778,49 @@ public class FirebaseServer implements FirebaseInterface {
     public void deleteOrganizerWithDependencies(String organizerId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         DocumentReference organizerRef = db.collection("organizers").document(organizerId);
 
-        // Step 1: Get the `events` subcollection
+        // Step 1: Get the `events` subcollection and delete it recursively
         organizerRef.collection("events").get().addOnSuccessListener(eventsSnapshot -> {
             for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
                 String eventId = eventDoc.getId();
 
-                // Step 2: Delete `waitlistEntrantIds` subcollection
+                // Delete any nested subcollections in each event (if applicable)
                 deleteSubcollection(eventDoc.getReference().collection("waitlistEntrantIds"), () -> {
-                    // Step 3: Delete the event itself
+                    // Delete the event itself
                     eventDoc.getReference().delete().addOnSuccessListener(aVoid -> {
                         Log.d("Firebase", "Event deleted: " + eventId);
                     }).addOnFailureListener(e -> Log.e("Firebase", "Failed to delete event: " + eventId, e));
-                }, failure -> Log.e("Firebase", "Failed to delete 'waitlistEntrantIds' subcollection", failure));
+                }, failure -> Log.e("Firebase", "Failed to delete nested subcollection", failure));
             }
 
-            // Step 4: Delete the organizer document itself
-            organizerRef.delete().addOnSuccessListener(aVoid -> {
-                Log.d("Firebase", "Organizer and dependencies deleted: " + organizerId);
+            // Step 2: Clear all organizer fields except the ID
+            organizerRef.update(
+                    "name", null,
+                    "email", null,
+                    "phone", null,
+                    "profilePictureUrl", null,
+                    "events", null,
+                    "role", null
+            ).addOnSuccessListener(aVoid -> {
+                Log.d("Firebase", "Organizer fields cleared for ID: " + organizerId);
+
+                // Step 3: Confirm deletion success
                 onSuccess.onSuccess(aVoid);
             }).addOnFailureListener(onFailure);
         }).addOnFailureListener(onFailure);
     }
 
-    // Helper method to delete subcollections
+    // Helper method to delete subcollections recursively
     private void deleteSubcollection(CollectionReference subcollectionRef, Runnable onComplete, OnFailureListener onFailure) {
         subcollectionRef.get().addOnSuccessListener(querySnapshot -> {
             WriteBatch batch = db.batch();
             for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                 batch.delete(doc.getReference());
             }
-            batch.commit().addOnSuccessListener(aVoid -> {
-                Log.d("FirebaseServer", "Deleted subcollection: " + subcollectionRef.getPath());
-                onComplete.run();
-            }).addOnFailureListener(onFailure);
+            batch.commit().addOnSuccessListener(aVoid -> onComplete.run())
+                    .addOnFailureListener(onFailure);
         }).addOnFailureListener(onFailure);
     }
+
 
 
     @Override
