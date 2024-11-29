@@ -226,6 +226,7 @@ public class OrganizerEventDetailFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ParticipantListActivity.class);
                 intent.putExtra("event", e);
+                intent.putExtra("organizerId", app.getUserId());
                 Log.d("event wishlist", e.getWaitlistEntrantIds().toString());
                 startActivity(intent);
             }

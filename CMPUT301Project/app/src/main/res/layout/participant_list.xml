@@ -74,12 +74,12 @@
             app:trackColor="@color/design_default_color_primary" />
 
         <TextView
-            android:id="@+id/capacity_text"
+            android:id="@+id/finalization_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:text="Capacity: x/y"
+            android:text="This event has been finalized."
             android:textColor="@color/black" />
 
         <LinearLayout
@@ -107,6 +107,18 @@
                 android:backgroundTint="@color/design_default_color_primary"
                 android:layout_marginStart="8dp"
                 android:text="Remove"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/participant_list" />
+
+            <Button
+                android:id="@+id/finalize_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/design_default_color_primary"
+                android:layout_marginStart="8dp"
+                android:text="Finalize"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
