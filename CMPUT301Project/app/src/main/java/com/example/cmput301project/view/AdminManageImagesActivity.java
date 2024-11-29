@@ -2,12 +2,18 @@ package com.example.cmput301project.view;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +32,9 @@ public class AdminManageImagesActivity extends AppCompatActivity {
     private ImageRecyclerViewAdapter adapter;
     private List<String> imageUrls;
 
+    private ProgressBar progressBar;
+    private ConstraintLayout mainLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +52,12 @@ public class AdminManageImagesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         deleteButton = findViewById(R.id.deletePoster);
         searchView = findViewById(R.id.searchView);
+        progressBar = findViewById(R.id.progressBar);
+        mainLayout = findViewById(R.id.main_layout);
+
+        CardView container = findViewById(R.id.searchPoster);
+        container.setVisibility(View.GONE);
+//        searchView.setVisibility(View.GONE);
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -95,6 +110,8 @@ public class AdminManageImagesActivity extends AppCompatActivity {
         });
 
         deleteButton.setOnClickListener(v -> {
+            lockUI();
+            Log.d("lockui", "debug3");
             List<String> selectedImages = adapter.getSelectedImages();
             if (selectedImages.isEmpty()) {
                 Toast.makeText(this, "No images selected for deletion.", Toast.LENGTH_SHORT).show();
@@ -104,6 +121,7 @@ public class AdminManageImagesActivity extends AppCompatActivity {
             firebaseServer.deleteImage(selectedImages.get(0), new FirebaseServer.OnImageDeletedListener() {
                 @Override
                 public void onImageDeleted() {
+                    unlockUI();
                     imageUrls.removeAll(selectedImages);
                     adapter.updateImageList(imageUrls);
                     adapter.clearSelections();
@@ -112,6 +130,7 @@ public class AdminManageImagesActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(Exception e) {
+                    unlockUI();
                     Toast.makeText(AdminManageImagesActivity.this, "Failed to delete images.", Toast.LENGTH_SHORT).show();
                     Log.e("AdminManageImages", "Error deleting images", e);
                 }
@@ -145,5 +164,17 @@ public class AdminManageImagesActivity extends AppCompatActivity {
                 Log.e("AdminManageImages", "Error deleting image", e);
             }
         });
+    }
+
+    private void lockUI() {
+        progressBar.setVisibility(View.VISIBLE);
+        mainLayout.setAlpha(0.5f); // Dim background for effect
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void unlockUI() {
+        progressBar.setVisibility(View.GONE);
+        mainLayout.setAlpha(1.0f); // Restore background opacity
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }

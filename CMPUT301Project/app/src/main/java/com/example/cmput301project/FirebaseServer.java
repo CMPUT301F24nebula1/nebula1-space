@@ -574,6 +574,7 @@ import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.model.User;
+import com.example.cmput301project.view.AdminAllProfilesActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
@@ -581,6 +582,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -678,8 +680,6 @@ public class FirebaseServer implements FirebaseInterface {
     }
 
 
-
-
     private void removeImageReferenceFromFirestore(String imageUrl, OnImageDeletedListener listener) {
         db.collection("organizers")
                 .get()
@@ -753,12 +753,95 @@ public class FirebaseServer implements FirebaseInterface {
 
                     // Remove the reference from Firestore
                     removeImageReferenceFromFirestore(imageUrl, listener);
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseServer", "Failed to delete image from Storage: " + imagePath, e);
                     listener.onError(e);
                 });
     }
+
+    public void fetchAllFacilities(OnSuccessListener<List<Organizer>> onSuccess, OnFailureListener onFailure) {
+        db.collection("organizers")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Organizer> organizers = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        Organizer organizer = doc.toObject(Organizer.class);
+                        if (organizer != null) {
+                            organizer.setId(doc.getId());
+                            organizers.add(organizer);
+                        }
+                    }
+                    onSuccess.onSuccess(organizers);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void deleteOrganizerWithDependencies(String organizerId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        DocumentReference organizerRef = db.collection("organizers").document(organizerId);
+
+        // Step 1: Get the `events` subcollection
+        organizerRef.collection("events").get().addOnSuccessListener(eventsSnapshot -> {
+            for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
+                String eventId = eventDoc.getId();
+
+                // Step 2: Delete `userId` subcollection
+                deleteSubcollection(eventDoc.getReference().collection("userId"), () -> {
+                    // Step 3: Delete the event itself
+                    eventDoc.getReference().delete().addOnSuccessListener(aVoid -> {
+                        Log.d("Firebase", "Event deleted: " + eventId);
+                    }).addOnFailureListener(e -> Log.e("Firebase", "Failed to delete event: " + eventId, e));
+                }, failure -> Log.e("Firebase", "Failed to delete 'waitlistEntrantIds' subcollection", failure));
+            }
+
+            // Step 4: Delete the organizer document itself
+            organizerRef.delete().addOnSuccessListener(aVoid -> {
+                Log.d("Firebase", "Organizer and dependencies deleted: " + organizerId);
+                deleteUserRole("organizer", organizerId, new AdminAllProfilesActivity.DeleteRoleCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        Log.d("Firebase", message);
+                        onSuccess.onSuccess(null); // Notify the parent caller
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("Firebase", error);
+                        onFailure.onFailure(new Exception(error));
+                    }
+                });
+            }).addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
+    // Helper method to delete subcollections
+    private void deleteSubcollection(CollectionReference subcollectionRef, Runnable onComplete, OnFailureListener onFailure) {
+        subcollectionRef.get().addOnSuccessListener(querySnapshot -> {
+            WriteBatch batch = db.batch();
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                batch.delete(doc.getReference());
+            }
+            batch.commit().addOnSuccessListener(aVoid -> onComplete.run())
+                    .addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
+    private void deleteUserRole(String role, String id, AdminAllProfilesActivity.DeleteRoleCallback callback) {
+        // Reference the specific document in the "users" collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(id)
+                .update("role", FieldValue.arrayRemove(role))
+                .addOnSuccessListener(aVoid -> {
+                    String message = "Successfully removed '" + role + "' from the role array of document: " + id;
+                    callback.onSuccess(message);
+                })
+                .addOnFailureListener(e -> {
+                    String error = "Error removing '" + role + "' from document " + id + ": " + e.getMessage();
+                    callback.onFailure(error);
+                });
+    }
+
 
     @Override
     public void listenToEntrantUpdates(String userId) {
@@ -1341,10 +1424,6 @@ public class FirebaseServer implements FirebaseInterface {
         });
     }
 
-
-
-
-
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("qrCode", null); // Remove the QR code
@@ -1358,10 +1437,6 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
-
-
-
-
 
     @Override
     public LiveData<Entrant> getEntrantLiveData() {

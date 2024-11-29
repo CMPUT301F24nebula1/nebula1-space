@@ -53,15 +53,40 @@ public class ImageRecyclerViewAdapter extends RecyclerView.Adapter<ImageRecycler
                 .load(imageUrl)
                 .placeholder(android.R.color.darker_gray)
                 .into(holder.imageView);
+//
+//        // Highlight selected images
+//        holder.itemView.setBackgroundColor(selectedImages.contains(imageUrl) ?
+//                context.getResources().getColor(R.color.grey) :
+//                context.getResources().getColor(android.R.color.transparent));
 
         // Highlight selected images
-        holder.itemView.setBackgroundColor(selectedImages.contains(imageUrl) ?
-                context.getResources().getColor(R.color.grey) :
-                context.getResources().getColor(android.R.color.transparent));
+        if (selectedImages.contains(imageUrl)) {
+            holder.imageView.setAlpha(0.5f); // Dim the image
+        } else {
+            holder.imageView.setAlpha(1.0f); // Normal image
+        }
 
         // Handle clicks for selection
         holder.itemView.setOnClickListener(v -> {
-            if (selectedImages.contains(imageUrl)) {
+//            if (selectedImages.contains(imageUrl)) {
+//                selectedImages.remove(imageUrl); // Deselect image
+//            } else {
+//                selectedImages.add(imageUrl); // Select image
+//            }
+            boolean wasSelected = selectedImages.contains(imageUrl);
+
+            // Clear previous selection
+            if (!wasSelected && !selectedImages.isEmpty()) {
+                String previousSelection = selectedImages.iterator().next(); // Get the first selected image
+                selectedImages.clear(); // Clear all selections since we allow only one
+                int previousPosition = imageUrls.indexOf(previousSelection);
+                if (previousPosition >= 0) {
+                    notifyItemChanged(previousPosition); // Update UI for the previously selected item
+                }
+            }
+
+            // Add or remove the current selection
+            if (wasSelected) {
                 selectedImages.remove(imageUrl); // Deselect image
             } else {
                 selectedImages.add(imageUrl); // Select image
@@ -69,15 +94,15 @@ public class ImageRecyclerViewAdapter extends RecyclerView.Adapter<ImageRecycler
             notifyItemChanged(position); // Update UI for this item
         });
 
-        // Handle long-click for immediate delete
-        holder.itemView.setOnLongClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onDelete(imageUrl); // Trigger single delete
-            } else {
-                Toast.makeText(context, "Delete listener not set.", Toast.LENGTH_SHORT).show();
-            }
-            return true;
-        });
+//        // Handle long-click for immediate delete
+//        holder.itemView.setOnLongClickListener(v -> {
+//            if (deleteListener != null) {
+//                deleteListener.onDelete(imageUrl); // Trigger single delete
+//            } else {
+//                Toast.makeText(context, "Delete listener not set.", Toast.LENGTH_SHORT).show();
+//            }
+//            return true;
+//        });
     }
 
     @Override
