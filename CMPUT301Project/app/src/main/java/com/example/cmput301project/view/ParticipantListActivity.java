@@ -275,7 +275,10 @@ public class ParticipantListActivity extends AppCompatActivity {
         geoButton.setOnClickListener(view -> {
             if (entrants_waitlist.isEmpty()) {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
-                return;
+            } else {
+                // Show the dialog with the map
+                waitlistMapFragment dialog = waitlistMapFragment.newInstance();
+                dialog.show(getSupportFragmentManager(), "WaitlistMapFragment");
             }
         });
 

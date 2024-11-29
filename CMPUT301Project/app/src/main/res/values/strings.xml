@@ -34,7 +34,7 @@
 <!--    <string name="phone_number">Phone Number</string>-->
     <string name="optional">Optional</string>
 
-
+    <string name="geolocation_map">Geolocation Map</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit...
