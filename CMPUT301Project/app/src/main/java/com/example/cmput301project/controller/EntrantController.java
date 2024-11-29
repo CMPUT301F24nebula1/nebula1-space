@@ -1,10 +1,12 @@
 package com.example.cmput301project.controller;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Entrant;
+import com.example.cmput301project.view.EntrantEventViewFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +40,8 @@ public class EntrantController {
         entrantData.put("email", entrant.getEmail());
         entrantData.put("phone", entrant.getPhone());
         entrantData.put("profilePictureUrl", entrant.getProfilePictureUrl());
+        entrantData.put("latitude", entrant.getLatitude());
+        entrantData.put("longitude", entrant.getLongitude());
 
         if (u != null) {
             uploadImageToFirebase(u, new OnSuccessListener<String>() {
@@ -85,23 +89,49 @@ public class EntrantController {
 
     }
 
-    public void joinEventWaitingList(Event event) {
+    public void joinEventWaitingList(Event event, Context context) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (event.isRequiresGeolocation()) {
+            // Fetch and update location
+            locationHelper.fetchEntrantLocation(context, new locationHelper.LocationCallback() {
+                @Override
+                public void onLocationRetrieved(double latitude, double longitude) {
+                    // Update lat and long in Firebase
+                    updateEntrantLocation(entrant, latitude, longitude, db);
+                    // Add entrant to the waitlist
+                    addEntrantToWaitlist(event, entrant, db);
+                }
+
+                @Override
+                public void onLocationError(String errorMessage) {
+                    Log.e("joinEventWaitingList", "Error fetching location: " + errorMessage);
+                    // Even if location fails, add the entrant to the waitlist
+                    addEntrantToWaitlist(event, entrant, db);
+                }
+            });
+        } else {
+            // Directly add entrant to waitlist if no geolocation is required
+            addEntrantToWaitlist(event, entrant, db);
+        }
+    }
+
+    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db) {
+        Map<String, Object> waitlistData = new HashMap<>();
+
         db.collection("entrants")
                 .document(entrant.getId())  // Assuming entrant has a unique ID
                 .collection("entrantWaitList")
                 .document(event.getId())
-                .set(new HashMap<String, Object>() {{
-                    put("eventId", event.getId());
-                    put("status", "WAITING");
-                }})
+                .set(waitlistData)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("join event waiting list", "Entrant data updated successfully in Firebase");
+                    Log.d("addEntrantToWaitlist", "Entrant successfully added to event waitlist.");
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("join event waiting list", "Failed to update entrant data in Firebase", e);
+                    Log.e("addEntrantToWaitlist", "Failed to add entrant to event waitlist: " + e.getMessage(), e);
                 });
     }
+
 
     public void addToEventWaitingList(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -224,6 +254,18 @@ public class EntrantController {
                         }))
                 .addOnFailureListener(failureListener);
 
+    }
+    public void updateEntrantLocation(Entrant entrant, double latitude, double longitude, FirebaseFirestore db) {
+        entrant.setLocation(latitude, longitude);
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("latitude", latitude);
+        locationData.put("longitude", longitude);
+
+        db.collection("entrants")
+                .document(entrant.getId())
+                .update(locationData)
+                .addOnSuccessListener(aVoid -> Log.d("updateLocation", "Entrant location updated successfully."))
+                .addOnFailureListener(e -> Log.e("updateLocation", "Error updating location: " + e.getMessage(), e));
     }
 
 }
