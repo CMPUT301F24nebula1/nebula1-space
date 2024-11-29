@@ -116,21 +116,24 @@ public class EntrantController {
         }
     }
 
-    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db) {
-        Map<String, Object> waitlistData = new HashMap<>();
+//helper function for adding to waitlist
+private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db) {
+    Map<String, Object> waitlistData = new HashMap<>();
+    waitlistData.put("eventId", event.getId());
+    waitlistData.put("status", "WAITING");
 
-        db.collection("entrants")
-                .document(entrant.getId())  // Assuming entrant has a unique ID
-                .collection("entrantWaitList")
-                .document(event.getId())
-                .set(waitlistData)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("addEntrantToWaitlist", "Entrant successfully added to event waitlist.");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("addEntrantToWaitlist", "Failed to add entrant to event waitlist: " + e.getMessage(), e);
-                });
-    }
+    db.collection("entrants")
+            .document(entrant.getId())  // Assuming entrant has a unique ID
+            .collection("entrantWaitList")
+            .document(event.getId())
+            .set(waitlistData)
+            .addOnSuccessListener(aVoid -> {
+                Log.d("addEntrantToWaitlist", "Entrant successfully added to event waitlist.");
+            })
+            .addOnFailureListener(e -> {
+                Log.e("addEntrantToWaitlist", "Failed to add entrant to event waitlist: " + e.getMessage(), e);
+            });
+}
 
 
     public void addToEventWaitingList(Event event) {
