@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.AdminManageFacilitiesActivity">
+    tools:context=".view.AdminManageFacilitiesActivity"
+    android:padding="16dp">
 
     <!-- Toolbar at the top -->
     <com.google.android.material.appbar.AppBarLayout
@@ -35,8 +36,7 @@
         android:queryHint="Search Facilities"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- RecyclerView for facilities -->
     <androidx.recyclerview.widget.RecyclerView
