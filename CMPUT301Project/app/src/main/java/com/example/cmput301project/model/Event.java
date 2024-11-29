@@ -25,6 +25,7 @@ public class Event extends Observable implements Serializable {
     private String endDate;
     private final String id;
     private boolean requiresGeolocation;
+    private boolean isFinalized = false;
     private String organizerId;
     private transient Timestamp timestamp;
     private boolean isQrRemoved = false;
@@ -263,5 +264,15 @@ public class Event extends Observable implements Serializable {
 
     public void setQrRemoved(boolean qrRemoved) {
         isQrRemoved = qrRemoved;
+    }
+
+    @PropertyName("isFinalized")
+    public boolean isFinalized() {
+        return isFinalized;
+    }
+
+    @PropertyName("isFinalized")
+    public void setFinalized(boolean finalized) {
+        isFinalized = finalized;
     }
 }
