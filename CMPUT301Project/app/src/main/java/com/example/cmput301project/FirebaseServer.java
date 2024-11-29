@@ -574,6 +574,7 @@ import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.model.User;
+import com.example.cmput301project.view.AdminAllProfilesActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
@@ -581,6 +582,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -751,6 +753,7 @@ public class FirebaseServer implements FirebaseInterface {
 
                     // Remove the reference from Firestore
                     removeImageReferenceFromFirestore(imageUrl, listener);
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseServer", "Failed to delete image from Storage: " + imagePath, e);
@@ -783,8 +786,8 @@ public class FirebaseServer implements FirebaseInterface {
             for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
                 String eventId = eventDoc.getId();
 
-                // Step 2: Delete `waitlistEntrantIds` subcollection
-                deleteSubcollection(eventDoc.getReference().collection("waitlistEntrantIds"), () -> {
+                // Step 2: Delete `userId` subcollection
+                deleteSubcollection(eventDoc.getReference().collection("userId"), () -> {
                     // Step 3: Delete the event itself
                     eventDoc.getReference().delete().addOnSuccessListener(aVoid -> {
                         Log.d("Firebase", "Event deleted: " + eventId);
@@ -795,7 +798,19 @@ public class FirebaseServer implements FirebaseInterface {
             // Step 4: Delete the organizer document itself
             organizerRef.delete().addOnSuccessListener(aVoid -> {
                 Log.d("Firebase", "Organizer and dependencies deleted: " + organizerId);
-                onSuccess.onSuccess(aVoid);
+                deleteUserRole("organizer", organizerId, new AdminAllProfilesActivity.DeleteRoleCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        Log.d("Firebase", message);
+                        onSuccess.onSuccess(null); // Notify the parent caller
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("Firebase", error);
+                        onFailure.onFailure(new Exception(error));
+                    }
+                });
             }).addOnFailureListener(onFailure);
         }).addOnFailureListener(onFailure);
     }
@@ -812,6 +827,21 @@ public class FirebaseServer implements FirebaseInterface {
                 onComplete.run();
             }).addOnFailureListener(onFailure);
         }).addOnFailureListener(onFailure);
+    }
+
+    private void deleteUserRole(String role, String id, AdminAllProfilesActivity.DeleteRoleCallback callback) {
+        // Reference the specific document in the "users" collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(id)
+                .update("role", FieldValue.arrayRemove(role))
+                .addOnSuccessListener(aVoid -> {
+                    String message = "Successfully removed '" + role + "' from the role array of document: " + id;
+                    callback.onSuccess(message);
+                })
+                .addOnFailureListener(e -> {
+                    String error = "Error removing '" + role + "' from document " + id + ": " + e.getMessage();
+                    callback.onFailure(error);
+                });
     }
 
 

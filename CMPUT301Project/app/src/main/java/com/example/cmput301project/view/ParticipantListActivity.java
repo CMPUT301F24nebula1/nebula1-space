@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.navigation.NavController;
 
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.EntrantArrayAdapter;
@@ -31,20 +30,16 @@ import com.example.cmput301project.service.PoolingService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.slider.Slider;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ParticipantListActivity extends AppCompatActivity {
@@ -77,6 +72,7 @@ public class ParticipantListActivity extends AppCompatActivity {
     private MaterialButton notifyButton;
     private ProgressBar progressBar;
     private ConstraintLayout mainLayout;
+    TextView finalizationText;
 
     private boolean isDataLoaded = false;
 
@@ -113,9 +109,9 @@ public class ParticipantListActivity extends AppCompatActivity {
         finalizeButton = findViewById(R.id.finalize_button);
         progressBar = findViewById(R.id.progressBar);
         mainLayout = findViewById(R.id.main_layout);
-        TextView capacity = findViewById(R.id.capacity_text);
+        finalizationText = findViewById(R.id.finalization_text);
 
-        capacity.setVisibility(View.GONE);
+        finalizationText.setVisibility(View.GONE);
 
         setSupportActionBar(findViewById(R.id.toolbar_select));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -653,10 +649,13 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
         if (entrantAdapter != null)
             entrantAdapter.setAllCheckboxesSelected(false);
 
+        finalizationText.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
             setToggleButtonsAndSlider(entrants_waitlist.size());
-            cancelButton.setVisibility(View.GONE);
+
             entrantAdapter.setCheckboxVisibility(true);
             status = "WAITING";
         } else if (toggleGroup.getCheckedButtonId() == R.id.btn_selected) {
@@ -693,6 +692,9 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             updateEntrantsList(new ArrayList<>(entrants_final));
             setButtonInvisible();
             finalizeButton.setVisibility(View.VISIBLE);
+            if (event.isFinalized()) {
+                finalizationText.setVisibility(View.VISIBLE);
+            }
             if (entrants_final.isEmpty()) {
                 finalizeButton.setAlpha(0.2f);
                 finalizeButton.setClickable(false);

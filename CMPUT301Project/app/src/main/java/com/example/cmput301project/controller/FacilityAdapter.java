@@ -21,7 +21,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
     private OnDeleteFacilityListener onDeleteListener;
 
     public interface OnDeleteFacilityListener {
-        void onDelete(Organizer facility);
+        void onDeleteClick(Organizer facility);
     }
 
     public FacilityAdapter(List<Organizer> facilities, OnDeleteFacilityListener listener) {
@@ -54,7 +54,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
             holder.facilityImageView.setVisibility(View.GONE); // Hide the ImageView if no URL
         }
 
-        holder.deleteButton.setOnClickListener(v -> onDeleteListener.onDelete(facility));
+        holder.deleteButton.setOnClickListener(v -> onDeleteListener.onDeleteClick(facility));
     }
 
 

@@ -55,12 +55,14 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
 
         // Load profile picture using Glide (or similar library)
         if (entrant.getProfilePictureUrl() != null && !entrant.getProfilePictureUrl().isEmpty()) {
+            holder.profilePictureImageView.setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(entrant.getProfilePictureUrl())
                     .placeholder(R.drawable.ic_launcher_background) // Placeholder image
                     .into(holder.profilePictureImageView);
         } else {
-            holder.profilePictureImageView.setImageResource(R.drawable.ic_launcher_background); // Default image
+//            holder.profilePictureImageView.setImageResource(R.drawable.ic_launcher_background); // Default image
+            holder.profilePictureImageView.setVisibility(View.INVISIBLE);
         }
 
         holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(entrant, position));
