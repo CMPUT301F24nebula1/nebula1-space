@@ -79,7 +79,21 @@ public class AdminManageImagesActivity extends AppCompatActivity {
 
         // Fetch and display poster URLs
         FirebaseServer firebaseServer = new FirebaseServer();
-        firebaseServer.retrieveAllPosterUrls(new FirebaseServer.OnImagesRetrievedListener() {
+//        firebaseServer.retrieveAllPosterUrls(new FirebaseServer.OnImagesRetrievedListener() {
+//            @Override
+//            public void onImagesRetrieved(List<String> images) {
+//                imageUrls.clear();
+//                imageUrls.addAll(images);
+//                adapter.updateImageList(imageUrls);
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Toast.makeText(AdminManageImagesActivity.this, "Failed to load posters.", Toast.LENGTH_SHORT).show();
+//                Log.e("AdminManageImages", "Error loading posters", e);
+//            }
+//        });
+        firebaseServer.retrieveAllImages(new FirebaseServer.OnImagesRetrievedListener() {
             @Override
             public void onImagesRetrieved(List<String> images) {
                 imageUrls.clear();
@@ -89,8 +103,8 @@ public class AdminManageImagesActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(AdminManageImagesActivity.this, "Failed to load posters.", Toast.LENGTH_SHORT).show();
-                Log.e("AdminManageImages", "Error loading posters", e);
+                Toast.makeText(AdminManageImagesActivity.this, "Failed to load images.", Toast.LENGTH_SHORT).show();
+                Log.e("AdminManageImages", "Error loading images", e);
             }
         });
 
