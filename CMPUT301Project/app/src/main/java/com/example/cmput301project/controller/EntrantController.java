@@ -259,16 +259,22 @@ private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestor
 
     }
     public void updateEntrantLocation(Entrant entrant, double latitude, double longitude, FirebaseFirestore db) {
+        // update local
         entrant.setLocation(latitude, longitude);
+
+        // map for update fields
         Map<String, Object> locationData = new HashMap<>();
         locationData.put("latitude", latitude);
         locationData.put("longitude", longitude);
 
+        // Directly update the root document for the entrant in Firestore
         db.collection("entrants")
-                .document(entrant.getId())
-                .update(locationData)
-                .addOnSuccessListener(aVoid -> Log.d("updateLocation", "Entrant location updated successfully."))
-                .addOnFailureListener(e -> Log.e("updateLocation", "Error updating location: " + e.getMessage(), e));
+                .document(entrant.getId())  // Assuming the entrant has a unique ID
+                .update(locationData)       // Only update the fields specified in locationData
+                .addOnSuccessListener(aVoid ->
+                        Log.d("updateEntrantLocation", "Entrant location updated successfully."))
+                .addOnFailureListener(e ->
+                        Log.e("updateEntrantLocation", "Error updating location: " + e.getMessage(), e));
     }
 
 }
