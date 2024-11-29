@@ -149,10 +149,6 @@
             android:textColor="@color/btn_text_selector"
             android:textSize="10dp"
             app:backgroundTint="@color/btn_background_selector"
-            app:iconSize="10dp"
-            app:icon="@drawable/ic_check_selector"
-            app:iconPadding="0dp"
-            app:iconTint="@color/btn_text_selector"
             app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
 
         <com.google.android.material.button.MaterialButton
@@ -165,10 +161,6 @@
             android:textColor="@color/btn_text_selector"
             android:textSize="10dp"
             app:backgroundTint="@color/btn_background_selector"
-            app:icon="@drawable/ic_check_selector"
-            app:iconPadding="0dp"
-            app:iconSize="10dp"
-            app:iconTint="@color/btn_text_selector"
             app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
 
         <com.google.android.material.button.MaterialButton
@@ -181,9 +173,6 @@
             android:textColor="@color/btn_text_selector"
             android:textSize="10dp"
             app:backgroundTint="@color/btn_background_selector"
-            app:icon="@drawable/ic_check_selector"
-            app:iconPadding="0dp"
-            app:iconTint="@color/btn_text_selector"
             app:shapeAppearanceOverlay="@style/LeftRoundedButtonShape" />
 
         <com.google.android.material.button.MaterialButton
@@ -196,9 +185,6 @@
             android:textColor="@color/btn_text_selector"
             android:textSize="10dp"
             app:backgroundTint="@color/btn_background_selector"
-            app:icon="@drawable/ic_check_selector"
-            app:iconPadding="0dp"
-            app:iconTint="@color/btn_text_selector"
             app:shapeAppearanceOverlay="@style/RightRoundedButtonShape" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
