@@ -822,10 +822,8 @@ public class FirebaseServer implements FirebaseInterface {
             for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                 batch.delete(doc.getReference());
             }
-            batch.commit().addOnSuccessListener(aVoid -> {
-                Log.d("FirebaseServer", "Deleted subcollection: " + subcollectionRef.getPath());
-                onComplete.run();
-            }).addOnFailureListener(onFailure);
+            batch.commit().addOnSuccessListener(aVoid -> onComplete.run())
+                    .addOnFailureListener(onFailure);
         }).addOnFailureListener(onFailure);
     }
 
