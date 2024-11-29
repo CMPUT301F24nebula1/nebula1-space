@@ -1,5 +1,7 @@
 package com.example.cmput301project.view;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +11,16 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.MyApplication;
@@ -287,7 +293,7 @@ public class EntrantEventViewFragment extends Fragment {
         Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
         app.getEntrant().join_event(e);       // Add entrant to the event's waitlist
         e.add_entrant(app.getEntrant());      // Update the event's entrant list
-        ec.joinEventWaitingList(e);           // Sync changes with the database
+        ec.joinEventWaitingList(e, requireContext());           // Sync changes with the database
         ec.addToEventWaitingList(e);          // Update local storage
         setButtonSelected(binding.leaveClassButton, binding.joinClassButton); // Update UI
         Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
