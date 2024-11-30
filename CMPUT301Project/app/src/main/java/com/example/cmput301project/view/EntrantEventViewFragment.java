@@ -1,5 +1,7 @@
 package com.example.cmput301project.view;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +11,16 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+//import com.example.cmput301project.Manifest;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.MyApplication;
@@ -38,6 +44,8 @@ public class EntrantEventViewFragment extends Fragment {
     Entrant entrant;
     String category;
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -49,24 +57,21 @@ public class EntrantEventViewFragment extends Fragment {
         e = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getE();
         category = EntrantEventViewFragmentArgs.fromBundle(getArguments()).getCategory();
 
+        if (e.isRequiresGeolocation()) {
+            binding.geolocationContainer.setVisibility(View.VISIBLE);
+            binding.geolocationWarning.setText("This event utilizes geolocation.");
+            binding.geolocationCheckbox.setChecked(true);
+            binding.geolocationCheckbox.setEnabled(false);
+        } else {
+            binding.geolocationContainer.setVisibility(View.GONE);
+        }
         // Customize UI based on category
         switch (category) {
             case "SELECTED":
                 // Handle Pending events
                 binding.joinClassButton.setText("Accept");
                 binding.leaveClassButton.setText("Decline");
-//                binding.joinClassButton.setEnabled(true);
-//                binding.leaveClassButton.setEnabled(true);
 
-//                binding.joinClassButton.setOnClickListener(v -> {
-//                    Log.d("Pending Invitation", "Accepted event: " + e.getName());
-//                    proceedToAcceptEvent();
-//                });
-
-//                binding.leaveClassButton.setOnClickListener(v -> {
-//                    Log.d("Pending Invitation", "Declined event: " + e.getName());
-//                    proceedToDeclineEvent();
-//                });
                 break;
             case "CANCELED":
             case "FINAL":
@@ -79,6 +84,11 @@ public class EntrantEventViewFragment extends Fragment {
                 binding.joinClassButton.setText("Join Class");
                 binding.leaveClassButton.setText("Leave Class");
                 break;
+        }
+        if (e.isFinalized()) {
+            binding.joinClassButton.setVisibility(View.GONE);
+            binding.leaveClassButton.setVisibility(View.GONE);
+            binding.eventFinalizedText.setVisibility(View.VISIBLE);
         }
         Log.d("waitlist entrants", e.getName() + ' ' + String.valueOf(e.getWaitlistEntrantIds().size()));
         Log.d("waitlist limit", e.getName() + String.valueOf(e.getLimit()));
@@ -189,7 +199,17 @@ public class EntrantEventViewFragment extends Fragment {
                                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                                     .setCancelable(false)  // prevents dialog from closing on back press
                                     .show();
-                        } else if (e.requiresGeolocation()) {
+                        } else if (e.isRequiresGeolocation()) {
+
+                            // Check if location permission is granted
+                            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                // Request location permission if not granted
+                                ActivityCompat.requestPermissions(requireActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        LOCATION_PERMISSION_REQUEST_CODE);
+                                return; // Exit the method to wait for user permission
+                            }
+
                             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                             builder.setTitle("Geolocation Required");
                             builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");
@@ -285,7 +305,7 @@ public class EntrantEventViewFragment extends Fragment {
         Log.d("join event", app.getEntrant().getWaitlistEventIds().toString());
         app.getEntrant().join_event(e);       // Add entrant to the event's waitlist
         e.add_entrant(app.getEntrant());      // Update the event's entrant list
-        ec.joinEventWaitingList(e);           // Sync changes with the database
+        ec.joinEventWaitingList(e, requireContext());           // Sync changes with the database
         ec.addToEventWaitingList(e);          // Update local storage
         setButtonSelected(binding.leaveClassButton, binding.joinClassButton); // Update UI
         Toast.makeText(getContext(), "You joined the waiting list!", Toast.LENGTH_SHORT).show();
@@ -389,6 +409,22 @@ public class EntrantEventViewFragment extends Fragment {
                     }
                 });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can proceed to the geolocation dialog
+                proceedToJoinEvent();
+            } else {
+                // Permission denied, show a message or handle accordingly
+                Toast.makeText(requireContext(), "Location permission is required to join this event.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void lockUI() {
         binding.progressBar.setVisibility(View.VISIBLE);

@@ -83,10 +83,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        id = getDeviceId(this);
+        id = getDeviceId(this);
+        Log.d("device id", id);
 
+
+
+//        id = "1";
 //        id = "8";
         id = "1d98b5f2ca50879e";
+//        id = "6";
+
+
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
@@ -247,6 +254,10 @@ public class MainActivity extends AppCompatActivity {
                         if (eventTask.isSuccessful() && eventTask.getResult() != null && eventTask.getResult().exists()) {
                             isFound.set(true);
                             Event event = eventTask.getResult().toObject(Event.class);
+                            if (event != null && event.isQrRemoved()) {
+                                callback.onFailure(null);
+                                return;
+                            }
 
                             ArrayList<String> userIdList = new ArrayList<>();
 

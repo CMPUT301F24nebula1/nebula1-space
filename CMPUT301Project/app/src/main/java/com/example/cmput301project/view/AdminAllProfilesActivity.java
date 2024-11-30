@@ -1,6 +1,7 @@
 package com.example.cmput301project.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -87,16 +88,19 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
     private void loadAllEntrantsFromFirebase() {
         progressBar.setVisibility(ProgressBar.VISIBLE); // Show the progress bar while loading
         db.collection("entrants")
+                .limit(1000)
                 .get()
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(ProgressBar.GONE); // Hide the progress bar once done
                     if (task.isSuccessful()) {
                         entrantList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("adminprofile document", String.valueOf(task.getResult().size()));
                             Entrant entrant = document.toObject(Entrant.class);
-                            if (entrant != null) {
+                            if (entrant != null && entrant.getName() != null && !entrant.getName().isEmpty()) {
                                 entrant.setId(document.getId()); // Set the ID manually
                                 entrantList.add(entrant);
+                                Log.d("adminprofile", String.valueOf(entrantList.size()));
                             }
                         }
                         profileAdapter.notifyDataSetChanged();
@@ -115,34 +119,6 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
         }
         profileAdapter.updateList(filteredList);
     }
-
-//    private void deleteEntrant(Entrant entrant, int position) {
-//        if (entrant == null || entrant.getId() == null) {
-//            Toast.makeText(this, "Error: Invalid entrant", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        db.collection("entrants").document(entrant.getId())
-//                .delete()
-//                .addOnSuccessListener(aVoid -> {
-//                    deleteUserRole("entrant", entrant.getId(), new DeleteRoleCallback() {
-//                        @Override
-//                        public void onSuccess(String message) {
-//                            Toast.makeText(AdminAllProfilesActivity.this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
-//                            entrantList.remove(position); // Remove from the list
-//                            profileAdapter.notifyItemRemoved(position); // Notify adapter
-//                        }
-//                        @Override
-//                        public void onFailure(String error) {
-//                            Toast.makeText(AdminAllProfilesActivity.this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//
-//                })
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
-//                });
-//    }
 
     private void deleteEntrant(Entrant entrant, int position) {
         if (entrant == null || entrant.getId() == null) {

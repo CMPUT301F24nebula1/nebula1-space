@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -115,18 +116,45 @@ public class OrganizerEventController {
     }
 
 
+//    private void saveEventToFirestore(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+//        CollectionReference eventsCollection = db.collection("organizers")
+//                .document(organizer.getId())
+//                .collection("events");
+//        eventsCollection.document(event.getId())
+//                .set(event)
+//                .addOnSuccessListener(eventVoid -> {
+//                    Log.d("Firestore", "Event successfully added: " + event.getId());
+//                    successListener.onSuccess(null);
+//                })
+//                .addOnFailureListener(e -> Log.e("Firestore", "Error adding event: " + event.getId(), e));
+//    }
+
     private void saveEventToFirestore(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
         CollectionReference eventsCollection = db.collection("organizers")
                 .document(organizer.getId())
                 .collection("events");
+
         eventsCollection.document(event.getId())
-                .set(event)
+                .set(event) // Save the event object first
                 .addOnSuccessListener(eventVoid -> {
-                    Log.d("Firestore", "Event successfully added: " + event.getId());
-                    successListener.onSuccess(null);
+                    // Now update the 'timestamp' field with the server timestamp
+                    eventsCollection.document(event.getId())
+                            .update("timestamp", FieldValue.serverTimestamp()) // Update the timestamp field
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("Firestore", "Event and timestamp successfully added: " + event.getId());
+                                successListener.onSuccess(null); // Call the success listener
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("Firestore", "Error updating timestamp for event: " + event.getId(), e);
+                                failureListener.onFailure(e); // Call the failure listener
+                            });
                 })
-                .addOnFailureListener(e -> Log.e("Firestore", "Error adding event: " + event.getId(), e));
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding event: " + event.getId(), e);
+                    failureListener.onFailure(e); // Call the failure listener
+                });
     }
+
 
     private void updateEventInFirebase(String organizerId, Event updatedEvent, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
         // Get a reference to the specific event document in the "events" subcollection

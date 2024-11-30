@@ -1,6 +1,9 @@
 package com.example.cmput301project.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
+import com.google.firebase.Timestamp;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.UUID;
@@ -22,7 +25,10 @@ public class Event extends Observable implements Serializable {
     private String endDate;
     private final String id;
     private boolean requiresGeolocation;
+    private boolean isFinalized = false;
     private String organizerId;
+    private transient Timestamp timestamp;
+    private boolean isQrRemoved = false;
 
 
     /**
@@ -55,14 +61,29 @@ public class Event extends Observable implements Serializable {
         return waitlistEntrantIds;
     }
 
+    /**
+     * Sets the list of entrant IDs currently on the waitlist for this event.
+     *
+     * @param waitlistEntrantIds an {@link ArrayList} of entrant IDs representing the waitlisted entrants.
+     */
     public void setWaitlistEntrantIds(ArrayList<String> waitlistEntrantIds) {
         this.waitlistEntrantIds = waitlistEntrantIds;
     }
 
+    /**
+     * Retrieves the ID of the organizer associated with this event.
+     *
+     * @return the organizer's ID as a {@link String}.
+     */
     public String getOrganizerId() {
         return organizerId;
     }
 
+    /**
+     * Sets the ID of the organizer associated with this event.
+     *
+     * @param organizerId the organizer's ID as a {@link String}.
+     */
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
     }
@@ -228,7 +249,8 @@ public class Event extends Observable implements Serializable {
      * Does this event need geolocation?
      * @return true if geolocation is required for this event
      */
-    public boolean requiresGeolocation() {
+    @PropertyName("requiresGeolocation")
+    public boolean isRequiresGeolocation() {
         return requiresGeolocation;
     }
 
@@ -237,7 +259,65 @@ public class Event extends Observable implements Serializable {
      * set geolocate reqs
      * @param requiresGeolocation true if geolocation for this event is required
      */
+    @PropertyName("requiresGeolocation")
     public void setRequiresGeolocation(boolean requiresGeolocation) {
         this.requiresGeolocation = requiresGeolocation;
+    }
+
+    /**
+     * Retrieves the timestamp associated with this object.
+     *
+     * @return the {@link Timestamp} of the object.
+     */
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * Sets the timestamp for this object.
+     *
+     * @param timestamp the {@link Timestamp} to be set.
+     */
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    /**
+     * Checks whether the QR code associated with this object has been removed.
+     *
+     * @return true if the QR code is removed; otherwise, false.
+     */
+    @PropertyName("isQrRemoved")
+    public boolean isQrRemoved() {
+        return isQrRemoved;
+    }
+
+    /**
+     * Sets the status of whether the QR code associated with this object has been removed.
+     *
+     * @param qrRemoved true if the QR code is removed; otherwise, false.
+     */
+    public void setQrRemoved(boolean qrRemoved) {
+        isQrRemoved = qrRemoved;
+    }
+
+    /**
+     * Checks whether this object has been finalized.
+     *
+     * @return true if the object is finalized; otherwise, false.
+     */
+    @PropertyName("isFinalized")
+    public boolean isFinalized() {
+        return isFinalized;
+    }
+
+    /**
+     * Sets the status of whether this object has been finalized.
+     *
+     * @param finalized true if the object is finalized; otherwise, false.
+     */
+    @PropertyName("isFinalized")
+    public void setFinalized(boolean finalized) {
+        isFinalized = finalized;
     }
 }

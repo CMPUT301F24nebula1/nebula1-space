@@ -9,13 +9,11 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavOptions;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cmput301project.MyApplication;
@@ -32,10 +29,11 @@ import com.example.cmput301project.controller.OrganizerEventController;
 import com.example.cmput301project.R;
 import com.example.cmput301project.databinding.OrganizerEventViewBinding;
 import com.example.cmput301project.model.Event;
-import com.example.cmput301project.model.Organizer;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
@@ -104,6 +102,10 @@ public class AddEventFragment extends Fragment {
                 event.setStartDate(startDateText.getText().toString());
                 event.setEndDate(endDateText.getText().toString());
                 event.setDescription(description);
+                event.setRequiresGeolocation(binding.geolocationCheckbox.isChecked());
+                Log.d("event geolocation", String.valueOf(event.isRequiresGeolocation()));
+                Log.e("event geolocation", "debug1");
+
                 String inputCapacity = binding.lotteryCapacity.getEditText().getText().toString().trim();
                 int lotteryCapacity;
                 try {

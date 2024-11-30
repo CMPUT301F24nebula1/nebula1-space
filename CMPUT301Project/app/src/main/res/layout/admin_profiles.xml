@@ -25,6 +25,7 @@
             app:titleCentered="true"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchName"
         android:layout_width="0dp"

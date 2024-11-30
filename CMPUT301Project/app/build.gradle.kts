@@ -46,7 +46,7 @@ android {
 }
 
 dependencies {
-//    implementation(files("C:/Users/fxj/AppData/Local/Android/Sdk/platforms/android-34/android.jar"))
+    implementation(files("C:/Users/fxj/AppData/Local/Android/Sdk/platforms/android-34/android.jar"))
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage:20.0.0")
@@ -64,8 +64,8 @@ dependencies {
     implementation(libs.espresso.intents)
     implementation(libs.filament.android)
 
-    //for google maps api
-    implementation ("com.google.android.gms:play-services-maps:18.0.2")
+//    //for google maps api - in process of removing
+//    implementation ("com.google.android.gms:play-services-maps:18.0.2")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")

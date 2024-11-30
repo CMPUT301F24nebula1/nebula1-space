@@ -574,6 +574,7 @@ import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
 import com.example.cmput301project.model.User;
+import com.example.cmput301project.view.AdminAllProfilesActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
@@ -581,6 +582,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -622,6 +624,7 @@ public class FirebaseServer implements FirebaseInterface {
         void onImageDeleted();
         void onError(Exception e);
     }
+
 
     public void retrieveAllPosterUrls(OnImagesRetrievedListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -677,18 +680,53 @@ public class FirebaseServer implements FirebaseInterface {
                 .addOnFailureListener(listener::onError);
     }
 
+    public void retrieveAllImages(OnImagesRetrievedListener listener) {
+        List<String> allImageUrls = new ArrayList<>();
 
+        // First, retrieve all poster URLs
+        retrieveAllPosterUrls(new OnImagesRetrievedListener() {
+            @Override
+            public void onImagesRetrieved(List<String> posterUrls) {
+                allImageUrls.addAll(posterUrls); // Add poster URLs to the list
 
+                // Then, retrieve all entrant profile picture URLs
+                retrieveAllEntrantProfileImages(new OnImagesRetrievedListener() {
+                    @Override
+                    public void onImagesRetrieved(List<String> profileUrls) {
+                        allImageUrls.addAll(profileUrls); // Add profile URLs to the list
+
+                        // Return the consolidated list of image URLs
+                        listener.onImagesRetrieved(allImageUrls);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        // If fetching profile images fails, notify the listener
+                        listener.onError(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // If fetching poster images fails, notify the listener
+                listener.onError(e);
+            }
+        });
+    }
+
+    /**
+     * Retrieve all entrant profile images.
+     */
 
     private void removeImageReferenceFromFirestore(String imageUrl, OnImageDeletedListener listener) {
+        // Remove `posterUrl` from `organizers/events`
         db.collection("organizers")
                 .get()
                 .addOnSuccessListener(organizersSnapshot -> {
-                    // Loop through all organizers
                     for (DocumentSnapshot organizerDoc : organizersSnapshot.getDocuments()) {
                         String organizerId = organizerDoc.getId();
 
-                        // Check the events subcollection for the matching posterUrl
                         db.collection("organizers")
                                 .document(organizerId)
                                 .collection("events")
@@ -696,26 +734,40 @@ public class FirebaseServer implements FirebaseInterface {
                                 .get()
                                 .addOnSuccessListener(eventsSnapshot -> {
                                     for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
-                                        // Update the document by setting the posterUrl to null
                                         eventDoc.getReference().update("posterUrl", null)
                                                 .addOnSuccessListener(aVoid -> {
                                                     Log.d("FirebaseServer", "posterUrl cleared in Firestore: " + imageUrl);
-                                                    listener.onImageDeleted(); // Notify success
                                                 })
-                                                .addOnFailureListener(e -> {
-                                                    Log.e("FirebaseServer", "Failed to clear posterUrl in Firestore", e);
-                                                    listener.onError(e); // Notify failure
-                                                });
+                                                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to clear posterUrl in Firestore", e));
                                     }
                                 })
+                                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to retrieve events with matching posterUrl", e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to retrieve organizers from Firestore", e));
+
+        // Remove `profilePictureUrl` from `entrants`
+        db.collection("entrants")
+                .whereEqualTo("profilePictureUrl", imageUrl)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().update("profilePictureUrl", null)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FirebaseServer", "profilePictureUrl cleared in Firestore: " + imageUrl);
+                                    listener.onImageDeleted(); // Notify success after clearing profilePictureUrl
+                                })
                                 .addOnFailureListener(e -> {
-                                    Log.e("FirebaseServer", "Failed to retrieve events with matching posterUrl", e);
-                                    listener.onError(e);
+                                    Log.e("FirebaseServer", "Failed to clear profilePictureUrl in Firestore", e);
+                                    listener.onError(e); // Notify failure
                                 });
+                    }
+                    if (querySnapshot.isEmpty()) {
+                        listener.onImageDeleted(); // Notify success even if no matching entrant is found
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirebaseServer", "Failed to retrieve organizers from Firestore", e);
+                    Log.e("FirebaseServer", "Failed to retrieve entrants with matching profilePictureUrl", e);
                     listener.onError(e);
                 });
     }
@@ -753,12 +805,95 @@ public class FirebaseServer implements FirebaseInterface {
 
                     // Remove the reference from Firestore
                     removeImageReferenceFromFirestore(imageUrl, listener);
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseServer", "Failed to delete image from Storage: " + imagePath, e);
                     listener.onError(e);
                 });
     }
+
+    public void fetchAllFacilities(OnSuccessListener<List<Organizer>> onSuccess, OnFailureListener onFailure) {
+        db.collection("organizers")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Organizer> organizers = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        Organizer organizer = doc.toObject(Organizer.class);
+                        if (organizer != null) {
+                            organizer.setId(doc.getId());
+                            organizers.add(organizer);
+                        }
+                    }
+                    onSuccess.onSuccess(organizers);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void deleteOrganizerWithDependencies(String organizerId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        DocumentReference organizerRef = db.collection("organizers").document(organizerId);
+
+        // Step 1: Get the `events` subcollection
+        organizerRef.collection("events").get().addOnSuccessListener(eventsSnapshot -> {
+            for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
+                String eventId = eventDoc.getId();
+
+                // Step 2: Delete `userId` subcollection
+                deleteSubcollection(eventDoc.getReference().collection("userId"), () -> {
+                    // Step 3: Delete the event itself
+                    eventDoc.getReference().delete().addOnSuccessListener(aVoid -> {
+                        Log.d("Firebase", "Event deleted: " + eventId);
+                    }).addOnFailureListener(e -> Log.e("Firebase", "Failed to delete event: " + eventId, e));
+                }, failure -> Log.e("Firebase", "Failed to delete 'waitlistEntrantIds' subcollection", failure));
+            }
+
+            // Step 4: Delete the organizer document itself
+            organizerRef.delete().addOnSuccessListener(aVoid -> {
+                Log.d("Firebase", "Organizer and dependencies deleted: " + organizerId);
+                deleteUserRole("organizer", organizerId, new AdminAllProfilesActivity.DeleteRoleCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        Log.d("Firebase", message);
+                        onSuccess.onSuccess(null); // Notify the parent caller
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("Firebase", error);
+                        onFailure.onFailure(new Exception(error));
+                    }
+                });
+            }).addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
+    // Helper method to delete subcollections
+    private void deleteSubcollection(CollectionReference subcollectionRef, Runnable onComplete, OnFailureListener onFailure) {
+        subcollectionRef.get().addOnSuccessListener(querySnapshot -> {
+            WriteBatch batch = db.batch();
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                batch.delete(doc.getReference());
+            }
+            batch.commit().addOnSuccessListener(aVoid -> onComplete.run())
+                    .addOnFailureListener(onFailure);
+        }).addOnFailureListener(onFailure);
+    }
+
+    private void deleteUserRole(String role, String id, AdminAllProfilesActivity.DeleteRoleCallback callback) {
+        // Reference the specific document in the "users" collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(id)
+                .update("role", FieldValue.arrayRemove(role))
+                .addOnSuccessListener(aVoid -> {
+                    String message = "Successfully removed '" + role + "' from the role array of document: " + id;
+                    callback.onSuccess(message);
+                })
+                .addOnFailureListener(e -> {
+                    String error = "Error removing '" + role + "' from document " + id + ": " + e.getMessage();
+                    callback.onFailure(error);
+                });
+    }
+
 
     @Override
     public void listenToEntrantUpdates(String userId) {
@@ -1341,23 +1476,19 @@ public class FirebaseServer implements FirebaseInterface {
         });
     }
 
-
-
-
-
     public void deleteQRCode(String organizerId, String eventId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("qrCode", null); // Remove the QR code
+        updates.put("isQrRemoved", true); // Set isQrRemoved to true
+
         db.collection("organizers")
                 .document(organizerId)
                 .collection("events")
                 .document(eventId)
-                .update("qrCode", null) // Remove the QR code
+                .update(updates) // Remove the QR code
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
-
-
-
-
 
     @Override
     public LiveData<Entrant> getEntrantLiveData() {
@@ -1381,5 +1512,43 @@ public class FirebaseServer implements FirebaseInterface {
     public void setDb(FirebaseFirestore db) {
         this.db = db;
     }
+
+    public void retrieveAllEntrantProfileImages(OnImagesRetrievedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<String> profileImageUrls = new ArrayList<>();
+
+        db.collection("entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        Entrant entrant = doc.toObject(Entrant.class);
+                        if (entrant != null && entrant.getProfilePictureUrl() != null && !entrant.getProfilePictureUrl().isEmpty()) {
+                            profileImageUrls.add(entrant.getProfilePictureUrl());
+                        }
+                    }
+                    listener.onImagesRetrieved(profileImageUrls);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void deleteEntrantProfileImage(String imageUrl, OnImageDeletedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("entrants")
+                .whereEqualTo("profilePictureUrl", imageUrl)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().update("profilePictureUrl", null)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FirebaseServer", "Profile image reference removed for entrant.");
+                                    listener.onImageDeleted();
+                                })
+                                .addOnFailureListener(listener::onError);
+                    }
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
 }
 

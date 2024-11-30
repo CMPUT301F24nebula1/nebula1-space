@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
@@ -62,9 +63,11 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_image) // Replace with your error image
                     .into(holder.eventPoster);
-            holder.eventPoster.setVisibility(View.VISIBLE);
+//            holder.eventPoster.setVisibility(View.VISIBLE);
+            holder.container.setVisibility(View.VISIBLE);
         }else{
-            holder.eventPoster.setVisibility(View.GONE);
+//            holder.eventPoster.setVisibility(View.GONE);
+            holder.container.setVisibility(View.INVISIBLE);
         }
         // click listener
         holder.itemView.setOnClickListener(v -> {
@@ -90,7 +93,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         TextView eventEndDate;
         TextView eventStartDate;
         ImageView eventPoster;
-
+        CardView container;
 
 
         public EventViewHolder(@NonNull View itemView) {
@@ -99,7 +102,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
             eventStartDate = itemView.findViewById(R.id.lottery_starts_date);
             eventEndDate = itemView.findViewById(R.id.lottery_ends_date);
             eventPoster = itemView.findViewById(R.id.event_poster);
-
+            container = itemView.findViewById(R.id.event_poster_container);
 
         }
     }

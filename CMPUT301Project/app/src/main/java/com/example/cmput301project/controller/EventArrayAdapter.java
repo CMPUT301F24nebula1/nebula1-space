@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
 import com.example.cmput301project.R;
@@ -40,6 +41,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         }
         Event e = getItem(position);
         ImageView poster = view.findViewById(R.id.event_poster);
+        CardView cardView = view.findViewById(R.id.event_poster_container);
         TextView name = view.findViewById(R.id.event_name);
         TextView endDateTextView = view.findViewById(R.id.lottery_ends_date);
 
@@ -53,7 +55,8 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
             name.setText(e.getName());
 
             if (!(e.getPosterUrl() == null) && !e.getPosterUrl().isEmpty()) {
-                poster.setVisibility(View.VISIBLE);
+//                poster.setVisibility(View.VISIBLE);
+                cardView.setVisibility(View.VISIBLE);
                 Glide.with(getContext())
                         .load(e.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)  // placeholder
@@ -61,7 +64,8 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
                         .into(poster);
             }
             else {
-                poster.setVisibility(View.GONE);
+//                poster.setVisibility(View.INVISIBLE);
+                cardView.setVisibility(View.INVISIBLE);
                 Log.e("Error", "Poster URL is null");
             }
         }

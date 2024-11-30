@@ -225,6 +225,12 @@ public class EntrantClassFragment extends Fragment {
                                                 Log.d("entrant class", "debug2");
                                                 callback.emptyEvents(); // No valid events found
                                             } else {
+                                                events.sort((e1, e2) -> {
+                                                    if (e1.getTimestamp() == null && e2.getTimestamp() == null) return 0;
+                                                    if (e1.getTimestamp() == null) return 1; // e1 comes after e2
+                                                    if (e2.getTimestamp() == null) return -1; // e2 comes after e1
+                                                    return e2.getTimestamp().compareTo(e1.getTimestamp()); // Compare non-null timestamps
+                                                });
                                                 callback.onEventsRetrieved(events); // Found events
                                             }
                                         }
@@ -239,6 +245,12 @@ public class EntrantClassFragment extends Fragment {
                             Log.d("entrant class", "debug3");
                             callback.emptyEvents();
                         } else {
+                            events.sort((e1, e2) -> {
+                                if (e1.getTimestamp() == null && e2.getTimestamp() == null) return 0;
+                                if (e1.getTimestamp() == null) return 1; // e1 comes after e2
+                                if (e2.getTimestamp() == null) return -1; // e2 comes after e1
+                                return e1.getTimestamp().compareTo(e2.getTimestamp()); // Compare non-null timestamps
+                            });
                             callback.onEventsRetrieved(events);
                         }
                     }
