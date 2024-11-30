@@ -307,10 +307,13 @@ public class ParticipantListActivity extends AppCompatActivity {
         });
 
         geoButton.setOnClickListener(view -> {
+            Log.d("GEOBUTTON", "GEO BUTTON HAS BEEN CLICKED");
             if (entrants_waitlist.isEmpty()) {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
             } else {
                 // Show the dialog with the map
+                Log.d("GeoButtonClick", "Opening WaitlistMapFragment with Event ID: " + event.getId());
+
                 waitlistMapFragment dialog = waitlistMapFragment.newInstance(event.getId());
                 dialog.show(getSupportFragmentManager(), "WaitlistMapFragment");
             }
