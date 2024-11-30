@@ -2,6 +2,7 @@ package com.example.cmput301project;
 
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Organizer;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.UUID;
@@ -13,6 +14,7 @@ public class TestMyApplication extends MyApplication {
         super.onCreate();
 
         // Initialize Firebase emulator or other test-specific dependencies here
+        FirebaseApp.initializeApp(this);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.useEmulator("10.0.2.2", 8080);
         setDb(db);

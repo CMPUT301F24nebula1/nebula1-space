@@ -143,6 +143,8 @@ public class EntrantClassFragment extends Fragment {
             if (!categorizedEvents.containsKey(status)) {
                 categorizedEvents.put(status, new ArrayList<>());
             }
+            if (status.equals("WAITING") && event.isFinalized())
+                continue;
             categorizedEvents.get(status).add(event);
         }
 
