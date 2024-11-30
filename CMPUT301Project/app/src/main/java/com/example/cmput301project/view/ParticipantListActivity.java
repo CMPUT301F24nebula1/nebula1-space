@@ -699,8 +699,8 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
                 finalizationText.setVisibility(View.VISIBLE);
             }
             if (entrants_final.isEmpty()) {
-                finalizeButton.setAlpha(0.2f);
-                finalizeButton.setClickable(false);
+//                finalizeButton.setAlpha(0.2f);
+//                finalizeButton.setClickable(false);
                 notifyButton.setAlpha(0.2f);
                 Log.d("notifyButton", "debug2");
                 notifyButton.setClickable(false);
