@@ -88,17 +88,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//        id = "1";
-//        id = "8";
-        id = "1d98b5f2ca50879e";
-//        id = "6";
+//        id = "uiTest";
+//        id = "1d98b5f2ca50879e";
 
 
-
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(false)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -109,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         ((MyApplication) this.getApplication()).setUserId(id);
         ((MyApplication) this.getApplication()).setDb(FirebaseFirestore.getInstance());
         db = ((MyApplication) this.getApplication()).getDb();
+
+
 
         requestNotificationPermission(new PermissionCallback() {
             @Override

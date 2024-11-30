@@ -58,10 +58,10 @@ public class MyApplication extends Application {
             db = FirebaseFirestore.getInstance();
 //            db.useEmulator("10.0.2.2", 8080);
 //
-//            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                    .setPersistenceEnabled(false)
-//                    .build();
-//            db.setFirestoreSettings(settings);
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(false)
+                    .build();
+            db.setFirestoreSettings(settings);
         }
     }
 
