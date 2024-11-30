@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="#80000000"> <!-- Semi-transparent background -->
 
+    <!-- Map Image -->
     <ImageView
         android:id="@+id/mapImageView"
         android:layout_width="wrap_content"
@@ -18,4 +19,13 @@
         android:layout_height="match_parent"
         android:layout_gravity="center" />
 
+    <!-- Close Button -->
+    <ImageView
+        android:id="@+id/closeButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/close_map"
+        android:src="@drawable/ic_back_arrow" />
 </FrameLayout>
