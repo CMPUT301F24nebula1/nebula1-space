@@ -83,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        id = getDeviceId(this);
-//        Log.d("device id", id);
+        id = getDeviceId(this);
+        Log.d("device id", id);
 
 //        id = "6";
-        id = "1d98b5f2ca50879e";
+//        id = "1d98b5f2ca50879e";
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
