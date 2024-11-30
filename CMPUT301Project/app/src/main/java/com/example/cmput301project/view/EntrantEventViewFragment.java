@@ -44,6 +44,8 @@ public class EntrantEventViewFragment extends Fragment {
     Entrant entrant;
     String category;
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -198,6 +200,16 @@ public class EntrantEventViewFragment extends Fragment {
                                     .setCancelable(false)  // prevents dialog from closing on back press
                                     .show();
                         } else if (e.isRequiresGeolocation()) {
+
+                            // Check if location permission is granted
+                            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                // Request location permission if not granted
+                                ActivityCompat.requestPermissions(requireActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        LOCATION_PERMISSION_REQUEST_CODE);
+                                return; // Exit the method to wait for user permission
+                            }
+
                             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                             builder.setTitle("Geolocation Required");
                             builder.setMessage("This event utilizes geolocation. Are you sure you wish to proceed?");
@@ -397,6 +409,22 @@ public class EntrantEventViewFragment extends Fragment {
                     }
                 });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can proceed to the geolocation dialog
+                proceedToJoinEvent();
+            } else {
+                // Permission denied, show a message or handle accordingly
+                Toast.makeText(requireContext(), "Location permission is required to join this event.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void lockUI() {
         binding.progressBar.setVisibility(View.VISIBLE);

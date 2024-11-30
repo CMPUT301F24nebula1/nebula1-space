@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"com.example.cmput301project.model","l":"Admin"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.example.cmput301project.model","l":"Entrant"},{"p":"com.example.cmput301project.model","l":"Event"},{"p":"com.example.cmput301project.model","l":"Organizer"},{"p":"com.example.cmput301project.model","l":"User"}];updateSearchResults();

@@ -180,18 +180,44 @@ public class Entrant extends User implements Serializable {
         this.status = status;
     }
 
+    /**
+     * Gets whether the entrant has opted to receive notifications.
+     *
+     * @return true if the entrant receives notifications; otherwise, false.
+     */
     public  boolean getReceiveNotification() { return receiveNotification; }
 
+    /**
+     * Sets whether the entrant should receive notifications.
+     *
+     * @param receiveNotification true if the entrant should receive notifications; otherwise, false.
+     */
     public  void setReceiveNotification(Boolean receiveNotification) {this.receiveNotification = receiveNotification; }
 
+    /**
+     * Retrieves the list of notifications for the entrant.
+     *
+     * @return the list of {@link Notification} objects for the entrant.
+     */
     public ArrayList<Notification> getNotifications() {
         return notifications;
     }
 
+    /**
+     * Sets the list of notifications for the entrant.
+     *
+     * @param notifications an {@link ArrayList} of {@link Notification} objects.
+     */
     public void setNotifications(ArrayList<Notification> notifications) {
         this.notifications = notifications;
     }
 
+    /**
+     * Checks if the entrant has any unread notifications.
+     *
+     * @param notifications an {@link ArrayList} of {@link Notification} objects to check.
+     * @return true if there is at least one unread notification; otherwise, false.
+     */
     static public boolean hasUnreadNotifications(ArrayList<Notification> notifications) {
         if (notifications != null) {
             for (Notification notification : notifications) {
@@ -206,7 +232,12 @@ public class Entrant extends User implements Serializable {
             return false;
     }
 
-
+    /**
+     * Checks if this entrant is equal to another object.
+     *
+     * @param obj the object to compare with this entrant.
+     * @return true if the given object is an {@link Entrant} with the same ID and status; otherwise, false.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -216,6 +247,11 @@ public class Entrant extends User implements Serializable {
                 Objects.equals(status, other.status);
     }
 
+    /**
+     * Computes the hash code for the entrant.
+     *
+     * @return the hash code based on the entrant's ID and status.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(getId(), status);
@@ -231,10 +267,20 @@ public class Entrant extends User implements Serializable {
         this.longitude = longitude;
     }
 
+    /**
+     * Retrieves the latitude of the entrant's location.
+     *
+     * @return the latitude of the entrant's location.
+     */
     public Double getLatitude() {
         return latitude;
     }
 
+    /**
+     * Retrieves the longitude of the entrant's location.
+     *
+     * @return the longitude of the entrant's location.
+     */
     public Double getLongitude() {
         return longitude;
     }
