@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"com.example.cmput301project.model"},{"l":"所有程序包","u":"allpackages-index.html"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.cmput301project.model"}];updateSearchResults();
