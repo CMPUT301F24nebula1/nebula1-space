@@ -718,16 +718,15 @@ public class FirebaseServer implements FirebaseInterface {
     /**
      * Retrieve all entrant profile images.
      */
-    
+
     private void removeImageReferenceFromFirestore(String imageUrl, OnImageDeletedListener listener) {
+        // Remove `posterUrl` from `organizers/events`
         db.collection("organizers")
                 .get()
                 .addOnSuccessListener(organizersSnapshot -> {
-                    // Loop through all organizers
                     for (DocumentSnapshot organizerDoc : organizersSnapshot.getDocuments()) {
                         String organizerId = organizerDoc.getId();
 
-                        // Check the events subcollection for the matching posterUrl
                         db.collection("organizers")
                                 .document(organizerId)
                                 .collection("events")
@@ -735,26 +734,40 @@ public class FirebaseServer implements FirebaseInterface {
                                 .get()
                                 .addOnSuccessListener(eventsSnapshot -> {
                                     for (DocumentSnapshot eventDoc : eventsSnapshot.getDocuments()) {
-                                        // Update the document by setting the posterUrl to null
                                         eventDoc.getReference().update("posterUrl", null)
                                                 .addOnSuccessListener(aVoid -> {
                                                     Log.d("FirebaseServer", "posterUrl cleared in Firestore: " + imageUrl);
-                                                    listener.onImageDeleted(); // Notify success
                                                 })
-                                                .addOnFailureListener(e -> {
-                                                    Log.e("FirebaseServer", "Failed to clear posterUrl in Firestore", e);
-                                                    listener.onError(e); // Notify failure
-                                                });
+                                                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to clear posterUrl in Firestore", e));
                                     }
                                 })
+                                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to retrieve events with matching posterUrl", e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("FirebaseServer", "Failed to retrieve organizers from Firestore", e));
+
+        // Remove `profilePictureUrl` from `entrants`
+        db.collection("entrants")
+                .whereEqualTo("profilePictureUrl", imageUrl)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().update("profilePictureUrl", null)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FirebaseServer", "profilePictureUrl cleared in Firestore: " + imageUrl);
+                                    listener.onImageDeleted(); // Notify success after clearing profilePictureUrl
+                                })
                                 .addOnFailureListener(e -> {
-                                    Log.e("FirebaseServer", "Failed to retrieve events with matching posterUrl", e);
-                                    listener.onError(e);
+                                    Log.e("FirebaseServer", "Failed to clear profilePictureUrl in Firestore", e);
+                                    listener.onError(e); // Notify failure
                                 });
+                    }
+                    if (querySnapshot.isEmpty()) {
+                        listener.onImageDeleted(); // Notify success even if no matching entrant is found
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirebaseServer", "Failed to retrieve organizers from Firestore", e);
+                    Log.e("FirebaseServer", "Failed to retrieve entrants with matching profilePictureUrl", e);
                     listener.onError(e);
                 });
     }
@@ -1538,3 +1551,4 @@ public class FirebaseServer implements FirebaseInterface {
     }
 
 }
+
