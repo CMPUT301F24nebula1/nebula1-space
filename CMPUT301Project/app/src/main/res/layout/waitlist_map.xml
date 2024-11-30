@@ -17,7 +17,9 @@
         android:id="@+id/pinContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
 
     <!-- Close Button -->
     <ImageView
@@ -28,4 +30,13 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/close_map"
         android:src="@drawable/ic_back_arrow" />
+
+    <ImageView
+    android:id="@+id/pin"
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:src="@drawable/pin_icon"
+    android:layout_gravity="top|left"
+    android:layout_marginTop="200dp"
+    android:layout_marginStart="400dp" />
 </FrameLayout>
