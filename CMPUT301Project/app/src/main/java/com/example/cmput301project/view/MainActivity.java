@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         id = getDeviceId(this);
         Log.d("device id", id);
 
-//        id = "1";
+//        id = "6";
 //        id = "1d98b5f2ca50879e";
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()

@@ -7,6 +7,12 @@ import java.util.ArrayList;
  */
 public class Admin extends User {
 
+    /**
+     * Constructs an Admin user with the specified ID.
+     * The "admin" role is automatically added to the user's roles if not already present.
+     *
+     * @param id the unique identifier for the Admin user
+     */
     public Admin(String id) {
         super(id);
         ArrayList<String> roles = getRole();
@@ -15,5 +21,4 @@ public class Admin extends User {
         }
     }
 
-    // Additional methods specific to Admin functionality can go here
 }
