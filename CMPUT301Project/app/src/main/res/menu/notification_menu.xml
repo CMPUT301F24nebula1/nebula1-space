@@ -7,5 +7,7 @@
         android:icon="@drawable/ic_notification"
         android:visible="false"
         android:enabled="false"
+        android:contentDescription="menu_btn"
+        android:tag="button1"
         app:showAsAction="always" />
 </menu>

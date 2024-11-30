@@ -1,5 +1,6 @@
 package com.example.cmput301project;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -17,6 +18,7 @@ import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiSelector;
@@ -39,6 +41,9 @@ public class UserStoryTests {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule permissionRuleNotification = GrantPermissionRule.grant(POST_NOTIFICATIONS);
 
     // US 02.01.03 As an organizer, I want to create and manage my facility profile.
     @Test
