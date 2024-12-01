@@ -171,6 +171,8 @@ public class waitlistMapFragment extends DialogFragment {
     }
 
     private void addPinToMap(double latitude, double longitude, View rootView) {
+        Log.d("waitlistMapFragment", "addPinToMap called for lat: " + latitude + ", long: " + longitude);
+
         FrameLayout pinContainer = rootView.findViewById(R.id.pinContainer);
 
         // Creating pin
@@ -185,6 +187,9 @@ public class waitlistMapFragment extends DialogFragment {
         int x = calculateXPosition(longitude);
         int y = calculateYPosition(latitude);
 
+        //debugging text for pin position
+        Log.e("PinPosition", "Pin at x: " + x + ", y: " + y);
+
         // Setting pin
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) pin.getLayoutParams();
         params.leftMargin = x;
@@ -195,6 +200,7 @@ public class waitlistMapFragment extends DialogFragment {
         pinContainer.addView(pin);
     }
 
+//    https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg
     private int calculateXPosition(double longitude) {
         int mapWidth = 2058;
         return (int) ((longitude + 180) / 360 * mapWidth);
@@ -204,4 +210,5 @@ public class waitlistMapFragment extends DialogFragment {
         int mapHeight = 1036;
         return (int) ((-latitude + 90) / 180 * mapHeight);
     }
+
 }
