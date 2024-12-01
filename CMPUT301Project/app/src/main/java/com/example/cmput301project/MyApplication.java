@@ -57,11 +57,14 @@ public class MyApplication extends Application {
         if (db == null) {
             db = FirebaseFirestore.getInstance();
 //            db.useEmulator("10.0.2.2", 8080);
-//
-            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(false)
-                    .build();
-            db.setFirestoreSettings(settings);
+
+            if (isRunningTest()) {
+                db.useEmulator("10.0.2.2", 8080);
+            }
+//            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                    .setPersistenceEnabled(false)
+//                    .build();
+//            db.setFirestoreSettings(settings);
         }
     }
 
@@ -302,6 +305,10 @@ public class MyApplication extends Application {
     // Define the OnRolesLoadedListener interface within MyApplication
     public interface OnRolesLoadedListener {
         void onRolesLoaded(ArrayList<String> roles);
+    }
+
+    private boolean isRunningTest() {
+        return "true".equals(System.getProperty("firebase.test"));
     }
 
     public Organizer getOrganizer() {

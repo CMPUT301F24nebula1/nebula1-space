@@ -83,19 +83,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        id = getDeviceId(this);
-        Log.d("device id", id);
-
-
+//        id = getDeviceId(this);
+//        Log.d("device id", id);
 
 //        id = "uiTest";
 //        id = "1d98b5f2ca50879e";
 
+        Intent intent = getIntent();
 
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setPersistenceEnabled(false)
-//                .build();
-//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+        if (intent.hasExtra("test_id")) {
+            id = intent.getStringExtra("test_id");
+        } else {
+            id = getDeviceId(this); // Default value
+        }
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
+
         String navigateTo = intent.getStringExtra("navigateTo");
         String eventId = intent.getStringExtra("eventId");
 
