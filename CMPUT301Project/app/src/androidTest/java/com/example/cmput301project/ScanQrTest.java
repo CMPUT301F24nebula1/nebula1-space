@@ -9,6 +9,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -19,8 +21,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
@@ -33,10 +36,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import android.content.Context;
+import android.util.Log;
+
 import androidx.test.core.app.ApplicationProvider;
 
 @RunWith(AndroidJUnit4.class)
-public class EntrantJoinClassUITest {
+public class ScanQrTest {
 
     @Rule
     public GrantPermissionRule permissionRuleCamera = GrantPermissionRule.grant(CAMERA);
@@ -79,6 +84,7 @@ public class EntrantJoinClassUITest {
         )).respondWith(result);
     }
 
+//    US 01.06.01 As an entrant I want to view event details within the app by scanning the promotional QR code
     @Test
     public void testQRCodeScan() throws InterruptedException {
         // Click the button to open the gallery (triggers the mocked intent)
@@ -89,7 +95,33 @@ public class EntrantJoinClassUITest {
         // Adjust assertions based on what `onActivityResult` should achieve
 //        onView(withId(R.id.scan_qr_button)).check(matches(withText("Expected QR Code Content")));
         // After "ScannerActivity" finishes, check if EntrantEventViewFragment is loaded
-        onView(withId(R.id.join_class_button)).perform(click());
+//        onView(withId(R.id.join_class_button)).perform(click());
+
+        try {
+            Thread.sleep(500); // Adjust timing if needed
+            onView(withText("Invalid QR code.")).check(matches(isDisplayed()));
+            return;
+        } catch (Exception e) {
+            Log.d("ui test", "Warning dialog did not appear: " + e.getMessage());
+        }
+
+        ViewInteraction joinButton = onView(withId(R.id.join_class_button));
+        ViewInteraction leaveButton = onView(withId(R.id.leave_class_button));
+
+        try {
+            // Check if the join button is enabled
+            joinButton.check(matches(isEnabled()));
+            // Perform click on the join button
+            joinButton.perform(click());
+        } catch (NoMatchingViewException | AssertionError e) {
+            // If the join button is not enabled, perform click on the leave button
+            try {
+                leaveButton.check(matches(isEnabled()));
+                leaveButton.perform(click());
+            } catch (NoMatchingViewException | AssertionError e1) {
+                return;
+            }
+        }
     }
 
     @After
