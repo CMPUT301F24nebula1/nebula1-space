@@ -22,10 +22,10 @@
       <SelectionState runConfigName="testEntrantEventViewFragment() (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testEntrantClassFragment()">
+      <SelectionState runConfigName="testData()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testData()">
+      <SelectionState runConfigName="AdminTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
