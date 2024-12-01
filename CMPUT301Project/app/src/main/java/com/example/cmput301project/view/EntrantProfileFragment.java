@@ -65,6 +65,7 @@ import com.example.cmput301project.databinding.EntrantProfileBinding;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Notification;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -735,7 +736,18 @@ public class EntrantProfileFragment extends Fragment {
                 Log.d("Notifications", "Notifications: " + notifications);
 
                 // sort notifications according to timestamp
-                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
+//                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
+                notifications.sort((n1, n2) -> {
+                    Timestamp t1 = n1.getTimestamp();
+                    Timestamp t2 = n2.getTimestamp();
+
+                    if (t1 == null && t2 == null) return 0; // Both timestamps are null, treat as equal
+                    if (t1 == null) return 1;               // Null timestamps are considered "less than"
+                    if (t2 == null) return -1;
+
+                    return t2.compareTo(t1);                // Compare non-null timestamps
+                });
+
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 

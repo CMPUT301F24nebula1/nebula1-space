@@ -1,20 +1,43 @@
 package com.example.cmput301project;
 
-import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.core.AllOf.allOf;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
+
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
-import com.example.cmput301project.controller.QRCodeGenerator;
-import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
@@ -27,49 +50,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static com.google.firebase.firestore.util.Assert.fail;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.AllOf.allOf;
-
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.test.rule.GrantPermissionRule;
-import androidx.test.uiautomator.UiDevice;
-
-import androidx.test.uiautomator.UiObject;
-import androidx.test.uiautomator.UiObjectNotFoundException;
-import androidx.test.uiautomator.UiSelector;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,12 +66,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
 import okhttp3.Request;
-
+import okhttp3.Response;
 
 @RunWith(AndroidJUnit4.class)
-public class UserStoryTests {
+public class EntrantJoinEventTest {
 
 //    @Rule
 //    public ActivityScenarioRule<MainActivity> activityRule =
@@ -111,330 +98,286 @@ public class UserStoryTests {
             scenario = null;
         }
     }
-
-
     @Test
-    public void testNavigateToEntrantProfile() throws InterruptedException {
+    public void testEntrantClassFragment() throws InterruptedException {
+
+        // Create an Intent with the required arguments
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario = ActivityScenario.launch(intent);
+        intent.putExtra("test_id", "uiTest");
 
-        // Wait for the activity to launch
-        Thread.sleep(4000);
-        // Use UiAutomator to click the button directly
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject profileButton = device.findObject(new UiSelector().resourceId("com.example.cmput301project:id/profile_button"));
-
-        Thread.sleep(4000);
-
-        try {
-            // Attempt to click using UiAutomator if the button is found
-            if (profileButton.exists() && profileButton.isEnabled()) {
-                profileButton.click();
-            }
-        } catch (Exception e) {
-            throw new AssertionError("Could not perform click on profile_button using UiAutomator", e);
-        }
-
-        // Verify elements on entrant_profile.xml
-        onView(withId(R.id.btnEditSave)).check(matches(isDisplayed()));
-        onView(withId(R.id.profile_imageview)).check(matches(isDisplayed()));
-        onView(withId(R.id.entrant_profile_name)).check(matches(isDisplayed()));
-        onView(withId(R.id.entrant_profile_email)).check(matches(isDisplayed()));
-//        onView(withId(R.id.entrant_profile_email)).check(matches(withText("t")));
-        onView(withId(R.id.entrant_profile_phone)).check(matches(isDisplayed()));
-    }
-
-    //     US 01.02.01 As an entrant, I want to provide my personal information such as name,
-//     email and optional phone number in the app.
-//     US 01.02.02 As an entrant I want to update information such as name,
-//     email and contact information on my profile.
-//     US 01.03.01 As an entrant I want to upload a profile picture for a more personalized experience
-//     US 01.03.02 As an entrant I want remove profile picture if need be
-//     US 01.03.03 As an entrant I want my profile picture to be deterministically generated from
-//     my profile name if I haven't uploaded a profile image yet.
-    @Test
-    public void testEntrantProvidesPersonalInfo() throws InterruptedException {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario = ActivityScenario.launch(intent);
-
-        // Use UiAutomator to click the button directly
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject profileButton = device.findObject(new UiSelector().resourceId("com.example.cmput301project:id/profile_button"));
-
-        Thread.sleep(2000);
-
-        try {
-            // Attempt to click using UiAutomator if the button is found
-            if (profileButton.exists() && profileButton.isEnabled()) {
-                profileButton.click();
-            }
-        } catch (Exception e) {
-            throw new AssertionError("Could not perform click on profile_button using UiAutomator", e);
-        }
-
-        Thread.sleep(2000);  // Wait for 2 seconds to allow view to render
-
-        // Tap the Edit button to enable the fields for editing
-        onView(withId(R.id.btnEditSave)).perform(click());
-
-        Thread.sleep(1000);  // Wait for 2 seconds to allow view to render
-
-        // Input the name
-        onView(withId(R.id.entrant_profile_name))
-                .perform(clearText(), typeText("John Doe"), closeSoftKeyboard());
-
-        // Input the email
-        onView(withId(R.id.entrant_profile_email))
-                .perform(clearText(), typeText("johndoe@example.com"), closeSoftKeyboard());
-
-        // Optional: Input the phone number (optional field)
-        onView(withId(R.id.entrant_profile_phone))
-                .perform(clearText(), typeText("123-456-7890"), closeSoftKeyboard());
-
-        Thread.sleep(2000);  // Wait for 2 seconds
-        // Check if the warning dialog appears
-        try {
-            // Wait briefly for the dialog to appear
-            Thread.sleep(500); // Adjust timing if needed
-
-            // Verify that the warning dialog with specific text is displayed
-            onView(withText("Invalid email form")).check(matches(isDisplayed()));
-
-            // Dismiss the dialog
-            onView(withText("OK")).perform(click());
-        } catch (Exception e) {
-            // Handle case where dialog may not appear, if no warning dialog is expected for valid cases
-            System.out.println("Warning dialog did not appear: " + e.getMessage());
-        }
-        // Click the save button
-        onView(withId(R.id.btnEditSave)).perform(click());
-        Thread.sleep(2000);
-
-        // Verify that the entered name, email, and phone are displayed in the fields
-        onView(withId(R.id.entrant_profile_name)).check(matches(withText("John Doe")));
-        onView(withId(R.id.entrant_profile_email)).check(matches(withText("johndoe@example.com")));
-        onView(withId(R.id.entrant_profile_phone)).check(matches(withText("123-456-7890")));
-    }
-
-    @Test
-    public void testNavigateToOrganizerHomepage() {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario = ActivityScenario.launch(intent);
-
-        // Start from the EntrantHomepageFragment
-//        ActivityScenario.launch(MainActivity.class);
-
-        // Click on the Organizer button in the toggle group
-        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
-                .perform(ViewActions.click());
-    }
-
-    //     US 02.01.03 As an organizer, I want to create and manage my facility profile.
-    @Test
-    public void testFacilityProfile() throws InterruptedException {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
+        // Launch the MainActivity with the Intent
         scenario =  ActivityScenario.launch(intent);
 
         Thread.sleep(3000);
 
-        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
+        Espresso.onView(allOf(withText("My Classes"), isDisplayed()))
+                .perform(click());
 
-        Thread.sleep(2000);  // Wait for 2 seconds
-
-        // Check if the warning dialog appears
-        try {
-            Thread.sleep(500); // Adjust timing if needed
-            onView(withText("Invalid email form")).check(matches(isDisplayed()));
-            onView(withText("OK")).perform(click());
-        } catch (Exception e) {
-            System.out.println("Warning dialog did not appear: " + e.getMessage());
-        }
-
-        // Save the changes
-        onView(withId(R.id.btnEditSave)).perform(click());
 
         Thread.sleep(2000);
 
-        // Verify the changes
-        verifyFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
+        try {
+            Espresso.onView(withText("Test event5"))
+                    .check(matches(isDisplayed()));
+        } catch (androidx.test.espresso.AmbiguousViewMatcherException |
+                 NoMatchingViewException exception) {
+            Log.d("ui test", "several matches");
+        }
+
+        Thread.sleep(2000);
     }
 
+//    US 01.01.01 As an entrant, I want to join the waiting list for a specific event
+//    US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
+//    US 01.05.02 As an entrant I want to be able to accept the invitation to register/sign up when chosen to participate in an event
+//    US 01.05.03 As an entrant I want to be able to decline an invitation when chosen to participate in an event
+//    US 01.08.01 As an entrant, I want to be warned before joining a waiting list that requires geolocation.
     @Test
-    public void testNavigateToManageEvents() throws InterruptedException {
+    public void testEntrantEventViewFragment() throws InterruptedException {
+
+        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Define a variable to hold the event ID
+        final String[] validEventId = {null};
+
+        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
+        db.collection("organizers") // Top-level collection
+                .document("uiTest") // Specific organizer document
+                .collection("events") // Subcollection for events
+                .limit(1) // Retrieve only one event
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("id"); // Get the event ID from the field
+                    }
+                    latch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    latch.countDown();
+                });
+
+        latch.await(5, TimeUnit.SECONDS); // Wait for the query to complete
+
+        if (validEventId[0] == null) {
+            return;
+        }
+
+        // Create an Intent with the required arguments
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
+        intent.putExtra("test_id", "uiTest");
+        intent.putExtra("navigateTo", "entrantEventViewFragment");
+        intent.putExtra("eventId", validEventId[0]); // Replace with a valid test Event ID
+        intent.putExtra("category", "WAITING");
+
+        // Launch the MainActivity with the Intent
         scenario =  ActivityScenario.launch(intent);
 
         Thread.sleep(3000);
 
-        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
+        try {
 
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isEnabled()));
 
-        Thread.sleep(2000);
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isDisplayed()))
+                    .perform(ViewActions.click());
+        } catch (AssertionError e) {
 
-        onView(withId(R.id.btnEditSave)).perform(click());
+            try {
+                Espresso.onView(ViewMatchers.withId(R.id.leave_class_button))
+                        .check(matches(isDisplayed()))
+                        .perform(ViewActions.click());
+            } catch (AssertionError e1) {
+                ;
+            }
+        }
 
-        Thread.sleep(2000);
-
-        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
-                .perform(click());
-
-        Thread.sleep(2000);
-
-        // Click on the Organizer button in the toggle group
-        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
-                .perform(ViewActions.click());
-
-        // Click on the button that navigates to the Manage Events view
-        // Replace R.id.manage_events_button with the actual button ID that triggers the navigation
-        Espresso.onView(ViewMatchers.withId(R.id.manageEventsButton))
-                .perform(ViewActions.click());
-
-        // Verify that the event list view is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.event_list))
-                .check(matches(isDisplayed()));
+        Thread.sleep(3000);
     }
 
-//    US 02.01.01 As an organizer I want to create a new event and generate a unique
-//    promotional QR code that links to the event description and event poster in the app
-//    US 02.01.02 As an organizer I want to store the generated QR code in my database
-//    US 02.02.03 As an organizer I want to enable or disable the geolocation requirement for my event.
-//    US 02.03.01 As an organizer I want to OPTIONALLY limit the number of entrants who can join my waiting list
-//    US 02.04.01 As an organizer I want to upload an event poster to provide visual information to entrants
-//    US 02.04.02 As an organizer I want to update an event poster to provide visual information to entrants
-    @Test
-    public void testOrganizerCreateEvent() throws InterruptedException, UiObjectNotFoundException {
-//        clearFirebaseEmulatorData();
 
+//    US 01.05.02 As an entrant I want to be able to accept the invitation to register/sign up when chosen to participate in an event
+//    US 01.05.03 As an entrant I want to be able to decline an invitation when chosen to participate in an event
+    @Test
+    public void testEntrantAcceptInvitation() throws InterruptedException {
+        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Define a variable to hold the event ID
+        final String[] validEventId = {null};
+        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
+
+        // Query the entrants collection for entrant ID "uiTest"
+        db.collection("entrants")
+                .document("uiTest") // Document ID for the entrant
+                .collection("entrantWaitList") // Subcollection
+                .whereEqualTo("status", "SELECTED") // Condition
+                .limit(1) // Fetch only the first matching result
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // Get the event ID or relevant document data
+                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("eventId"); // Replace "eventId" with the actual field name
+                    }
+                    latch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error fetching documents: " + e.getMessage());
+                    latch.countDown();
+                });
+
+        // Wait for Firestore query to complete
+        latch.await(5, TimeUnit.SECONDS);
+
+
+        if (validEventId[0] == null) {
+            return;
+        }
+
+        // Create an Intent with the required arguments
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
+        intent.putExtra("test_id", "uiTest");
+
+        // Launch the MainActivity with the Intent
         scenario =  ActivityScenario.launch(intent);
 
         Thread.sleep(3000);
 
-        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
-
-        Thread.sleep(2000);
-
-//        onView(withId(R.id.btnEditSave)).perform(click());
-
-        Thread.sleep(2000);
-
-        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
-                .perform(click());
-
-        Thread.sleep(2000);
-
-        // Click on the Organizer button in the toggle group
-        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
-                .perform(ViewActions.click());
-
-        // Click on the button that navigates to the Manage Events view
-        // Replace R.id.manage_events_button with the actual button ID that triggers the navigation
-        Espresso.onView(ViewMatchers.withId(R.id.manageEventsButton))
-                .perform(ViewActions.click());
-
-        Thread.sleep(2000);
-
-        // Verify that the event list view is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.event_list))
-                .check(matches(isDisplayed()));
-
-        Espresso.onView(ViewMatchers.withId(R.id.add_event_button))
-                .perform(ViewActions.click());
-
-//        Thread.sleep(2000);
-
-        onView(allOf(withId(R.id.event_name_edittext), isDisplayed()))
-                .perform(clearText(), typeText("Test event"), closeSoftKeyboard());
-
-        onView(withId(R.id.lottery_capacity_text))
-                .perform(replaceText("0"), closeSoftKeyboard());
-
-        // Set the start date directly
-        onView(withId(R.id.start_date_text))
-                .perform(replaceText("12/01/2024"), closeSoftKeyboard());
-
-        // Set the end date directly
-        onView(withId(R.id.end_date_text))
-                .perform(replaceText("12/10/2024"), closeSoftKeyboard());
-
-        onView(withId(R.id.save_event_button))
+        Espresso.onView(allOf(withText("My Classes"), isDisplayed()))
                 .perform(click());
 
         Thread.sleep(3000);
 
-        onView(withId(R.id.event_name))
-                .check(matches(isDisplayed()));
+        // Find the ListView and click on the first item
+        Espresso.onView(withId(R.id.event_list)) // Replace with the actual ListView ID
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed(); // Ensure the ListView is displayed
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Click on first item in the ListView";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        // Get the ListView and its first visible child
+                        ListView listView = (ListView) view;
+                        View itemView = listView.getChildAt(0); // Replace 0 with the desired index
+
+                        // Perform a click on the item
+                        itemView.performClick();
+                    }
+                });
+
     }
 
 
-//    US 01.04.01 As an entrant I want to receive notification when chosen from the waiting list (when I "win" the lottery)
-//    US 01.04.02 As an entrant I want to receive notification of not chosen on the app (when I "lose" the lottery)
+//    US 01.08.01 As an entrant, I want to be warned before joining a waiting list that requires geolocation.
     @Test
-    public void testEntrantReceiveNotification() throws InterruptedException {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario = ActivityScenario.launch(intent);
+    public void testGeoEvent() throws InterruptedException {
 
-        // Use UiAutomator to click the button directly
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject profileButton = device.findObject(new UiSelector().resourceId("com.example.cmput301project:id/profile_button"));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        try {
-            // Attempt to click using UiAutomator if the button is found
-            if (profileButton.exists() && profileButton.isEnabled()) {
-                profileButton.click();
-            }
-        } catch (Exception e) {
-            throw new AssertionError("Could not perform click on profile_button using UiAutomator", e);
+        // Define a variable to hold the event ID
+        final String[] validEventId = {null};
+
+        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
+        db.collection("organizers") // Top-level collection
+                .document("uiTest") // Specific organizer document
+                .collection("events") // Subcollection for events
+                .whereEqualTo("requiresGeolocation", true)
+                .limit(1) // Retrieve only one event
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("id"); // Get the event ID from the field
+                    }
+                    latch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    latch.countDown();
+                });
+
+        latch.await(5, TimeUnit.SECONDS); // Wait for the query to complete
+
+        if (validEventId[0] == null) {
+            return;
         }
 
-        Thread.sleep(2000);  // Wait for 2 seconds to allow view to render
-
-        onView(allOf(withId(R.id.btn_notification), isDisplayed())).perform(click());
-
-        // Tap the Notification button
-//        onView(withId(R.id.btn_notification)).perform(click());
-    }
-
-
-//    US 01.04.03 As an entrant I want to opt out of receiving notifications
-//    from organizers and admin
-    @Test
-    public void testStopNotification() throws InterruptedException {
+        // Create an Intent with the required arguments
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario = ActivityScenario.launch(intent);
+        intent.putExtra("test_id", "uiTest");
+        intent.putExtra("navigateTo", "entrantEventViewFragment");
+        intent.putExtra("eventId", validEventId[0]); // Replace with a valid test Event ID
 
-        // Use UiAutomator to click the button directly
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject profileButton = device.findObject(new UiSelector().resourceId("com.example.cmput301project:id/profile_button"));
+        // Launch the MainActivity with the Intent
+        scenario =  ActivityScenario.launch(intent);
+
+        Thread.sleep(3000);
 
         try {
-            // Attempt to click using UiAutomator if the button is found
-            if (profileButton.exists() && profileButton.isEnabled()) {
-                profileButton.click();
+
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isEnabled()));
+
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isDisplayed()))
+                    .perform(ViewActions.click());
+
+            // Check if the dialog is displayed with the correct title and message
+            Espresso.onView(ViewMatchers.withText("Geolocation Required"))
+                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+
+            Espresso.onView(ViewMatchers.withText("This event utilizes geolocation. Are you sure you wish to proceed?"))
+                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+
+            // Click the "Proceed" button
+            Espresso.onView(ViewMatchers.withText("Proceed"))
+                    .perform(ViewActions.click());
+
+        } catch (AssertionError e) {
+
+            try {
+                Espresso.onView(ViewMatchers.withId(R.id.leave_class_button))
+                        .check(matches(isDisplayed()))
+                        .perform(ViewActions.click());
+
+                Thread.sleep(2000);
+
+                Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                        .check(matches(isEnabled()));
+
+                Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                        .check(matches(isDisplayed()))
+                        .perform(ViewActions.click());
+
+                Thread.sleep(1000);
+
+                // Check if the dialog is displayed with the correct title and message
+                Espresso.onView(ViewMatchers.withText("Geolocation Required"))
+                        .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+
+                Espresso.onView(ViewMatchers.withText("This event utilizes geolocation. Are you sure you wish to proceed?"))
+                        .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+
+                Thread.sleep(1000);
+
+                // Click the "Proceed" button
+                Espresso.onView(ViewMatchers.withText("Proceed"))
+                        .perform(ViewActions.click());
+            } catch (AssertionError e1) {
+                ;
             }
-        } catch (Exception e) {
-            throw new AssertionError("Could not perform click on profile_button using UiAutomator", e);
         }
 
-        Thread.sleep(2000);  // Wait for 2 seconds to allow view to render
-
-        onView(allOf(withId(R.id.btn_notification), isDisplayed())).perform(click());
-
-        Thread.sleep(1000);
-
-        onView(allOf(withId(R.id.stop_notifications_button), isDisplayed())).perform(click());
-
-        Thread.sleep(1000);
-
+        Thread.sleep(3000);
     }
+
 
     public void clearFirebaseEmulatorData() {
         OkHttpClient client = new OkHttpClient();
@@ -456,6 +399,7 @@ public class UserStoryTests {
         }
     }
 
+    //    @Test
     private void createTestUsersAndEntrants() throws InterruptedException {
 
         // CountDownLatch for clearing Firestore Emulator data
@@ -555,7 +499,7 @@ public class UserStoryTests {
                     public void onSuccess(Void unused) {
                         Log.d("ui test add event", "event added");
                         for (Entrant entrant : testEntrants) {
-                            addEntrantToWaitlist(event, entrant, db);
+                            addEntrantToWaitlist(event, entrant, db, "SELECTED");
                             addToEventWaitingList(event, entrant.getId());
                             sendNotification("You are in the waiting list", entrant.getId(), event, "SELECTED");
                         }
@@ -567,7 +511,7 @@ public class UserStoryTests {
                     public void onSuccess(Void unused) {
                         Log.d("ui test add event", "event added");
                         for (Entrant entrant : testEntrants) {
-                            addEntrantToWaitlist(event, entrant, db);
+                            addEntrantToWaitlist(event, entrant, db, "WAITING");
                             addToEventWaitingList(event, entrant.getId());
                             sendNotification("You are in the waiting list", entrant.getId(), event, "WAITING");
                         }
@@ -606,6 +550,7 @@ public class UserStoryTests {
                     Log.e("FirestoreError", "Error writing notification", e);
                 });
     }
+
     public void saveOrganizerToDatabase(Organizer organizer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> organizerData = new HashMap<>();
@@ -626,10 +571,10 @@ public class UserStoryTests {
         Log.d("save entrant profile", organizer.toString());
     }
 
-    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db) {
+    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db, String status) {
         Map<String, Object> waitlistData = new HashMap<>();
         waitlistData.put("eventId", event.getId());
-        waitlistData.put("status", "WAITING");
+        waitlistData.put("status", status);
 
         db.collection("entrants")
                 .document(entrant.getId())  // Assuming entrant has a unique ID

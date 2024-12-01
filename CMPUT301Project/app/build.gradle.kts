@@ -79,6 +79,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
 //    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.5.0")
 
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
     implementation("com.google.android.gms:play-services-tasks:17.2.1")
     // Mockito
     testImplementation ("org.mockito:mockito-core:3.11.2")
