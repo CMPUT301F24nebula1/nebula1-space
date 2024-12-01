@@ -82,6 +82,7 @@
         android:drawablePadding="8dp"
         android:text="My Classes"
         android:textSize="16dp"
+        android:tag="my class"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scan_qr_layout"/>

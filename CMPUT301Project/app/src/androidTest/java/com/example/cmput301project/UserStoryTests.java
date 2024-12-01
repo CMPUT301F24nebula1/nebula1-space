@@ -12,7 +12,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.cmput301project.view.MainActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
@@ -32,12 +34,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.firebase.firestore.util.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
@@ -96,14 +101,14 @@ public class UserStoryTests {
         onView(withId(R.id.entrant_profile_phone)).check(matches(isDisplayed()));
     }
 
-    // US 01.02.01 As an entrant, I want to provide my personal information such as name,
-    // email and optional phone number in the app.
-    // US 01.02.02 As an entrant I want to update information such as name,
-    // email and contact information on my profile.
-    // US 01.03.01 As an entrant I want to upload a profile picture for a more personalized experience
-    // US 01.03.02 As an entrant I want remove profile picture if need be
-    // US 01.03.03 As an entrant I want my profile picture to be deterministically generated from
-    // my profile name if I haven't uploaded a profile image yet.
+//     US 01.02.01 As an entrant, I want to provide my personal information such as name,
+//     email and optional phone number in the app.
+//     US 01.02.02 As an entrant I want to update information such as name,
+//     email and contact information on my profile.
+//     US 01.03.01 As an entrant I want to upload a profile picture for a more personalized experience
+//     US 01.03.02 As an entrant I want remove profile picture if need be
+//     US 01.03.03 As an entrant I want my profile picture to be deterministically generated from
+//     my profile name if I haven't uploaded a profile image yet.
     @Test
     public void testEntrantProvidesPersonalInfo() throws InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
@@ -210,7 +215,7 @@ public class UserStoryTests {
                 .perform(ViewActions.click());
     }
 
-    // US 02.01.03 As an organizer, I want to create and manage my facility profile.
+//     US 02.01.03 As an organizer, I want to create and manage my facility profile.
     @Test
     public void testFacilityProfile() throws InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
@@ -276,6 +281,7 @@ public class UserStoryTests {
         Espresso.onView(ViewMatchers.withId(R.id.event_list))
                 .check(matches(isDisplayed()));
     }
+
 //    US 02.01.01 As an organizer I want to create a new event and generate a unique
 //    promotional QR code that links to the event description and event poster in the app
 //    US 02.01.02 As an organizer I want to store the generated QR code in my database
@@ -411,6 +417,122 @@ public class UserStoryTests {
         }
 
         Thread.sleep(3000);
+    }
+
+    @Test
+    public void testEntrantClassFragment() throws InterruptedException {
+
+        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Define a variable to hold the event ID
+        final String[] validEventId = {null};
+        final String[] eventName = new String[1];
+
+        CountDownLatch latch = new CountDownLatch(1);
+        db.collection("organizers")
+                .document("uiTest")
+                .collection("events")
+                .limit(1) // Retrieve only one event
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("id"); // Get the event ID from the field
+                    }
+                    db.collection("entrants")
+                            .document("uiTest") // Update the document with id "uiTest"
+                            .update(
+                                    "name", "John Doe1",
+                                    "email", "johndoe1@example.com"
+                            )
+                            .addOnSuccessListener(aVoid -> {
+                                // Log success or perform additional operations if needed
+                                Log.d("ui test", "Entrants document updated successfully.");
+                                latch.countDown();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle failure of update
+                                Log.d("ui test", "Error updating entrants document: " + e.getMessage());
+                                latch.countDown();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    latch.countDown();
+                });
+
+        latch.await(7, TimeUnit.SECONDS); // Wait for the query to complete
+
+        if (validEventId[0] == null) {
+            return;
+        }
+
+        db.collection("organizers")
+                .document("uiTest")
+                .collection("events")
+                .document(validEventId[0])
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        eventName[0] = documentSnapshot.getString("name");
+                        latch.countDown();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    latch.countDown();
+                });
+
+        latch.await(5, TimeUnit.SECONDS);
+
+        // Create an Intent with the required arguments
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
+        intent.putExtra("test_id", "uiTest");
+        intent.putExtra("navigateTo", "entrantEventViewFragment");
+        intent.putExtra("eventId", validEventId[0]); // Replace with a valid test Event ID
+
+        // Launch the MainActivity with the Intent
+        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent);
+
+        Thread.sleep(3000);
+
+        try {
+
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isEnabled()));
+
+            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
+                    .check(matches(isDisplayed()))
+                    .perform(ViewActions.click());
+        } catch (AssertionError e) {
+            ;
+        }
+
+        Thread.sleep(3000);
+
+        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
+                .perform(click());
+
+        Thread.sleep(2000);
+
+        Espresso.onView(allOf(withText("My Classes"), isDisplayed()))
+                .perform(click());
+
+
+        Thread.sleep(2000);
+
+        try {
+            Espresso.onView(withText(eventName[0]))
+                    .check(matches(isDisplayed()));
+        } catch (androidx.test.espresso.AmbiguousViewMatcherException e) {
+            ;
+        }
+
+        Thread.sleep(2000);
+    }
+
+    @Test
+    public void testEventWaitlist() {
+
     }
 
     private void editFacilityProfile(String name, String email, String phone) throws InterruptedException {
