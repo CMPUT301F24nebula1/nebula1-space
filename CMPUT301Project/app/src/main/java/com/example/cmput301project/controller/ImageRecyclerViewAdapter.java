@@ -1,6 +1,7 @@
 package com.example.cmput301project.controller;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.cmput301project.R;
 
 import java.util.ArrayList;
@@ -52,6 +58,29 @@ public class ImageRecyclerViewAdapter extends RecyclerView.Adapter<ImageRecycler
         Glide.with(holder.imageView.getContext())
                 .load(imageUrl)
                 .placeholder(android.R.color.darker_gray)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        // Log the error
+                        Log.e("Glide", "Image load failed for URL: " + imageUrl, e);
+
+                        // Remove the image URL from the list
+                        int position = holder.getAdapterPosition(); // Get the current position
+                        if (position != RecyclerView.NO_POSITION) {
+                            imageUrls.remove(position);
+                            notifyItemRemoved(position); // Notify the adapter about the removal
+                        }
+
+                        return true; // Return true to prevent Glide from applying the error placeholder
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        // Ensure the ImageView is visible on success
+                        holder.imageView.setVisibility(View.VISIBLE);
+                        return false; // Return false to let Glide handle displaying the image
+                    }
+                })
                 .into(holder.imageView);
 //
 //        // Highlight selected images

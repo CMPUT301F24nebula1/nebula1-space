@@ -21,6 +21,7 @@ import com.example.cmput301project.model.Organizer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -56,7 +57,6 @@ public class MyApplication extends Application {
         // Initialize Firestore and set the emulator only if it's not already initialized, only for testing
         if (db == null) {
             db = FirebaseFirestore.getInstance();
-//            db.useEmulator("10.0.2.2", 8080);
 
             if (isRunningTest()) {
                 db.useEmulator("10.0.2.2", 8080);
@@ -262,7 +262,18 @@ public class MyApplication extends Application {
                     }
                 }
                 Log.d("Notifications", "Notifications: " + notifications);
-                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
+//                notifications.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
+                notifications.sort((n1, n2) -> {
+                    Timestamp t1 = n1.getTimestamp();
+                    Timestamp t2 = n2.getTimestamp();
+
+                    if (t1 == null && t2 == null) return 0; // Both timestamps are null, treat as equal
+                    if (t1 == null) return 1;               // Null timestamps are considered "less than"
+                    if (t2 == null) return -1;
+
+                    return t2.compareTo(t1);                // Compare non-null timestamps
+                });
+
                 entrant.setNotifications(notifications);
 //                setEntrantLiveData(entrant);
 

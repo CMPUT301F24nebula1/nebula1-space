@@ -1,5 +1,6 @@
 package com.example.cmput301project.view;
 
+import android.annotation.SuppressLint;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import com.example.cmput301project.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-public class waitlistMapFragment extends DialogFragment {
+public class WaitlistMapFragment extends DialogFragment {
 
     private static final String TAG = "waitlistMapFragment";
     private String eventId;
@@ -38,8 +39,8 @@ public class waitlistMapFragment extends DialogFragment {
     private PointF start = new PointF();
     private float oldDist = 1f;
 
-    public static waitlistMapFragment newInstance(String eventId) {
-        waitlistMapFragment fragment = new waitlistMapFragment();
+    public static WaitlistMapFragment newInstance(String eventId) {
+        WaitlistMapFragment fragment = new WaitlistMapFragment();
         Bundle args = new Bundle();
         args.putString("eventId", eventId); // pass event id to fragment
         fragment.setArguments(args);
@@ -74,6 +75,7 @@ public class waitlistMapFragment extends DialogFragment {
         return view;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setupZoomAndPan(ImageView mapImageView) {
         scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener(mapImageView));
 
