@@ -52,6 +52,7 @@ public class ParticipantListActivity extends AppCompatActivity {
     private String organizerId;
     Event event;
 
+    private ArrayList<Entrant> entrants_all;
     private ArrayList<Entrant> entrants_store;
     private ArrayList<Entrant> entrants_waitlist; // entrants with status "WAITING"
     private ArrayList<Entrant> entrants_selected; // entrants with status "SELECTED"
@@ -91,6 +92,7 @@ public class ParticipantListActivity extends AppCompatActivity {
         organizerId = (String) intent.getStringExtra("organizerId");
         Log.d("organizerId", organizerId);
 
+        entrants_all = new ArrayList<Entrant>();
         entrants_store = new ArrayList<Entrant>();
         entrants_waitlist = new ArrayList<Entrant>();
         entrants_selected = new ArrayList<Entrant>();
@@ -126,7 +128,9 @@ public class ParticipantListActivity extends AppCompatActivity {
 
                 if (entrants == null || entrants.isEmpty()) {
                     setToggleButtonsAndSlider(0);
-                    Toast.makeText(ParticipantListActivity.this, "Waitlist is empty.", Toast.LENGTH_SHORT).show();
+                    if (entrants_all == null || entrants_all.isEmpty()) {
+                        Toast.makeText(ParticipantListActivity.this, "Waitlist is empty.", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (entrants.size() == 1) {
 //                    setButtonState(true);
 //                    slider.setVisibility(View.GONE);
@@ -308,13 +312,13 @@ public class ParticipantListActivity extends AppCompatActivity {
 
         geoButton.setOnClickListener(view -> {
             Log.d("GEOBUTTON", "GEO BUTTON HAS BEEN CLICKED");
-            if (entrants_waitlist.isEmpty()) {
+            if (entrants_all.isEmpty()) {
                 Toast.makeText(this, "No entrants with location data to display.", Toast.LENGTH_SHORT).show();
             } else {
                 // Show the dialog with the map
                 Log.d("GeoButtonClick", "Opening WaitlistMapFragment with Event ID: " + event.getId());
 
-                waitlistMapFragment dialog = waitlistMapFragment.newInstance(event.getId());
+                WaitlistMapFragment dialog = WaitlistMapFragment.newInstance(event.getId());
                 dialog.show(getSupportFragmentManager(), "WaitlistMapFragment");
             }
         });
@@ -431,6 +435,7 @@ public class ParticipantListActivity extends AppCompatActivity {
                             entrants_selected.clear();
                             entrants_canceled.clear();
                             entrants_final.clear();
+                            entrants_all.clear();
 
 
                             int totalDocuments = task.getResult().size();
@@ -454,8 +459,10 @@ public class ParticipantListActivity extends AppCompatActivity {
                                                 return;
                                             }
 
+
                                             if (subDocument != null && subDocument.exists()) {
                                                 String statusFirebase = subDocument.getString("status");
+                                                entrants_all.add(entrant);
 
                                                 switch (statusFirebase) {
                                                     case "WAITING":
@@ -657,6 +664,7 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
 
         finalizationText.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
+        finalizeButton.setVisibility(View.GONE);
 
         if (toggleGroup.getCheckedButtonId() == R.id.btn_waitlist) {
             updateEntrantsList(new ArrayList<>(entrants_waitlist));
@@ -724,6 +732,10 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
             cancelButton.setClickable(false);
             selectButton.setAlpha(0.2f);
             selectButton.setClickable(false);
+        }
+        if (!entrants_all.isEmpty()) {
+            geoButton.setClickable(true);
+            geoButton.setAlpha(1f);
         }
     }
 

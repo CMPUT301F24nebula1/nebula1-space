@@ -4,16 +4,23 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.cmput301project.FirebaseServer;
 import com.example.cmput301project.R;
 import com.example.cmput301project.controller.OrganizerEventController;
@@ -74,7 +81,23 @@ public class EventDetailsActivity extends AppCompatActivity {
                 Glide.with(this)
                         .load(event.getPosterUrl())
                         .placeholder(R.drawable.placeholder_image)
-                        .error(R.drawable.error_image)
+//                        .error(R.drawable.error_image)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                // If the image fails to load, set the ImageView's visibility to GONE
+                                eventImageView.setVisibility(View.GONE);
+                                Log.e("Glide", "Image load failed", e); // Log the error
+                                return true; // Return true to prevent Glide from applying the error placeholder
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                // If the image loads successfully, ensure the ImageView is visible
+                                eventImageView.setVisibility(View.VISIBLE);
+                                return false; // Return false to let Glide handle displaying the image
+                            }
+                        })
                         .into(eventImageView);
             }
             // delete button click listener
