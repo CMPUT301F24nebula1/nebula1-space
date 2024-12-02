@@ -229,6 +229,10 @@ public class ParticipantListActivity extends AppCompatActivity {
                     public void onInputConfirmed(String notification) {
                         ArrayList<Entrant> selectedEntrants = entrantAdapter.getSelectedEntrants();
 
+                        if (selectedEntrants.isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "Please select some users first.", Toast.LENGTH_SHORT).show();
+                        }
+
                         for (Entrant entrant : selectedEntrants) {
                             Map<String, Object> notificationData = new HashMap<>();
                             notificationData.put("isRead", false); // or "true" if the notification is read
