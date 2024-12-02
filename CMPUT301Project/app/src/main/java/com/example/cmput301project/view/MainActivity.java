@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 //        id = getDeviceId(this);
 //        Log.d("device id", id);
 
-//        id = "uiTest";
+        id = "uiTest";
 //        id = "1d98b5f2ca50879e";
 
         Intent intent = getIntent();

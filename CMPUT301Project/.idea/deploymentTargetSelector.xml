@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="EntrantJoinEventTest">
+      <SelectionState runConfigName="testCancelNonSignupEntrants()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="EntrantClassTest">
+      <SelectionState runConfigName="moreUserStoryTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testEntrantEventViewFragment() (1)">
+      <SelectionState runConfigName="testOpenWaitlistMap()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testData()">
+      <SelectionState runConfigName="testShowWaitlistMapFragment()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AdminTests">
+      <SelectionState runConfigName="testDrawReplacementEntrant()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
