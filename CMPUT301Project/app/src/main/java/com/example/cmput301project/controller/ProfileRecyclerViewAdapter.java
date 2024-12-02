@@ -1,8 +1,14 @@
 package com.example.cmput301project.controller;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -70,7 +76,8 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             // If the image fails to load, set the ImageView's visibility to GONE
-                            holder.profilePictureImageView.setVisibility(View.INVISIBLE);
+//                            holder.profilePictureImageView.setVisibility(View.INVISIBLE);
+                            holder.profilePictureImageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
                             Log.e("Glide", "Image load failed", e); // Log the error
                             return true; // Return true to prevent Glide from applying the error placeholder
                         }
@@ -85,10 +92,43 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                     .into(holder.profilePictureImageView);
         } else {
 //            holder.profilePictureImageView.setImageResource(R.drawable.ic_launcher_background); // Default image
-            holder.profilePictureImageView.setVisibility(View.INVISIBLE);
+//            holder.profilePictureImageView.setVisibility(View.INVISIBLE);
+            holder.profilePictureImageView.setImageDrawable(createInitialsDrawable(entrant.getName()));
         }
 
         holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(entrant, position));
+    }
+
+    private BitmapDrawable createInitialsDrawable(String name) {
+        String initials = getInitials(name);
+        int size = 150;
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#FF1D2A97"));
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(50f);
+        canvas.drawText(initials, size / 2, size / 2 + 15, paint);
+
+//        int MyVersion = Build.VERSION.SDK_INT;
+//        if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+//            checkIfAlreadyhavePermission();
+//        }
+//        imageUri = getImageUri(this.getContext(), bitmap);
+
+        return new BitmapDrawable(context.getResources(), bitmap);
+    }
+
+    private String getInitials(String name) {
+        if (TextUtils.isEmpty(name)) return "";
+        String[] parts = name.trim().split(" ");
+        String initials = "";
+        for (String part : parts) {
+            if (!TextUtils.isEmpty(part)) {
+                initials += part.charAt(0);
+            }
+        }
+        return initials.toUpperCase();
     }
 
 

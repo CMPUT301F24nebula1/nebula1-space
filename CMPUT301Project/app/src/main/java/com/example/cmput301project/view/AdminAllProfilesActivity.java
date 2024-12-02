@@ -85,6 +85,7 @@ public class AdminAllProfilesActivity extends AppCompatActivity {
         });
     }
 
+
     private void loadAllEntrantsFromFirebase() {
         progressBar.setVisibility(ProgressBar.VISIBLE); // Show the progress bar while loading
         db.collection("entrants")
