@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
+      <SelectionState runConfigName="AdminTests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
       <SelectionState runConfigName="EntrantJoinEventTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="EntrantClassTest">
+      <SelectionState runConfigName="UserStoryTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testEntrantEventViewFragment() (1)">
+      <SelectionState runConfigName="EventTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testData()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="AdminTests">
+      <SelectionState runConfigName="TestNavigateToManageEvent">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

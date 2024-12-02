@@ -85,10 +85,6 @@ import okhttp3.Request;
 @RunWith(AndroidJUnit4.class)
 public class UserStoryTests {
 
-//    @Rule
-//    public ActivityScenarioRule<MainActivity> activityRule =
-//            new ActivityScenarioRule<>(MainActivity.class);
-
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
             android.Manifest.permission.POST_NOTIFICATIONS,
@@ -145,7 +141,7 @@ public class UserStoryTests {
         onView(withId(R.id.entrant_profile_phone)).check(matches(isDisplayed()));
     }
 
-    //     US 01.02.01 As an entrant, I want to provide my personal information such as name,
+//     US 01.02.01 As an entrant, I want to provide my personal information such as name,
 //     email and optional phone number in the app.
 //     US 01.02.02 As an entrant I want to update information such as name,
 //     email and contact information on my profile.
@@ -263,115 +259,6 @@ public class UserStoryTests {
         verifyFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
     }
 
-    @Test
-    public void testNavigateToManageEvents() throws InterruptedException {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario =  ActivityScenario.launch(intent);
-
-        Thread.sleep(3000);
-
-        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
-
-
-        Thread.sleep(2000);
-
-        onView(withId(R.id.btnEditSave)).perform(click());
-
-        Thread.sleep(2000);
-
-        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
-                .perform(click());
-
-        Thread.sleep(2000);
-
-        // Click on the Organizer button in the toggle group
-        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
-                .perform(ViewActions.click());
-
-        // Click on the button that navigates to the Manage Events view
-        // Replace R.id.manage_events_button with the actual button ID that triggers the navigation
-        Espresso.onView(ViewMatchers.withId(R.id.manageEventsButton))
-                .perform(ViewActions.click());
-
-        // Verify that the event list view is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.event_list))
-                .check(matches(isDisplayed()));
-    }
-
-//    US 02.01.01 As an organizer I want to create a new event and generate a unique
-//    promotional QR code that links to the event description and event poster in the app
-//    US 02.01.02 As an organizer I want to store the generated QR code in my database
-//    US 02.02.03 As an organizer I want to enable or disable the geolocation requirement for my event.
-//    US 02.03.01 As an organizer I want to OPTIONALLY limit the number of entrants who can join my waiting list
-//    US 02.04.01 As an organizer I want to upload an event poster to provide visual information to entrants
-//    US 02.04.02 As an organizer I want to update an event poster to provide visual information to entrants
-    @Test
-    public void testOrganizerCreateEvent() throws InterruptedException, UiObjectNotFoundException {
-//        clearFirebaseEmulatorData();
-
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
-        scenario =  ActivityScenario.launch(intent);
-
-        Thread.sleep(3000);
-
-        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
-
-        Thread.sleep(2000);
-
-//        onView(withId(R.id.btnEditSave)).perform(click());
-
-        Thread.sleep(2000);
-
-        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
-                .perform(click());
-
-        Thread.sleep(2000);
-
-        // Click on the Organizer button in the toggle group
-        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
-                .perform(ViewActions.click());
-
-        // Click on the button that navigates to the Manage Events view
-        // Replace R.id.manage_events_button with the actual button ID that triggers the navigation
-        Espresso.onView(ViewMatchers.withId(R.id.manageEventsButton))
-                .perform(ViewActions.click());
-
-        Thread.sleep(2000);
-
-        // Verify that the event list view is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.event_list))
-                .check(matches(isDisplayed()));
-
-        Espresso.onView(ViewMatchers.withId(R.id.add_event_button))
-                .perform(ViewActions.click());
-
-//        Thread.sleep(2000);
-
-        onView(allOf(withId(R.id.event_name_edittext), isDisplayed()))
-                .perform(clearText(), typeText("Test event"), closeSoftKeyboard());
-
-        onView(withId(R.id.lottery_capacity_text))
-                .perform(replaceText("0"), closeSoftKeyboard());
-
-        // Set the start date directly
-        onView(withId(R.id.start_date_text))
-                .perform(replaceText("12/01/2024"), closeSoftKeyboard());
-
-        // Set the end date directly
-        onView(withId(R.id.end_date_text))
-                .perform(replaceText("12/10/2024"), closeSoftKeyboard());
-
-        onView(withId(R.id.save_event_button))
-                .perform(click());
-
-        Thread.sleep(3000);
-
-        onView(withId(R.id.event_name))
-                .check(matches(isDisplayed()));
-    }
-
 
 //    US 01.04.01 As an entrant I want to receive notification when chosen from the waiting list (when I "win" the lottery)
 //    US 01.04.02 As an entrant I want to receive notification of not chosen on the app (when I "lose" the lottery)
@@ -436,10 +323,49 @@ public class UserStoryTests {
 
     }
 
+    @Test
+    public void testStartNotification() throws InterruptedException {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
+        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
+        scenario = ActivityScenario.launch(intent);
+
+        // Use UiAutomator to click the button directly
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject profileButton = device.findObject(new UiSelector().resourceId("com.example.cmput301project:id/profile_button"));
+
+        try {
+            // Attempt to click using UiAutomator if the button is found
+            if (profileButton.exists() && profileButton.isEnabled()) {
+                profileButton.click();
+            }
+        } catch (Exception e) {
+            throw new AssertionError("Could not perform click on profile_button using UiAutomator", e);
+        }
+
+        Thread.sleep(2000);  // Wait for 2 seconds to allow view to render
+
+        onView(allOf(withId(R.id.btn_notification), isDisplayed())).perform(click());
+
+        Thread.sleep(1000);
+
+        onView(allOf(withId(R.id.stop_notifications_button), isDisplayed())).perform(click());
+
+        Thread.sleep(2000);
+
+        onView(allOf(withId(R.id.btn_notification), isDisplayed())).perform(click());
+
+        Thread.sleep(2000);
+
+        onView(allOf(withId(R.id.stop_notifications_button), isDisplayed())).perform(click());
+
+        Thread.sleep(1000);
+
+    }
+
     public void clearFirebaseEmulatorData() {
         OkHttpClient client = new OkHttpClient();
 
-        // Replace with your emulator's URL and port (default is http://10.0.2.2:8080 for Android Emulator)
+        // emulator's URL and port
         String url = "http://10.0.2.2:8080/emulator/v1/projects/cmput301test-cdac2/databases/(default)/documents";
 
         Request request = new Request.Builder()
@@ -606,6 +532,7 @@ public class UserStoryTests {
                     Log.e("FirestoreError", "Error writing notification", e);
                 });
     }
+
     public void saveOrganizerToDatabase(Organizer organizer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> organizerData = new HashMap<>();
