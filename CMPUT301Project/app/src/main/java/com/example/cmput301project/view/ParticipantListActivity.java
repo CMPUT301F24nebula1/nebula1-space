@@ -825,7 +825,7 @@ private void processEntrantStatus(Event event, Entrant entrant, String entrantId
                 }
                 else {
                     entrantAdapter.setAllCheckboxesSelected(true);
-                    item.setTitle("DESELECT\nALL");
+//                    item.setTitle("DESELECT\nALL");
                 }
             }
             return true;

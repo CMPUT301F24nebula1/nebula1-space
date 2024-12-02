@@ -1,43 +1,20 @@
 package com.example.cmput301project;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.core.AllOf.allOf;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.annotation.NonNull;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.GrantPermissionRule;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject;
-import androidx.test.uiautomator.UiObjectNotFoundException;
-import androidx.test.uiautomator.UiSelector;
 
+import com.example.cmput301project.controller.QRCodeGenerator;
+import com.example.cmput301project.controller.UserController;
 import com.example.cmput301project.model.Entrant;
 import com.example.cmput301project.model.Event;
 import com.example.cmput301project.model.Organizer;
@@ -50,14 +27,49 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static com.google.firebase.firestore.util.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.AllOf.allOf;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
+
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,15 +78,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Request;
+
 
 @RunWith(AndroidJUnit4.class)
-public class EntrantJoinEventTest {
-
-//    @Rule
-//    public ActivityScenarioRule<MainActivity> activityRule =
-//            new ActivityScenarioRule<>(MainActivity.class);
+public class TestNavigateToManageEvent {
 
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
@@ -98,296 +107,47 @@ public class EntrantJoinEventTest {
             scenario = null;
         }
     }
+
     @Test
-    public void testEntrantClassFragment() throws InterruptedException {
-
-        // Create an Intent with the required arguments
+    public void testNavigateToManageEvents() throws InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest");
-
-        // Launch the MainActivity with the Intent
+        intent.putExtra("test_id", "uiTest"); // Replace "uiTest" with the desired id
         scenario =  ActivityScenario.launch(intent);
 
         Thread.sleep(3000);
 
-        Espresso.onView(allOf(withText("My Classes"), isDisplayed()))
-                .perform(click());
+        editFacilityProfile("John Doe", "johndoe@example.com", "123-456-7890");
 
 
         Thread.sleep(2000);
 
-        try {
-            Espresso.onView(withText("Test event5"))
-                    .check(matches(isDisplayed()));
-        } catch (androidx.test.espresso.AmbiguousViewMatcherException |
-                 NoMatchingViewException exception) {
-            Log.d("ui test", "several matches");
-        }
+        onView(withId(R.id.btnEditSave)).perform(click());
 
         Thread.sleep(2000);
-    }
 
-//    US 01.01.01 As an entrant, I want to join the waiting list for a specific event
-//    US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
-//    US 01.05.02 As an entrant I want to be able to accept the invitation to register/sign up when chosen to participate in an event
-//    US 01.05.03 As an entrant I want to be able to decline an invitation when chosen to participate in an event
-//    US 01.08.01 As an entrant, I want to be warned before joining a waiting list that requires geolocation.
-    @Test
-    public void testEntrantEventViewFragment() throws InterruptedException {
-
-        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Define a variable to hold the event ID
-        final String[] validEventId = {null};
-
-        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
-        db.collection("organizers") // Top-level collection
-                .document("uiTest") // Specific organizer document
-                .collection("events") // Subcollection for events
-                .limit(1) // Retrieve only one event
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("id"); // Get the event ID from the field
-                    }
-                    latch.countDown();
-                })
-                .addOnFailureListener(e -> {
-                    latch.countDown();
-                });
-
-        latch.await(5, TimeUnit.SECONDS); // Wait for the query to complete
-
-        if (validEventId[0] == null) {
-            return;
-        }
-
-        // Create an Intent with the required arguments
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest");
-        intent.putExtra("navigateTo", "entrantEventViewFragment");
-        intent.putExtra("eventId", validEventId[0]); // Replace with a valid test Event ID
-        intent.putExtra("category", "WAITING");
-
-        // Launch the MainActivity with the Intent
-        scenario =  ActivityScenario.launch(intent);
-
-        Thread.sleep(3000);
-
-        try {
-
-            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                    .check(matches(isEnabled()));
-
-            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                    .check(matches(isDisplayed()))
-                    .perform(ViewActions.click());
-        } catch (AssertionError e) {
-
-            try {
-                Espresso.onView(ViewMatchers.withId(R.id.leave_class_button))
-                        .check(matches(isDisplayed()))
-                        .perform(ViewActions.click());
-            } catch (AssertionError e1) {
-                ;
-            }
-        }
-
-        Thread.sleep(3000);
-    }
-
-
-//    US 01.05.02 As an entrant I want to be able to accept the invitation to register/sign up when chosen to participate in an event
-//    US 01.05.03 As an entrant I want to be able to decline an invitation when chosen to participate in an event
-    @Test
-    public void testEntrantAcceptInvitation() throws InterruptedException {
-        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Define a variable to hold the event ID
-        final String[] validEventId = {null};
-        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
-
-        // Query the entrants collection for entrant ID "uiTest"
-        db.collection("entrants")
-                .document("uiTest") // Document ID for the entrant
-                .collection("entrantWaitList") // Subcollection
-                .whereEqualTo("status", "SELECTED") // Condition
-                .limit(1) // Fetch only the first matching result
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // Get the event ID or relevant document data
-                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("eventId"); // Replace "eventId" with the actual field name
-                    }
-                    latch.countDown();
-                })
-                .addOnFailureListener(e -> {
-                    System.out.println("Error fetching documents: " + e.getMessage());
-                    latch.countDown();
-                });
-
-        // Wait for Firestore query to complete
-        latch.await(5, TimeUnit.SECONDS);
-
-
-        if (validEventId[0] == null) {
-            return;
-        }
-
-        // Create an Intent with the required arguments
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest");
-
-        // Launch the MainActivity with the Intent
-        scenario =  ActivityScenario.launch(intent);
-
-        Thread.sleep(3000);
-
-        Espresso.onView(allOf(withText("My Classes"), isDisplayed()))
+        onView(withContentDescription("Navigate up")) // Matches the toolbar's navigation button
                 .perform(click());
 
-        Thread.sleep(3000);
+        Thread.sleep(2000);
 
-        // Find the ListView and click on the first item
-        Espresso.onView(withId(R.id.event_list))
-                .perform(new ViewAction() {
-                    @Override
-                    public Matcher<View> getConstraints() {
-                        return isDisplayed();
-                    }
+        // Click on the Organizer button in the toggle group
+        Espresso.onView(ViewMatchers.withId(R.id.btn_organizer))
+                .perform(ViewActions.click());
 
-                    @Override
-                    public String getDescription() {
-                        return "Click on first item in the ListView";
-                    }
+        // Click on the button that navigates to the Manage Events view
+        // Replace R.id.manage_events_button with the actual button ID that triggers the navigation
+        Espresso.onView(ViewMatchers.withId(R.id.manageEventsButton))
+                .perform(ViewActions.click());
 
-                    @Override
-                    public void perform(UiController uiController, View view) {
-                        // Get the ListView and its first visible child
-                        ListView listView = (ListView) view;
-                        View itemView = listView.getChildAt(0);
-
-                        // Perform a click on the item
-                        itemView.performClick();
-                    }
-                });
-
+        // Verify that the event list view is displayed
+        Espresso.onView(ViewMatchers.withId(R.id.event_list))
+                .check(matches(isDisplayed()));
     }
-
-
-//    US 01.08.01 As an entrant, I want to be warned before joining a waiting list that requires geolocation.
-    @Test
-    public void testGeoEvent() throws InterruptedException {
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Define a variable to hold the event ID
-        final String[] validEventId = {null};
-
-        CountDownLatch latch = new CountDownLatch(1); // To wait for async operation
-        db.collection("organizers") // Top-level collection
-                .document("uiTest") // Specific organizer document
-                .collection("events") // Subcollection for events
-                .whereEqualTo("requiresGeolocation", true)
-                .limit(1) // Retrieve only one event
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        validEventId[0] = queryDocumentSnapshots.getDocuments().get(0).getString("id"); // Get the event ID from the field
-                    }
-                    latch.countDown();
-                })
-                .addOnFailureListener(e -> {
-                    latch.countDown();
-                });
-
-        latch.await(5, TimeUnit.SECONDS); // Wait for the query to complete
-
-        if (validEventId[0] == null) {
-            return;
-        }
-
-        // Create an Intent with the required arguments
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        intent.putExtra("test_id", "uiTest");
-        intent.putExtra("navigateTo", "entrantEventViewFragment");
-        intent.putExtra("eventId", validEventId[0]); // Replace with a valid test Event ID
-
-        // Launch the MainActivity with the Intent
-        scenario =  ActivityScenario.launch(intent);
-
-        Thread.sleep(3000);
-
-        try {
-
-            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                    .check(matches(isEnabled()));
-
-            Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                    .check(matches(isDisplayed()))
-                    .perform(ViewActions.click());
-
-            // Check if the dialog is displayed with the correct title and message
-            Espresso.onView(ViewMatchers.withText("Geolocation Required"))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-
-            Espresso.onView(ViewMatchers.withText("This event utilizes geolocation. Are you sure you wish to proceed?"))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-
-            // Click the "Proceed" button
-            Espresso.onView(ViewMatchers.withText("Proceed"))
-                    .perform(ViewActions.click());
-
-        } catch (AssertionError e) {
-
-            try {
-                Espresso.onView(ViewMatchers.withId(R.id.leave_class_button))
-                        .check(matches(isDisplayed()))
-                        .perform(ViewActions.click());
-
-                Thread.sleep(2000);
-
-                Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                        .check(matches(isEnabled()));
-
-                Espresso.onView(ViewMatchers.withId(R.id.join_class_button))
-                        .check(matches(isDisplayed()))
-                        .perform(ViewActions.click());
-
-                Thread.sleep(1000);
-
-                // Check if the dialog is displayed with the correct title and message
-                Espresso.onView(ViewMatchers.withText("Geolocation Required"))
-                        .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-
-                Espresso.onView(ViewMatchers.withText("This event utilizes geolocation. Are you sure you wish to proceed?"))
-                        .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-
-                Thread.sleep(1000);
-
-                // Click the "Proceed" button
-                Espresso.onView(ViewMatchers.withText("Proceed"))
-                        .perform(ViewActions.click());
-            } catch (AssertionError e1) {
-                ;
-            }
-        }
-
-        Thread.sleep(3000);
-    }
-
-    @Test
-    public void testData() throws InterruptedException {
-        createTestUsersAndEntrants();
-    }
-
 
     public void clearFirebaseEmulatorData() {
         OkHttpClient client = new OkHttpClient();
 
-        // Replace with your emulator's URL and port (default is http://10.0.2.2:8080 for Android Emulator)
+        // emulator's URL and port
         String url = "http://10.0.2.2:8080/emulator/v1/projects/cmput301test-cdac2/databases/(default)/documents";
 
         Request request = new Request.Builder()
@@ -404,7 +164,6 @@ public class EntrantJoinEventTest {
         }
     }
 
-    //    @Test
     private void createTestUsersAndEntrants() throws InterruptedException {
 
         // CountDownLatch for clearing Firestore Emulator data
@@ -504,7 +263,7 @@ public class EntrantJoinEventTest {
                     public void onSuccess(Void unused) {
                         Log.d("ui test add event", "event added");
                         for (Entrant entrant : testEntrants) {
-                            addEntrantToWaitlist(event, entrant, db, "SELECTED");
+                            addEntrantToWaitlist(event, entrant, db);
                             addToEventWaitingList(event, entrant.getId());
                             sendNotification("You are in the waiting list", entrant.getId(), event, "SELECTED");
                         }
@@ -516,7 +275,7 @@ public class EntrantJoinEventTest {
                     public void onSuccess(Void unused) {
                         Log.d("ui test add event", "event added");
                         for (Entrant entrant : testEntrants) {
-                            addEntrantToWaitlist(event, entrant, db, "WAITING");
+                            addEntrantToWaitlist(event, entrant, db);
                             addToEventWaitingList(event, entrant.getId());
                             sendNotification("You are in the waiting list", entrant.getId(), event, "WAITING");
                         }
@@ -576,10 +335,10 @@ public class EntrantJoinEventTest {
         Log.d("save entrant profile", organizer.toString());
     }
 
-    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db, String status) {
+    private void addEntrantToWaitlist(Event event, Entrant entrant, FirebaseFirestore db) {
         Map<String, Object> waitlistData = new HashMap<>();
         waitlistData.put("eventId", event.getId());
-        waitlistData.put("status", status);
+        waitlistData.put("status", "WAITING");
 
         db.collection("entrants")
                 .document(entrant.getId())  // Assuming entrant has a unique ID

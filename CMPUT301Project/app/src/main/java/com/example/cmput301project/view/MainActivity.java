@@ -95,9 +95,10 @@ public class MainActivity extends AppCompatActivity {
         if (intent.hasExtra("test_id")) {
             id = intent.getStringExtra("test_id");
         } else {
-            id = getDeviceId(this); // Default value
-//            id = "bbac48bf368bc6bf";
+//            id = getDeviceId(this); // Default value
+            id = "bbac48bf368bc6bf";
 //            id = "1d98b5f2ca50879e";
+//            id = "8";
         }
 
 
