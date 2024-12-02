@@ -89,7 +89,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="#73673AB7"
-        android:text="Manage QR Code"
+        android:text="Manage QR"
         android:textColor="@android:color/white"
         app:cornerRadius="24dp"
         app:icon="@drawable/ic_edit"
