@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Exception e) {
+                    Log.d("qr eventid", eventId);
                     Toast.makeText(MainActivity.this, "Invalid QR code.", Toast.LENGTH_SHORT).show();
                 }
             });
