@@ -58,10 +58,12 @@ public class QRCodeAdapter extends RecyclerView.Adapter<QRCodeAdapter.QRCodeView
         if (event.getQrCode() != null && !event.getQrCode().isEmpty()) {
             holder.qrCodeImageView.setVisibility(View.VISIBLE);
             // Generate QR code using QRCodeGenerator
-            Bitmap qrCodeBitmap = QRCodeGenerator.generateQRCode(event.getQrCode());
+            Bitmap qrCodeBitmap = QRCodeGenerator.generateQRCode(event.getId());
             if (qrCodeBitmap != null) {
                 // Display the QR code
                 holder.qrCodeImageView.setImageBitmap(qrCodeBitmap);
+
+
                 // Add click listener to display enlarged QR code
                 holder.qrCodeImageView.setOnClickListener(v -> {
                     if (qrCodeClickListener != null) {
