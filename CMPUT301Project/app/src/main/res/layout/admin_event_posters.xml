@@ -16,7 +16,7 @@
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="?attr/homeAsUpIndicator"
         android:fitsSystemWindows="true"
-        app:title="Event Posters"
+        app:title="Images"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:ignore="MissingConstraints"
         android:background="#FDE0F3" />

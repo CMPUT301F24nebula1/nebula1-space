@@ -140,6 +140,12 @@ public class EntrantClassFragment extends Fragment {
 
         for (Event event : events) {
             String status = waitlistMap.get(event.getId());
+            if (status == null) {
+                Log.d("waitlist debug000", "Status is null for event ID: " + event.getId() + event.getName());
+                status = "WAITING";
+            } else {
+                Log.d("waitlist debug000", "Status: " + status + event.getName());
+                }
             if (!categorizedEvents.containsKey(status)) {
                 categorizedEvents.put(status, new ArrayList<>());
             }
@@ -147,6 +153,7 @@ public class EntrantClassFragment extends Fragment {
                 continue;
             categorizedEvents.get(status).add(event);
         }
+        Log.d("waitlist debug000", "separator");
 
         for (Map.Entry<String, ArrayList<Event>> entry : categorizedEvents.entrySet()) {
             entry.getValue().sort((event1, event2) -> event1.getName().compareToIgnoreCase(event2.getName()));

@@ -34,7 +34,6 @@ public class UserController {
                     addOrganizer(new Organizer(userId));
 //                    addAdmin(new Admin(userId));
 
-
                     DocumentReference entrantRef = db.collection("entrants").document(userId);
                     entrantRef.get().addOnSuccessListener(documentSnapshot1 -> {
 //                        ArrayList<String> roles1 = (ArrayList<String>) documentSnapshot.get("role");
