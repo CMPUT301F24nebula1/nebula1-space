@@ -21,8 +21,9 @@ public class EventTests {
     @Test
     public void testAddEntrant() {
         Entrant entrant = new Entrant();
+        String entrantId = entrant.getId();
         event.add_entrant(entrant);
-        assertTrue(event.getWaitlistEntrantIds().contains(entrant));
+        assertTrue(event.getWaitlistEntrantIds().contains(entrantId));
     }
 
     //Test 2: Testing remove entrant
